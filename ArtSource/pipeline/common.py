@@ -217,7 +217,7 @@ def soft_toon_material(name, rig=None, preset="Default", **overrides):
     lum = g.node("ShaderNodeRGBToBW")
     g.link(to_rgb.outputs["Color"], lum.inputs[0])
     shadow_raw = g.math("DIVIDE", lum.outputs[0], g.math("MAXIMUM", ndl, 0.05), clamp=True)
-    near_lit = g.map_range(ndl, 0.0, 0.15)
+    near_lit = g.map_range(ndl, 0.12, 0.35)  # self-shadow acne lives at the terminator; the ramp hides it there anyway
     shadow = g.mix_float(near_lit, 1.0, shadow_raw)
     received = g.mix_float(params["_ReceiveShadows"], 1.0, shadow)
 

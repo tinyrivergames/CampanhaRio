@@ -29,9 +29,12 @@ def build(rig=None):
 
     # Sun: the light points down its local -Z; aim it so -Z travels from the sun toward the scene
     sun_data = bpy.data.lights.new("LookDev_Sun", "SUN")
-    sun_data.energy = 1.0  # the diffuse probe in the material divides by N.L: keep it at 1 (white)
+    sun_data.energy = math.pi  # irradiance pi -> a white diffuse reads exactly N.L: the material's shadow probe (it divides by N.L)
     sun_data.color = (1.0, 1.0, 1.0)
     sun_data.angle = math.radians(rig["sun"]["angularDiameterDeg"])
+    for attr, value in (("shadow_filter_radius", 3.0), ("use_shadow_jitter", False)):
+        if hasattr(sun_data, attr):
+            setattr(sun_data, attr, value)
     sun = bpy.data.objects.new("LookDev_Sun", sun_data)
     col.objects.link(sun)
     to_sun = common.sun_direction_blender(rig)

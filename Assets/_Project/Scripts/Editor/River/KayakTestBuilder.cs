@@ -2,12 +2,14 @@ using System.IO;
 using CampanhaRio.CameraSystem;
 using CampanhaRio.Dev;
 using CampanhaRio.Kayak;
+using CampanhaRio.Rendering;
 using CampanhaRio.River;
 using Unity.Mathematics;
 using UnityEditor;
 using UnityEditor.SceneManagement;
 using UnityEngine;
 using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.Splines;
 
 namespace CampanhaRio.Editor
@@ -585,22 +587,25 @@ namespace CampanhaRio.Editor
 
         static void BuildLightAndCamera()
         {
+            // The game's light: the DayCycle at the afternoon (the lookdev rig), the sky and the post-processing
+            var rig = LookDevRig.Parse(AssetDatabase.LoadAssetAtPath<TextAsset>(LookDevBuilder.RigPath).text);
             var sun = new GameObject("Sun").AddComponent<Light>();
             sun.type = LightType.Directional;
             sun.shadows = LightShadows.Soft;
-            sun.intensity = 1.2f;
-            sun.color = new Color(1f, 0.95f, 0.86f);
-            sun.transform.rotation = Quaternion.Euler(45f, -30f, 0f);
-            RenderSettings.sun = sun;
-            RenderSettings.ambientMode = AmbientMode.Trilight;
-            RenderSettings.ambientSkyColor = new Color(0.62f, 0.74f, 0.88f);
-            RenderSettings.ambientEquatorColor = new Color(0.62f, 0.66f, 0.6f);
-            RenderSettings.ambientGroundColor = new Color(0.35f, 0.32f, 0.26f);
+            var day = new GameObject("Day Cycle").AddComponent<DayCycle>();
+            day.sun = sun;
+            day.skybox = LookDevBuilder.SkyMaterial(rig);
+            day.keys = DayCycle.DefaultKeys();
+            day.keys[0] = DayCycle.FromRig(rig, day.keys[0]);
+            day.Apply();
+            LookDevBuilder.PostVolume(rig);
 
             var camGo = new GameObject("Main Camera", typeof(Camera), typeof(AudioListener));
             camGo.tag = "MainCamera";
             var cam = camGo.GetComponent<Camera>();
             cam.farClipPlane = 1500f;
+            cam.GetUniversalAdditionalCameraData().renderPostProcessing = true;
+            cam.GetUniversalAdditionalCameraData().antialiasing = AntialiasingMode.SubpixelMorphologicalAntiAliasing;
             camGo.AddComponent<KayakCamera>();
         }
 
