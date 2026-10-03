@@ -1,0 +1,96 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 8
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: M_RiverWater
+  m_Shader: {fileID: 4800000, guid: cdc6d8d9793a9af4f925fc90fc395ed7, type: 3}
+  m_Parent: {fileID: 0}
+  m_ModifiedSerializedProperties: 0
+  m_ValidKeywords:
+  - _CAUSTICS
+  m_InvalidKeywords: []
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_LockedProperties: 
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _FoamTex:
+        m_Texture: {fileID: 2800000, guid: fdaa72f9ade94204386d3e9159d9fe48, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NormalTex:
+        m_Texture: {fileID: 2800000, guid: e663886571ff29d44b4baac603f203d4, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Ints: []
+    m_Floats:
+    - _BoilScale: 6
+    - _BoilStrength: 0.45
+    - _CalmDrift: 0.05
+    - _Caustics: 1
+    - _CausticsScale: 1.6
+    - _CausticsStrength: 0.35
+    - _Clarity: 0.9
+    - _DepthRange: 2.2
+    - _EdgeSoftness: 0.08
+    - _FlowCycleLength: 3
+    - _FlowMaxSpeed: 6
+    - _FlowSpeedScale: 1
+    - _FresnelPower: 3
+    - _GlintAnisotropy: 3.5
+    - _GlintCoverage: 0.45
+    - _GlintLifetimeScale: 14
+    - _GlintOpacity: 0.6
+    - _GlintScale: 2.2
+    - _GlintSharpness: 0.55
+    - _GlintThreshold: 0.16
+    - _GlintWarp: 1.2
+    - _LegacyStreaks: 0
+    - _NormalStrengthCalm: 0.12
+    - _NormalStrengthRapid: 0.75
+    - _ObstacleFoamStrength: 0.8
+    - _RapidsFoam: 0.6
+    - _ReflectionBreakup: 0.65
+    - _ReflectionDistortion: 0.025
+    - _ReflectionSmear: 0.008
+    - _ReflectionStrength: 0.9
+    - _RefractionStrength: 0.025
+    - _RingStrength: 0.35
+    - _RippleScale: 2.4
+    - _ShadowStrength: 0.6
+    - _ShoreFoamNoise: 0.85
+    - _ShoreFoamPulse: 1.2
+    - _ShoreFoamWidth: 0.2
+    - _StreakDensity: 0.55
+    - _StreakLength: 16
+    - _StreakOpacity: 0.7
+    - _StreakWidth: 16
+    - _SunGlintSize: 0.12
+    - _SunGlintStrength: 0.3
+    - _SwellScale: 11
+    - _WobbleHeight: 0.025
+    - _WobbleScale: 5
+    - _WobbleSpeed: 1
+    m_Colors:
+    - _DeepColor: {r: 0.089999996, g: 0.30999997, b: 0.34999996, a: 1}
+    - _FoamColor: {r: 0.95, g: 0.97999996, b: 0.96999997, a: 1}
+    - _FoamShadowColor: {r: 0.75, g: 0.89, b: 0.88, a: 1}
+    - _GlintColor: {r: 0.91, g: 0.96999997, b: 0.96, a: 1}
+    - _MidColor: {r: 0.17999998, g: 0.61, b: 0.6, a: 1}
+    - _ShadowColor: {r: 0.43999997, g: 0.6399999, b: 0.65, a: 1}
+    - _ShallowColor: {r: 0.35999998, g: 0.81, b: 0.75, a: 1}
+    - _SkyHorizonColor: {r: 0.65999997, g: 0.83, b: 0.93, a: 1}
+    - _SkyTopColor: {r: 0.24999997, g: 0.5, b: 0.78, a: 1}
+    - _SunGlintColor: {r: 1, g: 0.96, b: 0.86, a: 1}
+  m_BuildTextureStacks: []
+  m_AllowLocking: 1
