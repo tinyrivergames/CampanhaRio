@@ -1,0 +1,61 @@
+{
+    "about": "The ONE description of the lookdev light, sky, palette and preview views. Blender (ArtSource/pipeline/lookdev.py) and Unity (LookDev scene, DayCycle afternoon key) both read it. Colors are sRGB hex. Directions and views are in UNITY space: the asset faces +Z, Y is up.",
+    "version": 1,
+    "sun": {
+        "elevationDeg": 42,
+        "azimuthDeg": -38,
+        "color": "#FFF0D6",
+        "intensity": 1.15,
+        "angularDiameterDeg": 3.0
+    },
+    "ambient": {
+        "sky": "#9DB8D9",
+        "equator": "#A9AE9C",
+        "ground": "#6E6150",
+        "strength": 0.55
+    },
+    "shadowTint": "#5D6A9E",
+    "shadowTintStrength": 0.35,
+    "background": {
+        "top": "#78A9DC",
+        "horizon": "#D4E3EC"
+    },
+    "ground": {
+        "color": "#A39E92",
+        "size": 40
+    },
+    "camera": {
+        "fovDeg": 28,
+        "pitchDeg": 12,
+        "margin": 1.18
+    },
+    "views": [
+        { "name": "front", "label": "FRENTE", "yawDeg": 180 },
+        { "name": "side", "label": "LADO", "yawDeg": -90 },
+        { "name": "back", "label": "TRAS", "yawDeg": 0 },
+        { "name": "three_quarter", "label": "3/4", "yawDeg": -135 }
+    ],
+    "closeup": { "label": "CLOSE", "yawDeg": -150, "pitchDeg": 22, "zoom": 1.6 },
+    "scaleRef": { "label": "ESCALA (bicho 0,9 m)", "height": 0.9, "gap": 0.35, "yawDeg": 180, "color": "#D9A47A" },
+    "tileSize": 640,
+    "palette": {
+        "pine_dark": "#2F5A3A",
+        "pine_mid": "#3F7A45",
+        "pine_light": "#6FA35A",
+        "grass": "#8DB65A",
+        "grass_dry": "#C9C27A",
+        "rock_orange": "#D08A55",
+        "rock_sand": "#E2B07E",
+        "rock_shadow": "#9A5E44",
+        "moss": "#7E9A4A",
+        "dirt": "#B88A5E",
+        "bark": "#6B4A35",
+        "water_shallow": "#5FCFBF",
+        "water_deep": "#1F7F86",
+        "sky_top": "#78A9DC",
+        "cloud": "#F4F1EA",
+        "flower_pink": "#E58FA8",
+        "flower_yellow": "#F2CF5B",
+        "neutral_gray": "#A39E92"
+    }
+}
