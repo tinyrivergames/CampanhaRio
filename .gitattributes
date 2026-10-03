@@ -18,7 +18,8 @@
 # These lines MUST stay after "*.asset" (the last matching line wins).
 *TerrainData*.asset filter=lfs diff=lfs merge=lfs -text
 LightingData.asset  filter=lfs diff=lfs merge=lfs -text
-*NavMesh*.asset     filter=lfs diff=lfs merge=lfs -text
+NavMesh.asset       filter=lfs diff=lfs merge=lfs -text
+NavMesh-*.asset     filter=lfs diff=lfs merge=lfs -text
 *.cubemap           filter=lfs diff=lfs merge=lfs -text
 
 # ---- Code / text ----
