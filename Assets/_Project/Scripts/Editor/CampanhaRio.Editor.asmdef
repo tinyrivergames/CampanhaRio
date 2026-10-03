@@ -1,0 +1,28 @@
+{
+    "name": "CampanhaRio.Editor",
+    "rootNamespace": "CampanhaRio.Editor",
+    "references": [
+        "CampanhaRio",
+        "Unity.InputSystem",
+        "Unity.Splines",
+        "Unity.Splines.Editor",
+        "Unity.Mathematics",
+        "Unity.RenderPipelines.Core.Runtime",
+        "Unity.RenderPipelines.Core.Editor",
+        "Unity.RenderPipelines.Universal.Runtime",
+        "Unity.RenderPipelines.Universal.Editor",
+        "Unity.Animation.Rigging",
+        "Unity.Netcode.Runtime"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
