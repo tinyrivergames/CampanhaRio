@@ -41,6 +41,10 @@ Por baixo, cada comando é `blender.exe --background --python <script> -- <args>
 - `preview.py`: a folha de prévia (4 ângulos, close, silhueta, escala, LODs, e um cabeçalho com triângulos e tamanho).
 - `export.py`: FBX para o Unity + `<Asset>.softtoon.json` (os parâmetros do material).
 - `open_for_review.cmd`: abre a prévia e o `.blend` sem travar o terminal.
+- `compare.py`: Blender x Unity lado a lado (o último passo do protocolo).
+
+A folha de prévia aplica a **mesma cadeia de pós-processamento do Unity** (exposição, balanço de branco, contraste,
+saturação e o tonemapping Neutral do URP), então as cores da prévia são as cores do jogo.
 
 **A luz é uma só:** `Assets/_Project/Art/LookDev/lookdev_rig.json` define o sol (ângulo, cor, intensidade), o ambiente
 (céu, horizonte, chão), a cor da sombra, a paleta e os ângulos das câmeras. O Blender e a cena `LookDev` do Unity leem

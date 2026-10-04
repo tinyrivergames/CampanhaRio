@@ -46,19 +46,18 @@ def main():
     paths, pitches = [], []
     for view in rig["views"]:
         lookdev.frame(cam, [sphere, cube], view["yawDeg"], c["pitchDeg"], c["fovDeg"], c["margin"])
-        paths.append(preview.render_tile(os.path.join(tmp, view["name"] + ".png")))
+        paths.append(preview.render_tile(os.path.join(tmp, view["name"] + ".exr")))
         pitches.append(c["pitchDeg"])
     cu = rig["closeup"]
     lookdev.frame(cam, [sphere, cube], cu["yawDeg"], cu["pitchDeg"], c["fovDeg"], c["margin"], zoom=cu["zoom"])
-    paths.append(preview.render_tile(os.path.join(tmp, "closeup.png")))
+    paths.append(preview.render_tile(os.path.join(tmp, "closeup.exr")))
     pitches.append(cu["pitchDeg"])
 
     t, gap = rig["tileSize"], 8
     strip = np.ones((t, len(paths) * t + (len(paths) - 1) * gap, 3), dtype=np.float32) * np.array([236, 231, 221], dtype=np.float32) / 255.0
     for i, p in enumerate(paths):
         rgba = preview.load_rgba(p)
-        a = rgba[..., 3:4]
-        strip[:, i * (t + gap):i * (t + gap) + t] = preview.grade(preview.sky_backdrop(t, rig, pitches[i]) * (1 - a) + rgba[..., :3] * a, rig)
+        strip[:, i * (t + gap):i * (t + gap) + t] = preview.over_sky(rgba, rig, pitches[i])
     os.makedirs(os.path.dirname(out), exist_ok=True)
     preview.save_png(strip, out)
     print(f"[match_test] wrote {out}")

@@ -1,0 +1,31 @@
+{
+    "asset": "Pebble",
+    "family": "Test",
+    "source": "ArtSource/Test/Pebble/Pebble_v001.blend",
+    "material": {
+        "_BaseColor": "#E2B07E",
+        "_Wrap": 0.4,
+        "_RampCenter": 0.45,
+        "_RampSoftness": 0.32,
+        "_ReceiveShadows": 0.85,
+        "_RimStrength": 0.1,
+        "_RimPower": 3.5,
+        "_UseVertexColor": 1.0,
+        "_GradientBottom": "#D9C6B4",
+        "_GradientTop": "#FFFFFF",
+        "_GradientHeights": [
+            0.0,
+            0.32
+        ],
+        "_TopTint": "#7E9A4A",
+        "_TopTintAmount": 0.2,
+        "_TopTintSharpness": 0.35,
+        "_Translucency": 0.0,
+        "preset": "Rock"
+    },
+    "triangles": {
+        "COL": 40,
+        "LOD0": 600,
+        "LOD1": 150
+    }
+}

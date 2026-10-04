@@ -97,7 +97,9 @@ def configure_render(scene, rig):
     scene.render.resolution_y = tile
     scene.render.resolution_percentage = 100
     scene.render.film_transparent = True
-    scene.render.image_settings.file_format = "PNG"
+    # Linear EXR tiles: the sheet applies Unity's own post chain (preview.unity_post), so it shows what the game shows
+    scene.render.image_settings.file_format = "OPEN_EXR"
+    scene.render.image_settings.color_depth = "16"
     scene.render.image_settings.color_mode = "RGBA"
     ee = scene.eevee
     for attr, value in (("taa_render_samples", 32), ("use_shadows", True), ("shadow_ray_count", 2), ("shadow_step_count", 6)):

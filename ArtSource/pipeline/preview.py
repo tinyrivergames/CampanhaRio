@@ -68,15 +68,15 @@ def render_tiles(name, parts, rig, tmp):
     show_only([lod0])
     for view in rig["views"]:
         lookdev.frame(cam, [lod0], view["yawDeg"], camcfg["pitchDeg"], camcfg["fovDeg"], camcfg["margin"])
-        tiles.append((render_tile(os.path.join(tmp, f"{view['name']}.png")), view["label"], "sky", camcfg["pitchDeg"]))
+        tiles.append((render_tile(os.path.join(tmp, f"{view['name']}.exr")), view["label"], "sky", camcfg["pitchDeg"]))
 
     cu = rig["closeup"]
     lookdev.frame(cam, [lod0], cu["yawDeg"], cu["pitchDeg"], camcfg["fovDeg"], camcfg["margin"], zoom=cu["zoom"])
-    tiles.append((render_tile(os.path.join(tmp, "closeup.png")), cu["label"], "sky", cu["pitchDeg"]))
+    tiles.append((render_tile(os.path.join(tmp, "closeup.exr")), cu["label"], "sky", cu["pitchDeg"]))
 
     show_only([lod0], keep_ground=False)
     lookdev.frame(cam, [lod0], rig["views"][0]["yawDeg"], camcfg["pitchDeg"], camcfg["fovDeg"], camcfg["margin"])
-    tiles.append((render_tile(os.path.join(tmp, "silhouette.png")), "SILHUETA", "silhouette", 0))
+    tiles.append((render_tile(os.path.join(tmp, "silhouette.exr")), "SILHUETA", "silhouette", 0))
 
     # Scale: the animal stands to the asset's right (Blender +X), on the same ground
     sr = rig["scaleRef"]
@@ -87,7 +87,7 @@ def render_tiles(name, parts, rig, tmp):
     bpy.context.view_layer.update()
     show_only([lod0] + ref)
     lookdev.frame(cam, [lod0] + ref, sr["yawDeg"], camcfg["pitchDeg"], camcfg["fovDeg"], camcfg["margin"])
-    tiles.append((render_tile(os.path.join(tmp, "scale.png")), sr["label"], "sky", camcfg["pitchDeg"]))
+    tiles.append((render_tile(os.path.join(tmp, "scale.exr")), sr["label"], "sky", camcfg["pitchDeg"]))
     for p in ref:
         p.hide_render = True
 
@@ -101,7 +101,7 @@ def render_tiles(name, parts, rig, tmp):
     show_only(lods)
     lookdev.frame(cam, lods, 180, camcfg["pitchDeg"], camcfg["fovDeg"], camcfg["margin"])
     counts = " / ".join(str(common.triangle_count(o)) for o in lods)
-    tiles.append((render_tile(os.path.join(tmp, "lods.png")), f"LODs: {counts} tris", "sky", camcfg["pitchDeg"]))
+    tiles.append((render_tile(os.path.join(tmp, "lods.exr")), f"LODs: {counts} tris", "sky", camcfg["pitchDeg"]))
     for o, loc in zip(lods, saved):
         o.location = loc
     return tiles
@@ -124,8 +124,8 @@ def sky_backdrop(t, rig, pitch_deg=None, fov_deg=None):
     fov = math.radians(rig["camera"]["fovDeg"] if fov_deg is None else fov_deg)
     ndc = 1.0 - 2.0 * (np.arange(t, dtype=np.float32) + 0.5) / t
     up = np.sin(np.arctan(ndc * math.tan(fov * 0.5)) - math.radians(pitch))[:, None]
-    top, hor = (np.array(common.hex_srgb(rig["background"][k]), dtype=np.float32) for k in ("top", "horizon"))
-    gnd = np.array(common.hex_srgb(rig["sky"]["ground"]), dtype=np.float32)
+    top, hor = (np.array(common.lin(rig["background"][k])[:3], dtype=np.float32) for k in ("top", "horizon"))
+    gnd = np.array(common.lin(rig["sky"]["ground"])[:3], dtype=np.float32)
     k = 1.0 - (1.0 - np.clip(up, 0.0, 1.0)) ** rig["sky"]["horizonSharpness"]
     sky = hor * (1.0 - k) + top * k
     g = np.clip(-up * 4.0, 0.0, 1.0)
@@ -133,15 +133,38 @@ def sky_backdrop(t, rig, pitch_deg=None, fov_deg=None):
     return np.broadcast_to(sky[:, None, :], (t, t, 3)).copy()
 
 
-def grade(rgb, rig):
-    """Approximately Unity's post grading (Color Adjustments + White Balance), so the sheet looks like the game."""
+def unity_post(linear, rig):
+    """
+    Unity's post chain on scene-linear colour, so the sheet shows what the game shows (lookdev_rig.json "grading"):
+    post exposure, white balance (approx.), contrast around mid grey in log space, saturation around luminance, then
+    URP's Neutral tonemapper (the exact curve from URP's Color.hlsl NeutralTonemap) and the sRGB encoding.
+    """
     gr = rig["grading"]
-    x = rgb * 2.0 ** gr["postExposure"]
+    x = np.maximum(linear, 0.0) * 2.0 ** gr["postExposure"]
     x = x * np.array([1.0 + gr["temperature"] * 0.004, 1.0, 1.0 - gr["temperature"] * 0.004], dtype=np.float32)
-    x = (x - 0.5) * (1.0 + gr["contrast"] / 100.0) + 0.5
+    x = 0.18 * np.power(np.maximum(x, 1e-6) / 0.18, 1.0 + gr["contrast"] / 100.0)
     lum = (x * np.array([0.2126, 0.7152, 0.0722], dtype=np.float32)).sum(axis=-1, keepdims=True)
-    x = lum + (x - lum) * (1.0 + gr["saturation"] / 100.0)
-    return np.clip(x, 0.0, 1.0)
+    x = np.maximum(lum + (x - lum) * (1.0 + gr["saturation"] / 100.0), 0.0)
+    x = neutral_tonemap(x)
+    return np.where(x <= 0.0031308, x * 12.92, 1.055 * np.power(np.clip(x, 0.0031308, 1.0), 1 / 2.4) - 0.055).clip(0.0, 1.0)
+
+
+def neutral_tonemap(x):
+    """URP's NeutralTonemap (Packages/com.unity.render-pipelines.core/ShaderLibrary/Color.hlsl)."""
+    a, b, c, d, e, f = 0.2, 0.29, 0.24, 0.272, 0.02, 0.3
+    white_level, white_clip = 5.3, 1.0
+
+    def curve(v):
+        return ((v * (a * v + c * b) + d * e) / (v * (a * v + b) + d * f)) - e / f
+
+    scale = 1.0 / curve(white_level)
+    return curve(x * scale) * scale / white_clip
+
+
+def over_sky(rgba, rig, pitch):
+    """A linear, premultiplied render over the sky, through Unity's post: a display-ready tile."""
+    a = rgba[..., 3:4]
+    return unity_post(sky_backdrop(rgba.shape[0], rig, pitch) * (1.0 - a) + rgba[..., :3], rig)
 
 
 def compose(tiles, header_lines, rig, out_path, tmp):
@@ -162,7 +185,7 @@ def compose(tiles, header_lines, rig, out_path, tmp):
         if kind == "silhouette":
             tile = np.ones((t, t, 3), dtype=np.float32) * (1.0 - alpha) + np.array([0.11, 0.12, 0.14], dtype=np.float32) * alpha
         else:
-            tile = grade(sky_backdrop(t, rig, pitch) * (1.0 - alpha) + rgba[..., :3] * alpha, rig)
+            tile = over_sky(rgba, rig, pitch)
         tile[:LABEL_BAND] = tile[:LABEL_BAND] * 0.55  # a darker band for the label
         sheet[y:y + t, x:x + t] = tile
         labels.append((x + 14, y + 31, label, 24))

@@ -53,11 +53,12 @@ Short records: what was decided, why, and what it costs. Newest at the bottom of
 same material, from the same five views. Result: **the geometry, framing, sun direction, shadow shapes and the light/
 shade split match**. Known differences:
 
-1. **Tonemapping curve:** Blender uses "Khronos PBR Neutral" (the closest available); Unity uses its own Neutral. The
-   Blender sheet comes out a little more saturated and brighter in the lit oranges; Unity's shade side is slightly
-   lighter.
-2. **Grading** is applied to the Blender sheet in display space (an approximation of Unity's log-space contrast and
-   white balance).
+1. **Same post chain:** Blender renders linear EXR tiles and the sheet applies Unity's chain in numpy: post exposure,
+   white balance (approximated as a channel tint), contrast around mid grey in log space, saturation, then **URP's exact
+   Neutral tonemap curve** and sRGB. (A first version used Blender's "Khronos PBR Neutral" view and came out clearly more
+   saturated than the game; the shared curve fixed that.) Remaining: Unity's vignette and its white-balance math.
+2. **The Pebble** (`ArtSource/Test/Pebble/Pebble_blender_vs_unity.png`) shows the same: shape, framing, light and
+   colour match; Unity is a touch darker in the corners (vignette).
 3. **Shadow filtering:** EEVEE's soft sun (3° wide) vs URP's soft shadow filter. The penumbrae are close; EEVEE's are a
    bit wider at distance.
 4. **Received shadows** come from EEVEE's diffuse probe in Blender (Shader to RGB, sun energy π so it reads N·L) and from
