@@ -17,8 +17,12 @@ namespace CampanhaRio.Editor
     {
         public static readonly string[] BuildScenes =
         {
-            "Assets/_Project/Scenes/Dev/LookDev.unity",
+            "Assets/_Project/Scenes/Core/Core.unity",
+            "Assets/_Project/Scenes/Segments/Test_A.unity",
+            "Assets/_Project/Scenes/Segments/Test_B.unity",
+            "Assets/_Project/Scenes/Segments/Test_C.unity",
             "Assets/_Project/Scenes/Dev/KayakTest.unity",
+            "Assets/_Project/Scenes/Dev/LookDev.unity",
         };
 
         [MenuItem("CampanhaRio/Build/Windows (release)")]
