@@ -87,7 +87,8 @@ def build(asset, seed, length, width, height):
 def write_notes(asset, version, parts, args, paths):
     notes = os.path.join(paths["dir"], "NOTES.md")
     if not os.path.exists(notes):
-        with open(notes, "w", encoding="utf-8") as f:
+        with open(notes, "w", encoding="utf-8", newline="
+") as f:
             f.write(f"# {FAMILY} / {asset}\n\n"
                     "## Briefing\n"
                     "- **O que é:** um seixo de rio arredondado e estilizado. **Asset descartável**: só prova o pipeline (Fase 0).\n"
@@ -98,7 +99,8 @@ def write_notes(asset, version, parts, args, paths):
                     "- **Gerador:** `ArtSource/Test/pebble_gen.py`.\n\n"
                     "## Versões\n")
     tris = ", ".join(f"{k} {common.triangle_count(o)}" for k, o in parts.items())
-    with open(notes, "a", encoding="utf-8") as f:
+    with open(notes, "a", encoding="utf-8", newline="
+") as f:
         f.write(f"\n### v{version:03d}\n"
                 f"- Gerado com: `{' '.join(f'--{k} {v}' for k, v in args.items())}`\n"
                 f"- Triângulos: {tris}\n"

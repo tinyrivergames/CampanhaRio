@@ -66,7 +66,8 @@ def export(blend_path=None):
         "material": params,
         "triangles": {o.name.split("_")[-1]: common.triangle_count(o) for o in parts},
     }
-    with open(os.path.join(out_dir, asset + ".softtoon.json"), "w", encoding="utf-8") as f:
+    with open(os.path.join(out_dir, asset + ".softtoon.json"), "w", encoding="utf-8", newline="
+") as f:
         json.dump(sidecar, f, indent=4)
     print(f"[export] {fbx}  parts: {', '.join(sorted(o.name for o in parts))}")
     return fbx
