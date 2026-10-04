@@ -182,7 +182,8 @@ Shader "CampanhaRio/SoftToon"
                               + (_CR_AmbientGround.rgb - _CR_AmbientEquator.rgb) * saturate(-up);
                 #if defined(_SCREEN_SPACE_OCCLUSION)
                     AmbientOcclusionFactor ao = GetScreenSpaceAmbientOcclusion(GetNormalizedScreenSpaceUV(i.positionCS));
-                    ambient *= ao.indirectAmbientOcclusion;
+                    ambient *= ao.indirectAmbientOcclusion; // contact darkening (soft SSAO): under and around objects
+                    direct *= ao.directAmbientOcclusion;    // a little on the sunlit side too (URP's Direct Lighting Strength)
                 #endif
 
                 half3 color = albedo * (direct + ambient);

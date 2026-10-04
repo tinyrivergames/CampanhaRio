@@ -41,8 +41,10 @@ Short records: what was decided, why, and what it costs. Newest at the bottom of
   views). Blender's preview rig and Unity's DayCycle afternoon key both come from it.
 - **Post-processing:** Neutral tonemapping, gentle Color Adjustments (+0.1 exposure, +6 contrast, +10 saturation),
   White Balance +4 (warm), subtle Bloom (threshold 1.1, intensity 0.25), a light vignette. The numbers are in the rig
-  JSON; the Blender sheet applies an approximation of them. **No SSAO yet:** it adds grey contact shading that fights
-  the soft look on smooth graybox shapes; it gets re-evaluated with the first foliage (the shader already supports it).
+  JSON; the Blender sheet applies an approximation of them. **Contact AO (soft SSAO):** URP SSAO on the renderer, small and smooth (radius 0.35 m, interleaved gradient, 12 samples,
+  bilateral blur), applied by SoftToon to all of the ambient and 35% of the sunlight. It keeps objects on the ground at
+  every time of day, dusk included (no sun shadow then). The Blender material does the same with its AO node
+  (`contactAO` in the rig).
   No outlines, no watercolor.
 - **Fog:** exponential, coloured by the DayCycle (atmospheric perspective toward the horizon colour).
 - **URP:** Forward+, MSAA 4x, soft shadows (high), 4 cascades to 100 m, HDR, LOD cross-fade (dither).
@@ -64,8 +66,9 @@ shade split match**. Known differences:
 4. **Received shadows** come from EEVEE's diffuse probe in Blender (Shader to RGB, sun energy π so it reads N·L) and from
    the shadow map in Unity. Both fade out only in the terminator sliver (N·L 0 to 0.05, the same on both sides). A first, wider fade (0.12 to
    0.35) removed every shadow on flat ground once the sun was low (sunset: N·L = sin 4° = 0.07), which made objects
-   float; fixed 2026-10-03. Grazing-sun acne is handled by the sun's shadow bias instead, which the DayCycle raises as
-   the sun goes down (depth 1 to 2, normal 1 to 3 between 30° and 3° of elevation).
+   float; fixed 2026-10-03. The sun's shadow bias stays LOW (depth 0.4, normal 0.35): a high bias detached the shadows from the feet
+   ("peter-panning", tried and reverted 2026-10-03). The dark curved lines seen on the sphere at a low sun are the cube's
+   real shadow, not acne.
 5. **Sky backdrop:** Blender composites the same sky gradient formula per pixel row. There is no sun glow in the
    backdrop.
 6. **Anti-aliasing:** EEVEE 32 samples vs MSAA 4x.

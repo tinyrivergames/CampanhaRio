@@ -39,6 +39,7 @@
     "scaleRef": { "label": "ESCALA (bicho 0,9 m)", "height": 0.9, "gap": 0.35, "yawDeg": 180, "color": "#D9A47A" },
     "grading": { "postExposure": 0.1, "saturation": 10, "contrast": 6, "temperature": 4, "about": "Unity post-processing (Color Adjustments + White Balance); the Blender sheet applies the same approximately" },
     "sky": { "horizonSharpness": 1.6, "ground": "#8A8577" },
+    "contactAO": { "intensity": 1.2, "radius": 0.35, "directStrength": 0.35, "about": "soft SSAO in Unity (contact darkening under and around objects); the Blender material uses its AO node with the same radius and strength" },
     "tileSize": 640,
     "palette": {
         "pine_dark": "#2F5A3A",

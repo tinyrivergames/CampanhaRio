@@ -41,6 +41,9 @@ namespace CampanhaRio.Rendering
 
         public static DayCycle Instance { get; private set; }
 
+        /// <summary>The sun's shadow bias (depth, normal). Low, so shadows start right at the feet.</summary>
+        public const float ShadowBias = 0.4f, ShadowNormalBias = 0.35f;
+
         [Range(0f, 1f)] public float progress;
         public Light sun;
         [Tooltip("The CampanhaRio/SkyGradient material (set as the scene skybox).")]
@@ -77,12 +80,11 @@ namespace CampanhaRio.Rendering
                 sun.color = k.sunColor;
                 sun.intensity = k.sunIntensity;
                 sun.shadows = k.sunIntensity > 0.02f ? LightShadows.Soft : LightShadows.None;
-                // A low sun grazes the surfaces and its shadow map "acnes" them: more bias as the sun goes down
-                float low = Mathf.InverseLerp(30f, 3f, k.sunElevation);
+                // Low bias: a high one detaches the shadow from the feet ("peter-panning"). The ramp hides the terminator.
                 var urp = sun.GetComponent<UnityEngine.Rendering.Universal.UniversalAdditionalLightData>();
                 if (urp) urp.usePipelineSettings = false;
-                sun.shadowBias = Mathf.Lerp(1f, 2f, low);
-                sun.shadowNormalBias = Mathf.Lerp(1f, 3f, low);
+                sun.shadowBias = ShadowBias;
+                sun.shadowNormalBias = ShadowNormalBias;
             }
             Shader.SetGlobalVector(ShadowTintId, Linear(k.shadowTint) * k.shadowTintStrength);
             Shader.SetGlobalVector(AmbientSkyId, Linear(k.ambientSky) * k.ambientStrength);

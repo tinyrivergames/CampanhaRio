@@ -36,6 +36,7 @@ namespace CampanhaRio.Editor
             SetupPipeline();
             var rigAsset = AssetDatabase.LoadAssetAtPath<TextAsset>(RigPath);
             var rig = LookDevRig.Parse(rigAsset.text);
+            SetupContactAO(rig);
 
             var scene = EditorSceneManager.NewScene(NewSceneSetup.EmptyScene, NewSceneMode.Single);
             var sun = new GameObject("Sun").AddComponent<Light>();
@@ -239,6 +240,38 @@ namespace CampanhaRio.Editor
             rp.shadowCascadeCount = 4;
             rp.supportsHDR = true;
             EditorUtility.SetDirty(rp);
+        }
+
+        /// <summary>
+        /// Contact darkening: URP's SSAO on the renderer, soft and small (lookdev_rig.json "contactAO"), so objects sit on
+        /// the ground at any time of day, even at dusk when there is no sun shadow. SoftToon applies it to the ambient
+        /// (and a little to the sunlight). Its settings are internal to URP, so they are written through the serialized object.
+        /// </summary>
+        public static void SetupContactAO(LookDevRig rig)
+        {
+            var data = AssetDatabase.LoadAssetAtPath<UniversalRendererData>(SettingsDir + "/URP_Renderer.asset");
+            ScreenSpaceAmbientOcclusion ssao = null;
+            foreach (var f in data.rendererFeatures) if (f is ScreenSpaceAmbientOcclusion s) ssao = s;
+            if (!ssao)
+            {
+                ssao = ScriptableObject.CreateInstance<ScreenSpaceAmbientOcclusion>();
+                ssao.name = "Contact AO (SSAO)";
+                AssetDatabase.AddObjectToAsset(ssao, data);
+                data.rendererFeatures.Add(ssao);
+            }
+            var so = new SerializedObject(ssao);
+            so.FindProperty("m_Settings.Intensity").floatValue = rig.contactAO.intensity;
+            so.FindProperty("m_Settings.Radius").floatValue = rig.contactAO.radius;
+            so.FindProperty("m_Settings.DirectLightingStrength").floatValue = rig.contactAO.directStrength;
+            so.FindProperty("m_Settings.Falloff").floatValue = 60f;
+            so.FindProperty("m_Settings.AOMethod").enumValueIndex = 1;   // Interleaved Gradient: smooth, no blue-noise grain
+            so.FindProperty("m_Settings.Samples").enumValueIndex = 0;    // High (12 samples)
+            so.FindProperty("m_Settings.NormalSamples").enumValueIndex = 2; // High
+            so.FindProperty("m_Settings.BlurQuality").enumValueIndex = 0; // High (bilateral)
+            so.ApplyModifiedPropertiesWithoutUndo();
+            data.SetDirty();
+            EditorUtility.SetDirty(data);
+            AssetDatabase.SaveAssets();
         }
     }
 }

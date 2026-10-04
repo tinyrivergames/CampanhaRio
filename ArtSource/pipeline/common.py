@@ -239,6 +239,16 @@ def soft_toon_material(name, rig=None, preset="Default", **overrides):
     ambient = g.vadd(g.vec(eq), g.vadd(g.vscale(g.vec(sky - eq), t_up), g.vscale(g.vec(gr - eq), t_dn)))
     ambient = g.vscale(ambient, amb["strength"])
 
+    # Contact darkening, like Unity's soft SSAO (lookdev_rig.json "contactAO"): all of the ambient, part of the sun
+    cao = rig.get("contactAO")
+    if cao:
+        ao_node = g.node("ShaderNodeAmbientOcclusion")
+        ao_node.inputs["Distance"].default_value = cao["radius"]
+        occlusion = g.math("MULTIPLY", g.math("SUBTRACT", 1.0, ao_node.outputs["AO"]), cao["intensity"] * 0.6)
+        ao = g.math("SUBTRACT", 1.0, occlusion, clamp=True)
+        ambient = g.vscale(ambient, ao)
+        direct = g.vscale(direct, g.mix_float(cao["directStrength"], 1.0, ao))
+
     # Albedo: base * vertex colour * height gradient * top tint
     albedo = g.vec(Vector(lin(params["_BaseColor"])[:3]))
     if params["_UseVertexColor"] > 0.5:
