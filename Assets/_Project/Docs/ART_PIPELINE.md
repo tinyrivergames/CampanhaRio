@@ -32,6 +32,7 @@ Tudo pelo `ArtSource/art.cmd` (Windows):
 | `art review Test Pebble [v001]` | Abre a prévia + o `.blend` no Blender (a última versão se não disser qual) |
 | `art export Test\Pebble\Pebble_v003.blend` | Exporta a versão aprovada para `Assets/_Project/Art/Models/Test/` |
 | `art compare Test Pebble <...>\Pebble_views.png` | Junta as vistas do Blender (em cima) e a captura do LookDev no Unity (embaixo) em `Pebble_blender_vs_unity.png` |
+| `art look Test/Pebble sunset` | Abre a última versão no Blender (modo Rendered) com a luz de `afternoon`, `golden`, `sunset` ou `dusk`, ao lado do bicho de 0,9 m, da esfera e do cubo |
 
 Por baixo, cada comando é `blender.exe --background --python <script> -- <args>` (EEVEE). Os módulos ficam em
 `ArtSource/pipeline/`:

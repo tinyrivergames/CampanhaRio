@@ -5,6 +5,7 @@ rem   art preview Test\Pebble\Pebble_v001.blend                 re-render the pr
 rem   art export  Test\Pebble\Pebble_v001.blend                 FBX + material sidecar into Assets/_Project/Art/Models/Test
 rem   art review  Test Pebble [v001]                            open the preview PNG + the .blend in Blender (latest if no version)
 rem   art compare Test Pebble <Unity Pebble_views.png>      Blender views over the Unity LookDev views (final check)
+rem   art look    Test/Pebble sunset                            open the latest version in Blender lit for afternoon|golden|sunset|dusk
 setlocal
 set "BLENDER=C:\Program Files\Blender Foundation\Blender 5.2\blender.exe"
 set "ROOT=%~dp0"
@@ -14,8 +15,15 @@ if /i "%CMD%"=="preview" goto preview
 if /i "%CMD%"=="export"  goto export
 if /i "%CMD%"=="review"  goto review
 if /i "%CMD%"=="compare" goto compare
-echo usage: art build^|preview^|export^|review ...  (see the top of art.cmd)
+if /i "%CMD%"=="look"    goto look
+echo usage: art build^|preview^|export^|review^|compare^|look ...  (see the top of art.cmd)
 exit /b 1
+
+:look
+"%BLENDER%" --background --factory-startup --python "%ROOT%pipeline\review_scene.py" -- --asset %2 --time %3
+if errorlevel 1 exit /b 1
+start "" "%BLENDER%" "%ROOT%_tmp\review_%3.blend" --python "%ROOT%pipeline\viewport_rendered.py"
+exit /b 0
 
 :build
 set "GEN=%~2"
