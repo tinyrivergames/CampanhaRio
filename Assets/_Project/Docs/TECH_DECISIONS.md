@@ -82,3 +82,33 @@ shade split match**. Known differences:
 **Visuals and multiplayer are verified with release builds** (`CampanhaRio > Build > Windows (release)`,
 `Builds/` is git-ignored), screenshots and the Player.log. Batch-mode editor runs are fine for logic and builders,
 but never use `-nographics` for anything visual.
+
+## The world by segments
+
+- **Core + additive segments.** `Scenes/Core/Core.unity` is always loaded (bootstrap, network, players, light, camera,
+  save; roots for the van, audio and UI). Each stretch of the journey is its own scene under `Scenes/Segments/`, with a
+  `Segment` component (an area box and a "load next" box).
+- **The host decides** (`SegmentStreamer`, on the host only): it loads the next segment through Netcode's scene
+  management when any player reaches the end zone, and unloads a segment once every player is in a later one. Clients
+  load and unload automatically (they sync additively, so Core stays). Netcode allows one scene event at a time, so
+  decisions wait for the current one.
+- **Solo is a private host** on this machine, so solo and group run the same code paths.
+- **Checkpoint:** the latest segment that holds the whole group, saved by the host (see `SAVE_MODEL.md`).
+- **Release test results** (graybox segments, one host + one client build, `-cc-script streamwalk`):
+  loads of the next segment took 9–29 ms and unloads 3–16 ms. The worst frame while streaming during play was
+  4.4–15 ms on both machines; **no frame over 50 ms after warm-up on either**; no exceptions. A friend joining
+  mid-journey synced straight into the current segment and appeared beside the group. The only frames over 50 ms are at
+  boot: the first segment loads while the game starts (~2.6 s first frame, then one ~70 ms frame for the first shader
+  use). Shader warm-up (a variant collection) can hide that later, behind the start screen.
+
+## The river rule
+
+- `RiverChallenge` (host or solo): the time limit is the sunset. The DayCycle moves from the afternoon to dusk over the
+  limit; at the limit night falls, the screen goes black, and the group is put back at the river start.
+- Pass when **at least half** of the group (every kayak in the registry) crosses the finish line. The medal comes from
+  the group's time against the base limit (the assist never buys a medal).
+- **Hidden assist:** from the 3rd failure on, +8% per failure, capped at +25%. It's never shown.
+- Release test (`-cc-scene KayakTest -cc-script riverrule`): 3 failures with a 12 s limit, then the limit was 12.96 s
+  (+8%), then a pass with 1 of 2 kayaks finished in 91.3 s (gold) at day progress 0.48. The save recorded 4 attempts,
+  3 failures, best 91.3 s, gold.
+- Not yet: syncing the timer and result to clients (Phase 2, with the Rio 1 graybox).
