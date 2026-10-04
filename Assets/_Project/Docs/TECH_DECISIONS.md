@@ -62,8 +62,10 @@ shade split match**. Known differences:
 3. **Shadow filtering:** EEVEE's soft sun (3° wide) vs URP's soft shadow filter. The penumbrae are close; EEVEE's are a
    bit wider at distance.
 4. **Received shadows** come from EEVEE's diffuse probe in Blender (Shader to RGB, sun energy π so it reads N·L) and from
-   the shadow map in Unity. Both fade out near the terminator with the same N·L range (0.12 to 0.35), which removes
-   self-shadow acne on both sides.
+   the shadow map in Unity. Both fade out only in the terminator sliver (N·L 0 to 0.05, the same on both sides). A first, wider fade (0.12 to
+   0.35) removed every shadow on flat ground once the sun was low (sunset: N·L = sin 4° = 0.07), which made objects
+   float; fixed 2026-10-03. Grazing-sun acne is handled by the sun's shadow bias instead, which the DayCycle raises as
+   the sun goes down (depth 1 to 2, normal 1 to 3 between 30° and 3° of elevation).
 5. **Sky backdrop:** Blender composites the same sky gradient formula per pixel row. There is no sun glow in the
    backdrop.
 6. **Anti-aliasing:** EEVEE 32 samples vs MSAA 4x.

@@ -75,16 +75,22 @@ namespace CampanhaRio.Rendering
                 var renderers = SubjectRenderers(i);
                 if (renderers.Count > 0) files.AddRange(LookDevCapture.CaptureViews(rig, captureCamera, renderers, folder, subjects[i].name));
             }
-            Show(current);
             if (scaleReference) scaleReference.SetActive(true);
-            foreach (var (name, t) in new[] { ("tarde", DayCycle.Afternoon), ("hora_dourada", DayCycle.GoldenHour), ("por_do_sol", DayCycle.Sunset), ("crepusculo", DayCycle.Dusk) })
+            // One wide shot per time of day for every subject (with the scale animal beside it)
+            for (int i = 0; i < subjects.Length; i++)
             {
-                day.progress = t;
-                day.Apply();
-                var tex = LookDevCapture.Render(viewCamera, 1280, 720);
-                files.Add(LookDevCapture.Save(tex, Path.Combine(folder, $"day_{(int)(t * 100):000}_{name}.png")));
-                if (Application.isPlaying) Destroy(tex); else DestroyImmediate(tex);
+                if (!subjects[i]) continue;
+                Show(i);
+                foreach (var (name, t) in new[] { ("tarde", DayCycle.Afternoon), ("hora_dourada", DayCycle.GoldenHour), ("por_do_sol", DayCycle.Sunset), ("crepusculo", DayCycle.Dusk) })
+                {
+                    day.progress = t;
+                    day.Apply();
+                    var tex = LookDevCapture.Render(viewCamera, 1280, 720);
+                    files.Add(LookDevCapture.Save(tex, Path.Combine(folder, $"{subjects[i].name}_day_{(int)(t * 100):000}_{name}.png")));
+                    if (Application.isPlaying) Destroy(tex); else DestroyImmediate(tex);
+                }
             }
+            Show(current);
             day.progress = progress;
             day.Apply();
             if (turntable) turntable.spinning = spin;

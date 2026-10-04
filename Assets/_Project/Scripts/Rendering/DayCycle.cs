@@ -77,6 +77,12 @@ namespace CampanhaRio.Rendering
                 sun.color = k.sunColor;
                 sun.intensity = k.sunIntensity;
                 sun.shadows = k.sunIntensity > 0.02f ? LightShadows.Soft : LightShadows.None;
+                // A low sun grazes the surfaces and its shadow map "acnes" them: more bias as the sun goes down
+                float low = Mathf.InverseLerp(30f, 3f, k.sunElevation);
+                var urp = sun.GetComponent<UnityEngine.Rendering.Universal.UniversalAdditionalLightData>();
+                if (urp) urp.usePipelineSettings = false;
+                sun.shadowBias = Mathf.Lerp(1f, 2f, low);
+                sun.shadowNormalBias = Mathf.Lerp(1f, 3f, low);
             }
             Shader.SetGlobalVector(ShadowTintId, Linear(k.shadowTint) * k.shadowTintStrength);
             Shader.SetGlobalVector(AmbientSkyId, Linear(k.ambientSky) * k.ambientStrength);

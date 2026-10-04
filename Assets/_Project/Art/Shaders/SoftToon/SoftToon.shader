@@ -2,7 +2,7 @@
 // ArtSource/pipeline/common.py -> soft_toon_material. Change one, change the other.)
 //
 //   wrapped = (N.L + wrap) / (1 + wrap)
-//   light   = smoothstep(center - soft, center + soft, wrapped) * lerp(1, shadow, receive), shadow faded in over N.L 0.12..0.35
+//   light   = smoothstep(center - soft, center + soft, wrapped) * lerp(1, shadow, receive), shadow faded in over N.L 0..0.05
 //   direct  = sun * light + shadowTint * (1 - light)                      (coloured shadows, never black)
 //   ambient = equator + (sky - equator) * saturate(N.y) + (ground - equator) * saturate(-N.y)
 //   color   = albedo * (direct + ambient) + sun * rim  [+ foliage translucency]
@@ -172,7 +172,7 @@ Shader "CampanhaRio/SoftToon"
                 half wrapped = (ndl + _Wrap) / (1.0 + _Wrap);
                 half ramp = smoothstep(_RampCenter - _RampSoftness, _RampCenter + _RampSoftness, wrapped);
                 // Received shadows fade out at the terminator (self-shadow acne lives there; the ramp is dark there anyway)
-                half nearLit = smoothstep(0.12, 0.35, ndl);
+                half nearLit = smoothstep(0.0, 0.05, ndl);
                 half received = lerp(1.0, lerp(1.0, sun.shadowAttenuation, nearLit), _ReceiveShadows);
                 half light = ramp * received;
                 half3 direct = sun.color * light + _CR_ShadowTint.rgb * (1.0 - light);
