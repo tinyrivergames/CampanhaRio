@@ -276,11 +276,139 @@ def build_tree_tufts(name, lod, p, col):
     return obj
 
 
+def build_tree_blades(name, lod, p, col):
+    """
+    The pine as dense TIERS OF BLADES (the developer's spruce/fir reference): each tier is a fan of thin, pointed,
+    folded blades radiating from the trunk and drooping toward the tips, plus a darker under-layer offset by half a
+    step. Blades vary in length, angle and shade, so the light breaks into facets and the outline is jagged. A visible
+    trunk with a flared base, a dark core and a small crown of upward blades at the tip.
+    """
+    rnd = random.Random(p["seed"])
+    bm = bmesh.new()
+    colors = {}
+    dark, mid, light, bark = srgb(common.palette("pine_dark")), srgb(common.palette("pine_mid")), srgb(common.palette("pine_light")), srgb(common.palette("bark"))
+    up = Vector((0, 0, 1))
+    detail = lod == "LOD0"
+
+    def lean(y):
+        return Vector((p["lean"] * y, 0.0, 0.0))
+
+    def vert(pos, color, alpha):
+        v = bm.verts.new(pos)
+        colors[v] = (min(color.x, 1), min(color.y, 1), min(color.z, 1), alpha)
+        return v
+
+    # Trunk with a flared base (alternating root spurs)
+    sides = 6 if detail else 4
+    rings = []
+    for y, r, flare in ((0.0, 0.34, 0.35), (0.35, 0.2, 0.0), (2.0, 0.16, 0.0), (p["height"] - 1.2, 0.05, 0.0)):
+        ring = []
+        for j in range(sides):
+            a = 2 * math.pi * j / sides
+            rr = r * (1.0 + (flare if j % 2 == 0 else -flare * 0.4))
+            ring.append(vert(Vector((math.cos(a) * rr, math.sin(a) * rr, y)) + lean(y), bark * (0.85 if y == 0 else 1.0), 0.0))
+        rings.append(ring)
+    for a_r, b_r in zip(rings, rings[1:]):
+        for j in range(sides):
+            bm.faces.new((a_r[j], a_r[(j + 1) % sides], b_r[(j + 1) % sides], b_r[j]))
+
+    # Dark core
+    core_sides = 6 if detail else 4
+    core = [vert(Vector((math.cos(2 * math.pi * j / core_sides) * p["radius"] * 0.4, math.sin(2 * math.pi * j / core_sides) * p["radius"] * 0.4, 1.9)) + lean(1.9), dark * 0.7, 0.0)
+            for j in range(core_sides)]
+    apex = vert(Vector((0, 0, p["height"] - 1.0)) + lean(p["height"] - 1.0), dark * 0.8, 0.3)
+    for j in range(core_sides):
+        bm.faces.new((apex, core[j], core[(j + 1) % core_sides]))
+
+    def blade(base, yaw, L, w, droop, shade, t, under):
+        d = Vector((math.cos(yaw), math.sin(yaw), 0.0))
+        side = Vector((-d.y, d.x, 0.0))
+        a0, a1 = droop, droop + p["curl"]
+        mid_pt = base + (d * math.cos(a0) - up * math.sin(a0)) * (L * 0.48)
+        tip = mid_pt + (d * math.cos(a1) - up * math.sin(a1)) * (L * 0.52)
+        top = light if not under else mid
+        c_base, c_mid, c_tip = dark.lerp(mid, 0.25) * shade, mid.lerp(top, p["top_light"] + 0.2 * t) * shade, top.lerp(light, 0.3) * shade
+        if under:
+            c_base, c_mid, c_tip = dark * 0.85 * shade, dark.lerp(mid, 0.55) * shade, mid * shade
+        wind = 0.4 + 0.6 * t
+        B = vert(base, c_base, 0.0)
+        T = vert(tip, c_tip, wind)
+        if detail:
+            C = vert(mid_pt + up * w * 0.35, c_mid, wind * 0.5)  # the fold along the middle
+            Lm = vert(mid_pt - side * w, c_mid * 0.92, wind * 0.5)
+            Rm = vert(mid_pt + side * w, c_mid * 0.92, wind * 0.5)
+            for f in ((B, Lm, C), (B, C, Rm), (Lm, T, C), (C, T, Rm)):
+                bm.faces.new(f)
+        else:
+            Lm = vert(mid_pt - side * w, c_mid, wind * 0.5)
+            Rm = vert(mid_pt + side * w, c_mid, wind * 0.5)
+            bm.faces.new((B, Lm, T))
+            bm.faces.new((B, T, Rm))
+
+    # The tiers, bottom to top
+    tiers = p["tiers"]
+    first, last = 1.9, p["height"] - 1.1
+    for i in range(tiers):
+        t = i / max(1, tiers - 1)
+        h = first + (last - first) * t
+        R = p["radius"] * (1.0 - 0.88 * t) + 0.25
+        n = max(6, round((18 - 10 * t) * p["density"] * (1.0 if detail else 0.45)))
+        droop = math.radians(p["droop_deg"] * (1.0 - 0.45 * t))
+        offset = rnd.uniform(0, 2 * math.pi)
+        for layer in ((False, 1.0, 0.0), (True, 0.8, 0.5)) if detail or t < 0.5 else ((False, 1.0, 0.0),):
+            under, scale, half = layer
+            for j in range(n):
+                yaw = offset + (j + half) * 2 * math.pi / n + rnd.uniform(-0.12, 0.12)
+                L = R * scale * rnd.uniform(0.82, 1.12)
+                base = Vector((0, 0, h - (0.14 if under else 0.0))) + lean(h) + Vector((math.cos(yaw), math.sin(yaw), 0)) * 0.08
+                w = L * p["blade_width"] * rnd.uniform(0.85, 1.15)
+                blade(base, yaw, L, w, droop * rnd.uniform(0.85, 1.15), rnd.uniform(0.9, 1.08), t, under)
+
+    # The crown: a spike and a few small blades pointing up
+    tip_y = p["height"]
+    spike_base = Vector((0, 0, last - 0.1)) + lean(last)
+    for j in range(5 if detail else 3):
+        yaw = j * 2 * math.pi / (5 if detail else 3)
+        blade(spike_base, yaw, 0.6, 0.07, math.radians(-55), 1.0, 1.0, False)
+    s0 = vert(spike_base + Vector((0.06, 0, 0)), mid, 0.7)
+    s1 = vert(spike_base + Vector((-0.03, 0.05, 0)), mid, 0.7)
+    s2 = vert(spike_base + Vector((-0.03, -0.05, 0)), mid, 0.7)
+    st = vert(Vector((0, 0, tip_y)) + lean(tip_y), light, 1.0)
+    for f in ((s0, s1, st), (s1, s2, st), (s2, s0, st)):
+        bm.faces.new(f)
+
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    bmesh.ops.triangulate(bm, faces=bm.faces)
+    mesh = bpy.data.meshes.new(name)
+    vert_colors = [colors[v] for v in bm.verts]
+    bm.to_mesh(mesh)
+    bm.free()
+    obj = common.mesh_object(name, mesh, col)
+    for poly in mesh.polygons:
+        poly.use_smooth = True
+    center = Vector((0, 0, p["height"] * 0.48))
+    axes = Vector((p["radius"] * 1.2, p["radius"] * 1.2, p["height"] * 0.58))
+    normals = []
+    for v, c in zip(mesh.vertices, vert_colors):
+        own = v.normal.copy()
+        if own.z < 0:  # one-sided blades seen from below: light them like their top
+            own = -own
+        dv = v.co - center - Vector((p["lean"] * v.co.z, 0, 0))
+        ell = Vector((dv.x / axes.x ** 2, dv.y / axes.y ** 2, dv.z / axes.z ** 2)).normalized()
+        normals.append(own.lerp(ell, p["inflate"]).normalized())
+    mesh.normals_split_custom_set_from_vertices(normals)
+    attr = mesh.color_attributes.new("Col", "BYTE_COLOR", "CORNER")
+    mesh.color_attributes.active_color = attr
+    for loop in mesh.loops:
+        attr.data[loop.index].color_srgb = vert_colors[loop.vertex_index]
+    return obj
+
+
 def build(asset, p):
     rig = common.load_rig()
     common.reset_scene()
     col = common.collection(asset)
-    make = build_tree_tufts if p["style"] == "tufts" else build_tree
+    make = {"tufts": build_tree_tufts, "blades": build_tree_blades}.get(p["style"], build_tree)
     lod0 = make(asset + "_LOD0", "LOD0", p, col)
     lod1 = make(asset + "_LOD1", "LOD1", p, col)
     mat = common.soft_toon_material("M_" + asset, rig, preset="Foliage", _BaseColor="#FFFFFF", _UseVertexColor=1.0,
@@ -321,7 +449,13 @@ def main():
     args = common.script_args()
     asset = args.get("asset", "PinheiroA")
     p = {
-        "style": args.get("style", "tufts"),
+        "style": args.get("style", "blades"),
+        "tiers": int(args.get("tiers", 12)),
+        "density": float(args.get("density", 1.0)),
+        "top_light": float(args.get("top_light", 0.55)),
+        "droop_deg": float(args.get("blade_droop", 32)),
+        "curl": math.radians(float(args.get("curl", 22))),
+        "blade_width": float(args.get("blade_width", 0.16)),
         "whorls": int(args.get("whorls", 9)),
         "seed": int(args.get("seed", 4)),
         "height": float(args.get("height", 9.0)),
@@ -333,6 +467,11 @@ def main():
         "inflate": float(args.get("inflate", 0.4)),
     }
     parts = build(asset, p)
+    if "draft" in args:  # a test render only: no version, no notes (ArtSource/_tmp/draft_<asset>.png)
+        out = os.path.join(common.TMP_DIR, f"draft_{asset}_{args['draft']}.png")
+        preview.render_sheet(out, "rascunho " + str(args["draft"]))
+        print(f"[pine] draft {out}")
+        return
     version, paths = common.save_new_version(FAMILY, asset, int(args["version"]) if "version" in args else None)
     preview.render_sheet(paths["preview"], f"v{version:03d}")
     write_notes(asset, version, parts, p, paths, args.get("changes", "_(descrever)_"))
