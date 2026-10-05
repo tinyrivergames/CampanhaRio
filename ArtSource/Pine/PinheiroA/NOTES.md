@@ -54,3 +54,8 @@
 - **Feedback do desenvolvedor (literal):** "essa 006 ficou boa, o meio termo caiu bem. pode seguir."
 - **O que mudou:** pontas das lâminas levemente arredondadas (uma ponta curta e cega em vez da agulha; `--tip_round 0.22`). LOD0 com 1.610 triângulos: 7% acima do teto de 1.500, aceito pela aparência aprovada.
 - ✅ **APROVADA (2026-10-05): é o mestre da família Pine.** Próximo: exportar, impostor (LOD2), cartão-borrão do fundo, conferência no Unity.
+
+## No jogo
+- Exportado com impostor (LOD2, 4 tris), conferido no LookDev (tarde e pôr do sol, fileira de 12 a 260 m) e jogado no KayakTest com 450 cópias (tamanho 0,75–1,35x).
+- **OK final do desenvolvedor (literal):** "show, ficaram bem no aspecto que eu queria."
+- Pendente da família: o cartão-borrão do fundo; as variações de forma (Fase 3, pelo gerador).
