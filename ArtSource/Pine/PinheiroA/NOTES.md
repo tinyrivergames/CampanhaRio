@@ -71,5 +71,5 @@
 - Gerado com: `--style blades --tiers 14 --density 0.85 --top_light 0.75 --hue_var 1.0 --tip_round 0.22 --core_soft 1 --core_r 0.3 --core_light 0.5 --core_rings 6 --core_step 0.7 --h_jitter 0.28 --droop_deg 32.0 --curl 0.2792526803190927 --blade_width 0.14 --whorls 9 --seed 4 --height 9.0 --radius 2.4 --layers 5 --lean 0.04 --scallop 0.28 --droop 0.12 --inflate 0.4`
 - Triângulos: LOD0 1736, LOD1 311
 - Prévia: `PinheiroA_v008_preview.png`
-- **Feedback do desenvolvedor (literal):** _(aguardando)_
+- **Feedback do desenvolvedor (literal):** "beleza, parece bom. Seguimos" → **APROVADA** (substitui a v006 como pinheiro-mestre)
 - **O que mudou:** Miolo ainda mais parte da folhagem: em degraus que acompanham as camadas (6 anéis, alternando largura), pontas claras e vãos escuros como as dobras das lâminas, e um tom próprio em cada ponta (como cada lâmina). Lâminas iguais à v006/v007.
