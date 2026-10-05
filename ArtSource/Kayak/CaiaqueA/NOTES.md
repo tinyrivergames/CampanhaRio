@@ -68,5 +68,5 @@
 - Gerado com: `--length 3.3 --width 0.68 --widest 0.06 --rocker 0.11 --sheer_rise 0.07 --end_rise 0.13 --lift 0.08 --simple 1 --solid_well 1 --cargo_panel 0 --facets 1 --coaming_h 0.055 --coaming_w 1.26 --chunky_seat 1 --round_fittings 1 --fit_r 0.034 --bow_triangle 1 --arch_handles 1 --exact_cut 1 --solver FLOAT --floor 0.09 --stations 12 --cockpit_y 0.1 --cockpit_l 0.86 --cockpit_w 0.44 --well_y 0.98 --well_l 0.52 --well_w 0.36 --hatch_y -1.17 --flat 0.75 --tone 0.06 --ramp 0.16 --wrap 0.35`
 - Triângulos: LOD0 1040, LOD1 422, LOD2 112
 - Prévia: `CaiaqueA_v008_preview.png`
-- **Feedback do desenvolvedor (literal):** _(aguardando)_
+- **Feedback do desenvolvedor (literal):** "caiaque aprovado." → **APROVADA** (o caiaque-mestre)
 - **O que mudou:** Vermelho mais para o vinho, mais escuro (deck #6C1729, fundo #46101A); pás do remo em vinho. O resto igual à v007.
