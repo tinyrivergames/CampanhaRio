@@ -44,6 +44,7 @@
 - Triângulos: LOD0 234, LOD1 100, LOD2 16, COL 20
 - Prévia: `RochaA_v005_preview.png`
 - **Feedback do desenvolvedor (literal):** "parece bom, coloca tambem no jogo de forma bem distribuida para eu ver la dentro. Depois do meu ok nos seguimos."
+- **Feedback no jogo (literal):** "acho que as pedras tem que ser UM POUCO mais realistas, mas o principal é sobre quando que a textura da pedra carrega. Ela ta carregando somente quando chega muito perto, deixando as pedras um pouco mais longes muito feias, e ainda muito visiveis. Quero que o carregamento da textura da pedra aconteca mais de longe, e coloque mais pedras ao redor do rio para testar como encaixa com o ambiente."
 - **O que mudou:** Cor de pedra de rio de floresta: base cinza-quente (cada face sorteia cinza, cinza-claro, cinza-frio ou bege), topo cinza-claro, base cinza-escuro; o laranja antigo virou só manchas de ferrugem suaves (warmth 0.4). Forma e musgo iguais à v004.
 
 ### v006
