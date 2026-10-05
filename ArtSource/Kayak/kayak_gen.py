@@ -166,6 +166,74 @@ class Parts:
         self.loft(loops, colour, cap_start=True, cap_end=True)
 
 
+BAND_NAMES = ("bottom", "side", "lip", "deck", "tub")
+
+
+def boolean_cut(bm, bands, C, p, name, col, openings, n_ell):
+    """Cuts the openings out of the closed hull with an exact boolean: a clean elliptic hole, and the cut's own walls and
+    floor close the hull again (the tub). Watertight: nothing can show through. Returns the new bmesh, bands, colours."""
+    for f, b in bands.items():
+        f.material_index = BAND_NAMES.index(b)
+    mats = [bpy.data.materials.get("_band_" + n) or bpy.data.materials.new("_band_" + n) for n in BAND_NAMES]
+    hull_mesh = bpy.data.meshes.new(name + "_cut")
+    bm.to_mesh(hull_mesh)
+    for m in mats:
+        hull_mesh.materials.append(m)
+    hull = bpy.data.objects.new(name + "_cut", hull_mesh)
+    col.objects.link(hull)
+    temp = [hull]
+    for i, (cx, cy, rx, ry) in enumerate(openings):
+        floor = station(p, cy / (p["length"] / 2))[1] + p["floor"]
+        cb = bmesh.new()
+        lo = [cb.verts.new(Vector((v.x, v.y, floor))) for v in ellipse(cx, cy, rx, ry, n_ell)]
+        hi = [cb.verts.new(Vector((v.x, v.y, 1.0))) for v in ellipse(cx, cy, rx, ry, n_ell)]
+        cb.faces.new(list(reversed(lo)))
+        cb.faces.new(hi)
+        for k in range(n_ell):
+            j = (k + 1) % n_ell
+            cb.faces.new((lo[k], lo[j], hi[j], hi[k]))
+        bmesh.ops.recalc_face_normals(cb, faces=list(cb.faces))
+        for f in cb.faces:
+            f.material_index = BAND_NAMES.index("tub")
+        cm = bpy.data.meshes.new(f"{name}_cutter{i}")
+        cb.to_mesh(cm)
+        cb.free()
+        for m in mats:
+            cm.materials.append(m)
+        cutter = bpy.data.objects.new(f"{name}_cutter{i}", cm)
+        col.objects.link(cutter)
+        temp.append(cutter)
+        mod = hull.modifiers.new(f"cut{i}", "BOOLEAN")
+        mod.operation, mod.solver, mod.object, mod.material_mode = "DIFFERENCE", p["solver"], cutter, "INDEX"
+    bpy.context.view_layer.update()
+    for o in bpy.context.view_layer.objects:
+        o.select_set(False)
+    bpy.context.view_layer.objects.active = hull
+    before = len(hull_mesh.polygons)
+    for m in list(hull.modifiers):
+        bpy.ops.object.modifier_apply(modifier=m.name)
+    result = hull.data.copy()
+    out = bmesh.new()
+    out.from_mesh(result)
+    open_edges = sum(1 for e in out.edges if not e.is_manifold)
+    print(f"[kayak] cut {name}: {len(out.faces)} faces, {open_edges} open edges")
+    for o in temp:
+        data = o.data
+        bpy.data.objects.remove(o)
+        bpy.data.meshes.remove(data)
+    bpy.data.meshes.remove(result)
+    new_bands, colours = {}, {}
+    for f in out.faces:
+        band = BAND_NAMES[min(f.material_index, len(BAND_NAMES) - 1)]
+        f.material_index = 0
+        if band == "tub":
+            colours[f] = C["tub"]  # (flat-shaded like the other parts)
+        else:
+            new_bands[f] = band
+            colours[f] = C[{"bottom": "hull", "side": "side", "lip": "lip", "deck": "deck"}[band]]
+    return out, new_bands, colours
+
+
 def hole_reach(segments, centre, direction):
     """How far from centre, along direction, the hole outline reaches (2D)."""
     best = 0.0
@@ -213,7 +281,9 @@ def build_kayak(name, lod, p, col):
     openings = ([ck] if p["solid_well"] else [ck, well]) if detail else []
     holes = []
     n_ell = {2: 20, 1: 14, 0: 10}[detail]
-    for cx, cy, rx, ry in openings:
+    if openings and p["exact_cut"]:
+        bm, bands, colours = boolean_cut(bm, bands, C, p, name, col, openings, n_ell)
+    for cx, cy, rx, ry in (openings if not p["exact_cut"] else []):
         rim = ellipse(cx, cy, rx, ry, n_ell)
         tops = [deck_z(v.x, v.y) for v in rim]
         # cut: delete the hull faces whose centre is inside the ellipse and above the sheer (the deck faces)
@@ -226,7 +296,7 @@ def build_kayak(name, lod, p, col):
         # the hole's real outline (2D segments): the coaming flange must cover all of it, or the inside shows through
         holes.append([(e.verts[0].co.xy.copy(), e.verts[1].co.xy.copy()) for e in kill_edges if e.is_valid and e.is_boundary])
 
-    if openings:
+    if openings and not p["exact_cut"]:
         # A dark liner inside the hull (its faces copied, turned inward): whatever shows through an opening is the boat's
         # dark inside, never the water or the ground under it
         hull_faces = [f for f in bands if f.is_valid]
@@ -243,15 +313,15 @@ def build_kayak(name, lod, p, col):
     for idx, (cx, cy, rx, ry) in enumerate(openings):
         is_cockpit = idx == 0
         # The hole left by the deleted faces is a jagged quad outline: a wide coaming flange covers it
-        out = ellipse(cx, cy, rx * 1.28 + 0.03, ry * 1.12 + 0.03, n_ell)
+        out = ellipse(cx, cy, rx * 1.28 + 0.03, ry * 1.12 + 0.03, n_ell) if not p["exact_cut"] else ellipse(cx, cy, rx * 1.14 + 0.02, ry * 1.07 + 0.02, n_ell)
         centre = Vector((cx, cy))
-        for i, v in enumerate(out):  # push the flange out wherever the hole reaches further (no gap between them)
+        for i, v in enumerate(out if not p["exact_cut"] else []):  # push the flange out wherever the hole reaches further (no gap between them)
             d = (v.xy - centre)
             reach = hole_reach(holes[idx], centre, d.normalized())
             if reach + 0.03 > d.length:  # (a little only: the dark liner below takes care of the rest)
                 out[i] = Vector((*(centre + d.normalized() * min(reach + 0.03, d.length + 0.05)), 0.0))
         p["_masks"].append([cx, cy, max(((v.x - cx) / rx) ** 2 + ((v.y - cy) / ry) ** 2 for v in out) ** 0.5])
-        inner = ellipse(cx, cy, rx, ry, n_ell)
+        inner = ellipse(cx, cy, rx, ry, n_ell) if not p["exact_cut"] else ellipse(cx, cy, rx * 0.96, ry * 0.97, n_ell)
         z_out = [deck_z(v.x, v.y) + 0.006 for v in out]
         lip_h = 0.035 if is_cockpit else 0.018
         flange = [Vector((v.x, v.y, z)) for v, z in zip(out, z_out)]
@@ -264,7 +334,10 @@ def build_kayak(name, lod, p, col):
         under = [Vector((v.x, v.y, z - 0.03)) for v, z in zip(inner, (t.z for t in top_in))]
         tub_mid = [Vector((cx + (v.x - cx) * 0.92, cy + (v.y - cy) * 0.94, (floor_z + u.z) / 2)) for v, u in zip(inner, under)]
         tub_floor = [Vector((cx + (v.x - cx) * 0.78, cy + (v.y - cy) * 0.86, floor_z)) for v in inner]
-        parts.loft([top_in, under, tub_mid, tub_floor], C["tub"], cap_end=True)
+        if p["exact_cut"]:
+            parts.loft([top_in, under], coaming)  # the lip's inner edge, hanging into the cut
+        else:
+            parts.loft([top_in, under, tub_mid, tub_floor], C["tub"], cap_end=True)
 
     if detail and p["solid_well"]:
         # The cargo well as a SOLID panel on the rear deck (no opening: nothing of the water can show through)
@@ -445,6 +518,9 @@ def main():
         "lift": f("lift", 0.0),
         "simple": int(args.get("simple", 0)),
         "solid_well": int(args.get("solid_well", 0)),
+        "exact_cut": int(args.get("exact_cut", 0)),
+        "solver": args.get("solver", "FLOAT"),
+        "floor": f("floor", 0.09),
         "stations": int(args.get("stations", 18)),
         "cockpit_y": f("cockpit_y", 0.1),
         "cockpit_l": f("cockpit_l", 0.86),

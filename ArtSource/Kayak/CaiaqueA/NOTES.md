@@ -46,5 +46,12 @@
 - Gerado com: `--length 3.3 --width 0.68 --widest 0.06 --rocker 0.11 --sheer_rise 0.07 --end_rise 0.13 --lift 0.08 --simple 1 --solid_well 1 --stations 12 --cockpit_y 0.1 --cockpit_l 0.86 --cockpit_w 0.44 --well_y 0.98 --well_l 0.52 --well_w 0.36 --hatch_y -1.17 --flat 0.75 --tone 0.04 --ramp 0.16 --wrap 0.35`
 - Triângulos: LOD0 1186, LOD1 754, LOD2 112
 - Prévia: `CaiaqueA_v005_preview.png`
-- **Feedback do desenvolvedor (literal):** _(aguardando)_
+- **Feedback do desenvolvedor (literal):** "ainda tem dois buracos nas laterais de onde estava aquele buraco, e da pra ver que esta com a agua embaixo passando."
 - **O que mudou:** Espaço de carga sólido: no lugar do buraco, um painel laranja-escuro sobre o deck com a rede de cabos por cima (não há mais abertura por onde a água possa aparecer). O resto igual à v004.
+
+### v006
+- Gerado com: `--length 3.3 --width 0.68 --widest 0.06 --rocker 0.11 --sheer_rise 0.07 --end_rise 0.13 --lift 0.08 --simple 1 --solid_well 1 --exact_cut 1 --solver FLOAT --floor 0.09 --stations 12 --cockpit_y 0.1 --cockpit_l 0.86 --cockpit_w 0.44 --well_y 0.98 --well_l 0.52 --well_w 0.36 --hatch_y -1.17 --flat 0.75 --tone 0.04 --ramp 0.16 --wrap 0.35`
+- Triângulos: LOD0 852, LOD1 504, LOD2 112
+- Prévia: `CaiaqueA_v006_preview.png`
+- **Feedback do desenvolvedor (literal):** "pronto, otimo. corrigido."
+- **O que mudou:** Corrige os furos nas laterais: o cockpit agora é um corte exato (boolean) no casco, e o próprio corte forma a cuba; o casco fica totalmente fechado (0 arestas abertas), sem nenhuma fresta por onde a água apareça. Visual igual à v005.

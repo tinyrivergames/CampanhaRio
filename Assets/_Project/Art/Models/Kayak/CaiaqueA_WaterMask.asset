@@ -17,8 +17,8 @@ Mesh:
     firstVertex: 0
     vertexCount: 25
     localAABB:
-      m_Center: {x: 0, y: 0.2119262, z: -0.100000024}
-      m_Extent: {x: 0.32332203, y: 0, z: 0.6319476}
+      m_Center: {x: 0, y: 0.2119262, z: -0.10000001}
+      m_Extent: {x: 0.278924, y: 0, z: 0.54516965}
   m_Shapes:
     vertices: []
     shapes: []
@@ -97,7 +97,7 @@ Mesh:
       format: 0
       dimension: 0
     m_DataSize: 300
-    _typelessdata: 000000002f03593ecdccccbd778aa53e2f03593ecdccccbd74e69f3e2f03593ec82b823dd45c8f3e2f03593e3c285d3e331c6a3e2f03593ee796b13e768a253e2f03593e3c02e53e6c61ab3d2f03593e86aa023ff4cc72b22f03593eb72d083f6f61abbd2f03593e86aa023f788a25be2f03593e3b02e53e331c6abe2f03593ee796b13ed45c8fbe2f03593e3e285d3e75e69fbe2f03593ebe2b823d778aa5be2f03593ed4ccccbd74e69fbe2f03593e59f186bed25c8fbe2f03593e88fad4be301c6abe2f03593ea8fe0bbf758a25be2f03593e51b425bf6861abbd2f03593ebadd35bf037a84312f03593eeb603bbf6961ab3d2f03593eb9dd35bf758a253e2f03593e51b425bf381c6a3e2f03593ea4fe0bbfd65c8f3e2f03593e7ffad4be75e69f3e2f03593e54f186be
+    _typelessdata: 000000002f03593ecdccccbd20cf8e3e2f03593ecdccccbd67f1893e2f03593ec658283d435a773e2f03593e14ba303e69f6493e2f03593e282c923e1fcf0e3e2f03593eed87be3eccd8933d2f03593e746ada3eaa7551b22f03593e47ede33ecfd893bd2f03593e746ada3e21cf0ebe2f03593eec87be3e69f649be2f03593e282c923e435a77be2f03593e16ba303e68f189be2f03593eb558283d20cf8ebe2f03593ed3ccccbd67f189be2f03593e00e376be415a77be2f03593e74c3bebe67f649be2f03593e9192f8be1ecf0ebe2f03593e2a7712bfc8d893bd2f03593e6e6820bffe9164312f03593ed72925bfc9d8933d2f03593e6d6820bf1ecf0e3e2f03593e2a7712bf6df6493e2f03593e8b92f8be465a773e2f03593e6cc3bebe68f1893e2f03593ef7e276be
   m_CompressedMesh:
     m_Vertices:
       m_NumItems: 0
@@ -151,8 +151,8 @@ Mesh:
       m_BitSize: 0
     m_UVInfo: 0
   m_LocalAABB:
-    m_Center: {x: 0, y: 0.2119262, z: -0.100000024}
-    m_Extent: {x: 0.32332203, y: 0, z: 0.6319476}
+    m_Center: {x: 0, y: 0.2119262, z: -0.10000001}
+    m_Extent: {x: 0.278924, y: 0, z: 0.54516965}
   m_MeshUsageFlags: 0
   m_CookingOptions: 30
   m_BakedConvexCollisionMesh: 
