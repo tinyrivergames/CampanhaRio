@@ -58,5 +58,12 @@
 - Gerado com: `--seed 7 --size 2.7 --depth 0.8 --height 0.74 --points 22 --merge 18.0 --jitter 0.22 --bevel 0.028 --inflate 0.05 --patches 0.08 --edge_light 0.22 --ramp 0.14 --wrap 0.3 --flat 1.0 --edge_angle 24.0 --tone 0.8 --moss 0.8 --variety 0.6 --warmth 0.4 --moss_cover -0.15 --moss_up 0.5`
 - Triângulos: LOD0 346, LOD1 152, LOD2 18, COL 20
 - Prévia: `RochaA_v007_preview.png`
-- **Feedback do desenvolvedor (literal):** _(aguardando)_
+- **Feedback do desenvolvedor (literal):** "ficou bem melhor, porem ta muito grossa a linha clara de line arte, deixa um pouquinho mais fina, so isso."
 - **O que mudou:** Menos massinha: faces com luz chapada (normais quase sem inflar), transição luz/sombra mais firme (ramp 0,14), cor mais limpa por face, e arestas claras de desgaste que desenham cada plano (o 'lineart' de luz).
+
+### v008
+- Gerado com: `--seed 7 --size 2.7 --depth 0.8 --height 0.74 --points 22 --merge 18.0 --jitter 0.22 --bevel 0.016 --inflate 0.05 --patches 0.08 --edge_light 0.22 --ramp 0.14 --wrap 0.3 --flat 1.0 --edge_angle 24.0 --tone 0.8 --moss 0.8 --variety 0.6 --warmth 0.4 --moss_cover -0.15 --moss_up 0.5`
+- Triângulos: LOD0 346, LOD1 152, LOD2 18, COL 20
+- Prévia: `RochaA_v008_preview.png`
+- **Feedback do desenvolvedor (literal):** _(aguardando)_
+- **O que mudou:** Igual à v007, com a aresta clara mais fina (chanfro 0,028 para 0,016).

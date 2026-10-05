@@ -1,7 +1,7 @@
 {
     "asset": "RochaA",
     "family": "Rock",
-    "source": "ArtSource/Rock/RochaA/RochaA_v007.blend",
+    "source": "ArtSource/Rock/RochaA/RochaA_v008.blend",
     "material": {
         "_BaseColor": "#FFFFFF",
         "_Wrap": 0.3,
