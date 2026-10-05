@@ -95,21 +95,25 @@ def build_rock(name, lod, p, col):
             normals.append(n.normalized().lerp(ell, p["inflate"]).normalized())
     mesh.normals_split_custom_set(normals)
 
-    # Colour per corner: each big face its own stone (sandier, orange or redder) and tone, large soft patches of
-    # lighter/darker rock, sand toward the top, a cooler darker base, and MOSS in patches on the faces looking up
+    # Colour per corner: a forest river stone (v005). Each big face picks its own stone from a warm-grey family
+    # (grey, light grey, cool grey, beige), soft ochre rust stains as the warm accent (warmth); large soft
+    # patches of lighter/darker rock, lighter toward the top, a darker base, and MOSS in patches on the faces looking up
     rnd = random.Random(p["seed"] * 31 + 5)
-    base, sand, shadow = srgb(common.palette("rock_orange")), srgb(common.palette("rock_sand")), srgb(common.palette("rock_shadow"))
-    red = srgb("#B5653F")
+    stones = [srgb(common.palette(n)) for n in ("rock_gray", "rock_gray_light", "rock_gray_cool", "rock_beige")]
+    ochre, orange = srgb(common.palette("rock_ochre")), srgb(common.palette("rock_orange"))
+    top, shadow = srgb(common.palette("rock_gray_light")), srgb(common.palette("rock_gray_dark"))
     moss_dark, moss_light = srgb("#3F5A2E"), srgb("#5C7A38")  # darker, toward the pine greens (v004)
-    warm, cool = Vector((1.06, 1.02, 0.9)), Vector((0.92, 0.97, 1.06))
+    warm, cool = Vector((1.05, 1.01, 0.93)), Vector((0.94, 0.98, 1.05))
     seed_v = Vector((p["seed"] * 1.37, p["seed"] * 0.71, 3.3))
     attr = mesh.color_attributes.new("Col", "BYTE_COLOR", "CORNER")
     mesh.color_attributes.active_color = attr
     hues, kinds = {}, {}
     for poly in mesh.polygons:
-        h, k = rnd.uniform(-1, 1), rnd.uniform(-1, 1)
-        if poly.area > big * 0.15:  # each big face: its own tone and stone (+ sandier, - redder)
-            hues[poly.index], kinds[poly.index] = h * p["tone"], k * p["variety"]
+        h, pick, mix = rnd.uniform(-1, 1), rnd.random(), rnd.random()
+        a, b = rnd.sample(stones, 2)
+        if poly.area > big * 0.15:  # each big face: its own tone and stone
+            stone = a.lerp(b, mix * p["variety"])
+            hues[poly.index], kinds[poly.index] = h * p["tone"], stone
     # Bevel strips and corners take the average of their big neighbours, so edges never show as light stripes
     by_edge = {}
     for poly in mesh.polygons:
@@ -122,17 +126,19 @@ def build_rock(name, lod, p, col):
             nb = [n for ek in poly.edge_keys for n in by_edge[ek] if n != poly.index and n in hues]
             if nb:
                 hues[poly.index] = sum(hues[n] for n in nb) / len(nb)
-                kinds[poly.index] = sum(kinds[n] for n in nb) / len(nb)
+                kinds[poly.index] = sum((kinds[n] for n in nb), Vector((0, 0, 0))) / len(nb)
     for poly in mesh.polygons:
-        hue, kind = hues.get(poly.index, 0.0), kinds.get(poly.index, 0.0)
+        hue, stone = hues.get(poly.index, 0.0), kinds.get(poly.index, stones[0])
         tone = Vector((1, 1, 1)).lerp(warm if hue > 0 else cool, abs(hue))
-        stone = base.lerp(sand, kind) if kind > 0 else base.lerp(red, -kind)
         up = max(0.0, poly.normal.z)
         for li in poly.loop_indices:
             co = mesh.vertices[mesh.loops[li].vertex_index].co
             t = co.z / max(height, 1e-3)
-            c = shadow.lerp(stone, min(1.0, t * 2.2)).lerp(sand, max(0.0, (t - 0.45) * 1.4) * 0.6)
+            c = shadow.lerp(stone, min(1.0, t * 2.2)).lerp(top, max(0.0, (t - 0.45) * 1.4) * 0.45)
             c = mul(c, tone) * (1.0 + 0.16 * p["variety"] * noise.noise(co * 0.9 + seed_v))  # big soft patches
+            # Rust stains (warmth): soft ochre/orange patches flowing across faces, the old warm colour as an accent
+            stain = max(0.0, min(1.0, noise.noise(co * 1.6 + seed_v * 3.0) * 3.5 - 1.0))
+            c = c.lerp(mul(ochre.lerp(orange, stain), tone), p["warmth"] * stain)
             # Moss: patches (3D noise, so they flow across faces) only where the rock looks up
             patch = max(0.0, min(1.0, noise.noise(co * 1.7 + seed_v * 2.0) * 2.2 + p["moss_cover"]))
             m = p["moss"] * patch * max(0.0, min(1.0, (up - p["moss_up"]) / 0.35))
@@ -200,6 +206,7 @@ def main():
         "tone": float(args.get("tone", 0.8)),
         "moss": float(args.get("moss", 0.8)),
         "variety": float(args.get("variety", 0.6)),
+        "warmth": float(args.get("warmth", 0.4)),
         "moss_cover": float(args.get("moss_cover", 0.35)),
         "moss_up": float(args.get("moss_up", 0.35)),
     }

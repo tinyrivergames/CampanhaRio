@@ -36,5 +36,12 @@
 - Gerado com: `--seed 7 --size 2.7 --depth 0.8 --height 0.74 --points 16 --merge 22.0 --jitter 0.18 --bevel 0.035 --inflate 0.3 --flat 0.75 --edge_angle 24.0 --tone 0.8 --moss 0.8 --variety 0.6 --moss_cover -0.15 --moss_up 0.5`
 - Triângulos: LOD0 234, LOD1 100, LOD2 16, COL 20
 - Prévia: `RochaA_v004_preview.png`
-- **Feedback do desenvolvedor (literal):** _(aguardando)_
+- **Feedback do desenvolvedor (literal):** "voce acha que as cores estao boas? nao tem que ser um pouco mais pro cinza do que laranja? o que acha? é um primeiro rio na floresta, alem de que ainda ta tudo laranja, deixa um pouco mais variada a cor"
 - **O que mudou:** forma no meio-termo entre v002 e v003 (chanfro 0,035, 16 pontos, 1,31 m de altura); musgo mais escuro (verde do pinheiro) e em manchas menores, só no topo; arredonda só as quinas de verdade (> 24°) e junta mais os planos quase retos, o que eliminou os traços claros dentro das faces; as tiras das arestas herdam o tom das faces vizinhas.
+
+### v005
+- Gerado com: `--seed 7 --size 2.7 --depth 0.8 --height 0.74 --points 16 --merge 22.0 --jitter 0.18 --bevel 0.035 --inflate 0.3 --flat 0.75 --edge_angle 24.0 --tone 0.8 --moss 0.8 --variety 0.6 --warmth 0.4 --moss_cover -0.15 --moss_up 0.5`
+- Triângulos: LOD0 234, LOD1 100, LOD2 16, COL 20
+- Prévia: `RochaA_v005_preview.png`
+- **Feedback do desenvolvedor (literal):** _(aguardando)_
+- **O que mudou:** Cor de pedra de rio de floresta: base cinza-quente (cada face sorteia cinza, cinza-claro, cinza-frio ou bege), topo cinza-claro, base cinza-escuro; o laranja antigo virou só manchas de ferrugem suaves (warmth 0.4). Forma e musgo iguais à v004.
