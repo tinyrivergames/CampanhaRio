@@ -37,5 +37,12 @@
 - Gerado com: `--style blades --tiers 10 --density 1.4 --top_light 0.75 --droop_deg 18.0 --curl 0.2792526803190927 --blade_width 0.14 --whorls 9 --seed 4 --height 9.0 --radius 2.4 --layers 5 --lean 0.04 --scallop 0.28 --droop 0.12 --inflate 0.4`
 - Triângulos: LOD0 1521, LOD1 303
 - Prévia: `PinheiroA_v004_preview.png`
-- **Feedback do desenvolvedor (literal):** _(aguardando)_
+- **Feedback do desenvolvedor (literal):** "show, parece bem legal para uma floresta. As camadas ainda estao muito separadas, tem que ser mais algo entremeado. E o principal que eu acho que fica legal de adicionar, nao deixar somente uma cor dependente das sombras, da pra varias um pouquinho pouquinho as cores mais de dentro fora/folhas diferentes no pinheiro nao?"
 - **O que mudou:** no estilo da referência (spruce/fir): 10 camadas de leques de lâminas finas e pontudas, com dobra no meio, caindo nas pontas, e uma segunda camada mais escura por baixo; tronco com base alargada e uma coroa de lâminas na ponta; topo das lâminas mais claro. Rascunhos internos ajustaram a queda (32 → 18 graus), a largura (copa de 5 m) e a densidade.
+
+### v005
+- Gerado com: `--style blades --tiers 14 --density 1.0 --top_light 0.75 --hue_var 1.0 --h_jitter 0.28 --droop_deg 18.0 --curl 0.2792526803190927 --blade_width 0.14 --whorls 9 --seed 4 --height 9.0 --radius 2.4 --layers 5 --lean 0.04 --scallop 0.28 --droop 0.12 --inflate 0.4`
+- Triângulos: LOD0 1521, LOD1 317
+- Prévia: `PinheiroA_v005_preview.png`
+- **Feedback do desenvolvedor (literal):** _(aguardando)_
+- **O que mudou:** camadas entremeadas (14 camadas mais próximas, cada lâmina com altura levemente diferente); cada lâmina com um tom próprio (umas mais amareladas, outras mais azuladas), o miolo mais frio e as pontas mais quentes, além da luz e da sombra. Mesmos 1.521 triângulos.

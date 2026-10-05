@@ -320,7 +320,12 @@ def build_tree_blades(name, lod, p, col):
     for j in range(core_sides):
         bm.faces.new((apex, core[j], core[(j + 1) % core_sides]))
 
-    def blade(base, yaw, L, w, droop, shade, t, under):
+    warm, cool = Vector((1.07, 1.05, 0.82)), Vector((0.88, 0.98, 1.1))
+
+    def mul(a, b):
+        return Vector((a.x * b.x, a.y * b.y, a.z * b.z))
+
+    def blade(base, yaw, L, w, droop, shade, t, under, hue=0.0):
         d = Vector((math.cos(yaw), math.sin(yaw), 0.0))
         side = Vector((-d.y, d.x, 0.0))
         a0, a1 = droop, droop + p["curl"]
@@ -330,6 +335,11 @@ def build_tree_blades(name, lod, p, col):
         c_base, c_mid, c_tip = dark.lerp(mid, 0.25) * shade, mid.lerp(top, p["top_light"] + 0.2 * t) * shade, top.lerp(light, 0.3) * shade
         if under:
             c_base, c_mid, c_tip = dark * 0.85 * shade, dark.lerp(mid, 0.55) * shade, mid * shade
+        # Each blade its own slight tone (yellower or bluer), a cooler inside and warmer tips: colour beyond the light
+        tone = Vector((1, 1, 1)).lerp(warm if hue > 0 else cool, abs(hue) * p["hue_var"])
+        c_base = mul(mul(c_base, tone), Vector((0.94, 0.98, 1.06)))
+        c_mid = mul(c_mid, tone)
+        c_tip = mul(mul(c_tip, tone), Vector((1.05, 1.03, 0.92)))
         wind = 0.4 + 0.6 * t
         B = vert(base, c_base, 0.0)
         T = vert(tip, c_tip, wind)
@@ -360,9 +370,9 @@ def build_tree_blades(name, lod, p, col):
             for j in range(n):
                 yaw = offset + (j + half) * 2 * math.pi / n + rnd.uniform(-0.12, 0.12)
                 L = R * scale * rnd.uniform(0.82, 1.12)
-                base = Vector((0, 0, h - (0.14 if under else 0.0))) + lean(h) + Vector((math.cos(yaw), math.sin(yaw), 0)) * 0.08
+                base = Vector((0, 0, h - (0.14 if under else 0.0) + rnd.uniform(-p["h_jitter"], p["h_jitter"]))) + lean(h) + Vector((math.cos(yaw), math.sin(yaw), 0)) * 0.08
                 w = L * p["blade_width"] * rnd.uniform(0.85, 1.15)
-                blade(base, yaw, L, w, droop * rnd.uniform(0.85, 1.15), rnd.uniform(0.9, 1.08), t, under)
+                blade(base, yaw, L, w, droop * rnd.uniform(0.8, 1.2), rnd.uniform(0.9, 1.08), t, under, rnd.uniform(-1.0, 1.0))
 
     # The crown: a spike and a few small blades pointing up
     tip_y = p["height"]
@@ -453,6 +463,8 @@ def main():
         "tiers": int(args.get("tiers", 12)),
         "density": float(args.get("density", 1.0)),
         "top_light": float(args.get("top_light", 0.55)),
+        "hue_var": float(args.get("hue_var", 0.0)),
+        "h_jitter": float(args.get("h_jitter", 0.0)),
         "droop_deg": float(args.get("blade_droop", 32)),
         "curl": math.radians(float(args.get("curl", 22))),
         "blade_width": float(args.get("blade_width", 0.16)),
