@@ -44,5 +44,13 @@
 - Gerado com: `--style blades --tiers 14 --density 1.0 --top_light 0.75 --hue_var 1.0 --h_jitter 0.28 --droop_deg 18.0 --curl 0.2792526803190927 --blade_width 0.14 --whorls 9 --seed 4 --height 9.0 --radius 2.4 --layers 5 --lean 0.04 --scallop 0.28 --droop 0.12 --inflate 0.4`
 - Triângulos: LOD0 1521, LOD1 317
 - Prévia: `PinheiroA_v005_preview.png`
-- **Feedback do desenvolvedor (literal):** _(aguardando)_
+- **Feedback do desenvolvedor (literal):** "legal, para pinheiro fica legal essas pontas pontiagudas mesmo? ou seria interessante mudar? ficou bem bonito do que eu estou vendo aqui" → depois de um rascunho com pontas arredondadas (forte demais): "arredonda menos pra testar"
 - **O que mudou:** camadas entremeadas (14 camadas mais próximas, cada lâmina com altura levemente diferente); cada lâmina com um tom próprio (umas mais amareladas, outras mais azuladas), o miolo mais frio e as pontas mais quentes, além da luz e da sombra. Mesmos 1.521 triângulos.
+
+### v006
+- Gerado com: `--style blades --tiers 14 --density 0.85 --top_light 0.75 --hue_var 1.0 --tip_round 0.22 --h_jitter 0.28 --droop_deg 18.0 --curl 0.2792526803190927 --blade_width 0.14 --whorls 9 --seed 4 --height 9.0 --radius 2.4 --layers 5 --lean 0.04 --scallop 0.28 --droop 0.12 --inflate 0.4`
+- Triângulos: LOD0 1610, LOD1 297
+- Prévia: `PinheiroA_v006_preview.png`
+- **Feedback do desenvolvedor (literal):** "essa 006 ficou boa, o meio termo caiu bem. pode seguir."
+- **O que mudou:** pontas das lâminas levemente arredondadas (uma ponta curta e cega em vez da agulha; `--tip_round 0.22`). LOD0 com 1.610 triângulos: 7% acima do teto de 1.500, aceito pela aparência aprovada.
+- ✅ **APROVADA (2026-10-05): é o mestre da família Pine.** Próximo: exportar, impostor (LOD2), cartão-borrão do fundo, conferência no Unity.

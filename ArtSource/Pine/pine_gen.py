@@ -347,8 +347,17 @@ def build_tree_blades(name, lod, p, col):
             C = vert(mid_pt + up * w * 0.35, c_mid, wind * 0.5)  # the fold along the middle
             Lm = vert(mid_pt - side * w, c_mid * 0.92, wind * 0.5)
             Rm = vert(mid_pt + side * w, c_mid * 0.92, wind * 0.5)
-            for f in ((B, Lm, C), (B, C, Rm), (Lm, T, C), (C, T, Rm)):
-                bm.faces.new(f)
+            if p["tip_round"] > 0.0:
+                # A short blunt tip (two points close together, pulled back a little): softer, still a blade
+                back = (tip - mid_pt) * 0.06
+                half = side * w * 0.5 * p["tip_round"]
+                bm.verts.remove(T)
+                TL, TR = vert(tip - back - half, c_tip, wind), vert(tip - back + half, c_tip, wind)
+                for f in ((B, Lm, C), (B, C, Rm), (Lm, TL, C), (C, TL, TR), (C, TR, Rm)):
+                    bm.faces.new(f)
+            else:
+                for f in ((B, Lm, C), (B, C, Rm), (Lm, T, C), (C, T, Rm)):
+                    bm.faces.new(f)
         else:
             Lm = vert(mid_pt - side * w, c_mid, wind * 0.5)
             Rm = vert(mid_pt + side * w, c_mid, wind * 0.5)
@@ -464,6 +473,7 @@ def main():
         "density": float(args.get("density", 1.0)),
         "top_light": float(args.get("top_light", 0.55)),
         "hue_var": float(args.get("hue_var", 0.0)),
+        "tip_round": float(args.get("tip_round", 0.0)),
         "h_jitter": float(args.get("h_jitter", 0.0)),
         "droop_deg": float(args.get("blade_droop", 32)),
         "curl": math.radians(float(args.get("curl", 22))),
