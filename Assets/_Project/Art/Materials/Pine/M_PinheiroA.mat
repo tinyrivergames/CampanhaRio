@@ -13,7 +13,8 @@ Material:
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
   - _WIND
-  m_InvalidKeywords: []
+  m_InvalidKeywords:
+  - _USEVERTEXCOLOR_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 1
   m_DoubleSidedGI: 0
@@ -39,6 +40,8 @@ Material:
     - _ReceiveShadows: 0.85
     - _RimPower: 3.5
     - _RimStrength: 0.14
+    - _StencilRef: 0
+    - _StencilWriteMask: 0
     - _TopTintAmount: 0
     - _TopTintSharpness: 0.35
     - _Translucency: 0.3

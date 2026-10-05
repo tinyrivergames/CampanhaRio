@@ -312,13 +312,36 @@ def build_tree_blades(name, lod, p, col):
         for j in range(sides):
             bm.faces.new((a_r[j], a_r[(j + 1) % sides], b_r[(j + 1) % sides], b_r[j]))
 
-    # Dark core
-    core_sides = 6 if detail else 4
-    core = [vert(Vector((math.cos(2 * math.pi * j / core_sides) * p["radius"] * 0.4, math.sin(2 * math.pi * j / core_sides) * p["radius"] * 0.4, 1.9)) + lean(1.9), dark * 0.7, 0.0)
-            for j in range(core_sides)]
-    apex = vert(Vector((0, 0, p["height"] - 1.0)) + lean(p["height"] - 1.0), dark * 0.8, 0.3)
-    for j in range(core_sides):
-        bm.faces.new((apex, core[j], core[(j + 1) % core_sides]))
+    # The core: hides the gaps in the middle so no sky shows through
+    if p["core_soft"]:
+        core_rnd = random.Random(p["seed"] + 99)  # its own draws: the approved blades keep their layout
+        # v007: a slim STAR-shaped core in a few rings (it reads as inner needles, not as a solid cone), in the blades'
+        # greens (darker low, lighter high) instead of near-black, so it blends with the foliage around it
+        core_sides = (12 if detail else 6)
+        heights = (1.9, 1.9 + (p["height"] - 2.9) * 0.45, p["height"] - 1.0)
+        prev = None
+        for k, y in enumerate(heights[:-1]):
+            ring_ = []
+            t = k / (len(heights) - 1)
+            for j in range(core_sides):
+                a = 2 * math.pi * (j + 0.5 * k) / core_sides
+                r = p["radius"] * p["core_r"] * (1.0 - 0.55 * t) * (1.0 if j % 2 == 0 else 0.55)
+                shade = dark.lerp(mid, p["core_light"] + 0.25 * t) * core_rnd.uniform(0.9, 1.06)
+                ring_.append(vert(Vector((math.cos(a) * r, math.sin(a) * r, y)) + lean(y), shade, 0.1 * k))
+            if prev:
+                for j in range(core_sides):
+                    bm.faces.new((prev[j], prev[(j + 1) % core_sides], ring_[(j + 1) % core_sides], ring_[j]))
+            prev = ring_
+        apex = vert(Vector((0, 0, heights[-1])) + lean(heights[-1]), dark.lerp(mid, p["core_light"] + 0.35), 0.3)
+        for j in range(core_sides):
+            bm.faces.new((apex, prev[j], prev[(j + 1) % core_sides]))
+    else:
+        core_sides = 6 if detail else 4
+        core = [vert(Vector((math.cos(2 * math.pi * j / core_sides) * p["radius"] * 0.4, math.sin(2 * math.pi * j / core_sides) * p["radius"] * 0.4, 1.9)) + lean(1.9), dark * 0.7, 0.0)
+                for j in range(core_sides)]
+        apex = vert(Vector((0, 0, p["height"] - 1.0)) + lean(p["height"] - 1.0), dark * 0.8, 0.3)
+        for j in range(core_sides):
+            bm.faces.new((apex, core[j], core[(j + 1) % core_sides]))
 
     warm, cool = Vector((1.07, 1.05, 0.82)), Vector((0.88, 0.98, 1.1))
 
@@ -474,6 +497,9 @@ def main():
         "top_light": float(args.get("top_light", 0.55)),
         "hue_var": float(args.get("hue_var", 0.0)),
         "tip_round": float(args.get("tip_round", 0.0)),
+        "core_soft": int(args.get("core_soft", 0)),
+        "core_r": float(args.get("core_r", 0.3)),
+        "core_light": float(args.get("core_light", 0.35)),
         "h_jitter": float(args.get("h_jitter", 0.0)),
         "droop_deg": float(args.get("blade_droop", 32)),
         "curl": math.radians(float(args.get("curl", 22))),

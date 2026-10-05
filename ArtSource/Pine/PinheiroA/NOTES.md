@@ -59,3 +59,10 @@
 - Exportado com impostor (LOD2, 4 tris), conferido no LookDev (tarde e pôr do sol, fileira de 12 a 260 m) e jogado no KayakTest com 450 cópias (tamanho 0,75–1,35x).
 - **OK final do desenvolvedor (literal):** "show, ficaram bem no aspecto que eu queria."
 - Pendente da família: o cartão-borrão do fundo; as variações de forma (Fase 3, pelo gerador).
+
+### v007
+- Gerado com: `--style blades --tiers 14 --density 0.85 --top_light 0.75 --hue_var 1.0 --tip_round 0.22 --core_soft 1 --core_r 0.3 --core_light 0.45 --h_jitter 0.28 --droop_deg 32.0 --curl 0.2792526803190927 --blade_width 0.14 --whorls 9 --seed 4 --height 9.0 --radius 2.4 --layers 5 --lean 0.04 --scallop 0.28 --droop 0.12 --inflate 0.4`
+- Triângulos: LOD0 1640, LOD1 311
+- Prévia: `PinheiroA_v007_preview.png`
+- **Feedback do desenvolvedor (literal):** _(aguardando)_
+- **O que mudou:** Miolo que mescla com a árvore: no lugar do cone liso quase preto, um miolo fino em forma de estrela (lê como folhagem interna), nos verdes das lâminas (mais escuro embaixo, mais claro em cima). Lâminas iguais à v006.
