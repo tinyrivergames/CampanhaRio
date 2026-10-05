@@ -35,13 +35,13 @@ namespace CampanhaRio.Editor
             int groups = 0, placed = 0, hint = -1;
             var bounds = terrain.terrainData.bounds;
             Vector3 origin = terrain.transform.position;
-            for (int attempt = 0; attempt < 20000 && groups < 110; attempt++)
+            for (int attempt = 0; attempt < 40000 && groups < 260; attempt++)
             {
                 // Mostly right at the bank (what the kayaker passes by), some further into the forest
                 float along = Rand(0f, river.Length);
                 var s = river.GetPointAtDistance(along);
                 float side = rng.NextDouble() < 0.5 ? -1f : 1f;
-                float edge = rng.NextDouble() < 0.7 ? Rand(-1.2f, 3f) : Rand(3f, 30f);
+                float edge = rng.NextDouble() < 0.6 ? Rand(-1.2f, 3f) : Rand(3f, 45f);
                 Vector3 centre = s.point + s.right * side * ((side > 0 ? s.rightWidth : s.leftWidth) + edge);
                 int count = 1 + rng.Next(4);
                 bool any = false;

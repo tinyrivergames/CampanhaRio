@@ -79,6 +79,8 @@ def export(blend_path=None, impostor=False):
         "materialList": [dict(name=k, **v) for k, v in materials.items()],
         "triangles": {o.name.split("_")[-1]: common.triangle_count(o) for o in parts},
     }
+    if "cr_lod_heights" in bpy.context.scene:  # per-asset LOD switch heights (screen fraction), set by the generator
+        sidecar["lodHeights"] = [float(h) for h in bpy.context.scene["cr_lod_heights"]]
     with open(os.path.join(out_dir, asset + ".softtoon.json"), "w", encoding="utf-8", newline="\n") as f:
         json.dump(sidecar, f, indent=4)
     print(f"[export] {fbx}  parts: {', '.join(sorted(o.name for o in parts))}")

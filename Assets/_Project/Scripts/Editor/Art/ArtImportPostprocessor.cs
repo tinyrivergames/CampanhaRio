@@ -70,10 +70,19 @@ namespace CampanhaRio.Editor
                 if (!group) group = root.AddComponent<LODGroup>();
                 group.fadeMode = LODFadeMode.CrossFade;
                 group.animateCrossFading = true;
-                group.SetLODs(lods.Select((r, i) => new LOD(LodHeights[Mathf.Min(i, LodHeights.Length - 1)], r)).ToArray());
+                var heights = SidecarLodHeights() ?? LodHeights; // per asset when the generator set them
+                group.SetLODs(lods.Select((r, i) => new LOD(heights[Mathf.Min(i, heights.Length - 1)], r)).ToArray());
                 group.RecalculateBounds();
             }
             Debug.Log($"[Campanha] Imported {asset}: {lods.Length} LOD(s), collider {(root.GetComponent<MeshCollider>() ? "yes" : "no")}.");
+        }
+
+        float[] SidecarLodHeights()
+        {
+            string path = Path.ChangeExtension(assetPath, ".softtoon.json");
+            if (!File.Exists(path)) return null;
+            var h = JsonUtility.FromJson<Sidecar>(File.ReadAllText(path)).lodHeights;
+            return h != null && h.Length > 0 ? h : null;
         }
 
         static void OnPostprocessAllAssets(string[] imported, string[] deleted, string[] moved, string[] movedFrom)
@@ -162,7 +171,7 @@ namespace CampanhaRio.Editor
         static Color Hex(string hex) => ColorUtility.TryParseHtmlString(hex, out var c) ? c : Color.white;
 
         [System.Serializable]
-        class Sidecar { public string asset, family, source; public Params material; public Params[] materialList; }
+        class Sidecar { public string asset, family, source; public Params material; public Params[] materialList; public float[] lodHeights; }
 
         [System.Serializable]
         class Params

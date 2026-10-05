@@ -57,7 +57,7 @@ def build_rock(name, lod, p, col):
     count = {"LOD0": p["points"], "LOD1": p["points"], "LOD2": max(10, p["points"] // 2), "COL": 12}[lod]
     verts = [bm.verts.new(v) for v in hull_points(p, count, 0 if lod != "COL" else 1)]
     result = bmesh.ops.convex_hull(bm, input=verts)
-    bmesh.ops.delete(bm, geom=result["geom_interior"] + result["geom_unused"], context="VERTS")
+    bmesh.ops.delete(bm, geom=list({*result["geom_interior"], *result["geom_unused"]}), context="VERTS")
     bmesh.ops.dissolve_limit(bm, angle_limit=math.radians(p["merge"]), verts=bm.verts, edges=bm.edges)  # merge near-coplanar faces into big planes
     segments = {"LOD0": 2, "LOD1": 1, "LOD2": 0, "COL": 0}[lod]
     if segments:
@@ -211,6 +211,8 @@ def main():
         "moss_up": float(args.get("moss_up", 0.35)),
     }
     parts = build(asset, p)
+    # Rocks are cheap (LOD0 ~250 tris) and very visible along the bank: full detail out to ~60 m, LOD1 to ~240 m
+    bpy.context.scene["cr_lod_heights"] = [0.03, 0.008, 0.002]
     if "draft" in args:
         out = os.path.join(common.TMP_DIR, f"draft_{asset}_{args['draft']}.png")
         preview.render_sheet(out, "rascunho " + str(args["draft"]))

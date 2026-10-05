@@ -1,7 +1,7 @@
 {
     "asset": "RochaA",
     "family": "Rock",
-    "source": "ArtSource/Rock/RochaA/RochaA_v005.blend",
+    "source": "ArtSource/Rock/RochaA/RochaA_v006.blend",
     "material": {
         "_BaseColor": "#FFFFFF",
         "_Wrap": 0.4,
@@ -49,8 +49,13 @@
     ],
     "triangles": {
         "COL": 20,
-        "LOD0": 234,
-        "LOD1": 100,
-        "LOD2": 16
-    }
+        "LOD0": 346,
+        "LOD1": 152,
+        "LOD2": 18
+    },
+    "lodHeights": [
+        0.03,
+        0.008,
+        0.002
+    ]
 }
