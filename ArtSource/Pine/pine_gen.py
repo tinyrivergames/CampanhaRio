@@ -318,15 +318,23 @@ def build_tree_blades(name, lod, p, col):
         # v007: a slim STAR-shaped core in a few rings (it reads as inner needles, not as a solid cone), in the blades'
         # greens (darker low, lighter high) instead of near-black, so it blends with the foliage around it
         core_sides = (12 if detail else 6)
-        heights = (1.9, 1.9 + (p["height"] - 2.9) * 0.45, p["height"] - 1.0)
+        rings = max(2, p["core_rings"]) if detail else 2
+        top_y = p["height"] - 1.0
+        heights = [1.9 + (top_y - 1.9) * k / rings for k in range(rings)] + [top_y]
         prev = None
         for k, y in enumerate(heights[:-1]):
             ring_ = []
             t = k / (len(heights) - 1)
             for j in range(core_sides):
                 a = 2 * math.pi * (j + 0.5 * k) / core_sides
-                r = p["radius"] * p["core_r"] * (1.0 - 0.55 * t) * (1.0 if j % 2 == 0 else 0.55)
-                shade = dark.lerp(mid, p["core_light"] + 0.25 * t) * core_rnd.uniform(0.9, 1.06)
+                point = j % 2 == 0
+                step = 1.0 if (k % 2 == 0 or rings < 3) else p["core_step"]  # v008: stepped like the tiers around it
+                r = p["radius"] * p["core_r"] * (1.0 - 0.7 * t) * step * (1.0 if point else 0.5)
+                # points lighter, valleys darker (like the blades' folds), each with its own slight tone (like each blade)
+                shade = dark.lerp(mid, p["core_light"] + 0.25 * t + (0.12 if point else -0.2)) * core_rnd.uniform(0.9, 1.06)
+                hue = core_rnd.uniform(-1, 1) * p["hue_var"]
+                tone = Vector((1, 1, 1)).lerp(Vector((1.07, 1.05, 0.82)) if hue > 0 else Vector((0.88, 0.98, 1.1)), abs(hue) * 0.7)
+                shade = Vector((shade.x * tone.x, shade.y * tone.y, shade.z * tone.z))
                 ring_.append(vert(Vector((math.cos(a) * r, math.sin(a) * r, y)) + lean(y), shade, 0.1 * k))
             if prev:
                 for j in range(core_sides):
@@ -500,6 +508,8 @@ def main():
         "core_soft": int(args.get("core_soft", 0)),
         "core_r": float(args.get("core_r", 0.3)),
         "core_light": float(args.get("core_light", 0.35)),
+        "core_rings": int(args.get("core_rings", 2)),
+        "core_step": float(args.get("core_step", 1.0)),
         "h_jitter": float(args.get("h_jitter", 0.0)),
         "droop_deg": float(args.get("blade_droop", 32)),
         "curl": math.radians(float(args.get("curl", 22))),

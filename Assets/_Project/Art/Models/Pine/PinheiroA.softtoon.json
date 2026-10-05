@@ -1,7 +1,7 @@
 {
     "asset": "PinheiroA",
     "family": "Pine",
-    "source": "ArtSource/Pine/PinheiroA/PinheiroA_v007.blend",
+    "source": "ArtSource/Pine/PinheiroA/PinheiroA_v008.blend",
     "material": {
         "_BaseColor": "#FFFFFF",
         "_Wrap": 0.7,
@@ -71,7 +71,7 @@
         }
     ],
     "triangles": {
-        "LOD0": 1640,
+        "LOD0": 1736,
         "LOD1": 311,
         "LOD2": 4
     }
