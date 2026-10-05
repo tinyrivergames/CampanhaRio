@@ -15,7 +15,7 @@
 - Gerado com: `--length 3.3 --width 0.68 --widest 0.06 --rocker 0.11 --sheer_rise 0.07 --end_rise 0.13 --stations 18 --cockpit_y 0.1 --cockpit_l 0.86 --cockpit_w 0.44 --well_y 0.98 --well_l 0.52 --well_w 0.36 --hatch_y -1.17 --flat 0.75 --tone 0.04 --ramp 0.16 --wrap 0.35`
 - Triângulos: LOD0 1596, LOD1 612, LOD2 112
 - Prévia: `CaiaqueA_v001_preview.png`
-- **Feedback do desenvolvedor (literal):** _(aguardando)_
+- **Feedback do desenvolvedor (literal):** _(não mostrada: afundava na água do jogo, substituída pela v002)_
 - **O que mudou:** primeira versão.
 
 ### v002
