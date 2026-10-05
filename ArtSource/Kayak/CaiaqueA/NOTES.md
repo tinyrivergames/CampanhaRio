@@ -53,5 +53,12 @@
 - Gerado com: `--length 3.3 --width 0.68 --widest 0.06 --rocker 0.11 --sheer_rise 0.07 --end_rise 0.13 --lift 0.08 --simple 1 --solid_well 1 --exact_cut 1 --solver FLOAT --floor 0.09 --stations 12 --cockpit_y 0.1 --cockpit_l 0.86 --cockpit_w 0.44 --well_y 0.98 --well_l 0.52 --well_w 0.36 --hatch_y -1.17 --flat 0.75 --tone 0.04 --ramp 0.16 --wrap 0.35`
 - Triângulos: LOD0 852, LOD1 504, LOD2 112
 - Prévia: `CaiaqueA_v006_preview.png`
-- **Feedback do desenvolvedor (literal):** "pronto, otimo. corrigido."
+- **Feedback do desenvolvedor (literal):** "pronto, otimo. corrigido." / depois: "vamos melhorar um pouco o caiaque, deixa a cor vermelha e ajustar o banco do passageiro. Aqui a foto literalmente pra voce se inspirar: se baseia totalmente nela pra fazer o caiaque."
 - **O que mudou:** Corrige os furos nas laterais: o cockpit agora é um corte exato (boolean) no casco, e o próprio corte forma a cuba; o casco fica totalmente fechado (0 arestas abertas), sem nenhuma fresta por onde a água apareça. Visual igual à v005.
+
+### v007
+- Gerado com: `--length 3.3 --width 0.68 --widest 0.06 --rocker 0.11 --sheer_rise 0.07 --end_rise 0.13 --lift 0.08 --simple 1 --solid_well 1 --cargo_panel 0 --facets 1 --coaming_h 0.055 --coaming_w 1.26 --chunky_seat 1 --round_fittings 1 --fit_r 0.034 --bow_triangle 1 --arch_handles 1 --exact_cut 1 --solver FLOAT --floor 0.09 --stations 12 --cockpit_y 0.1 --cockpit_l 0.86 --cockpit_w 0.44 --well_y 0.98 --well_l 0.52 --well_w 0.36 --hatch_y -1.17 --flat 0.75 --tone 0.06 --ramp 0.16 --wrap 0.35`
+- Triângulos: LOD0 1040, LOD1 422, LOD2 112
+- Prévia: `CaiaqueA_v007_preview.png`
+- **Feedback do desenvolvedor (literal):** _(aguardando)_
+- **O que mudou:** Baseado totalmente na foto de referência do desenvolvedor: todo vermelho e facetado em triângulos (cada um com seu tom), borda do cockpit grossa e elevada, assento marrom robusto, cabos em X com presilhas redondas na frente (com triângulo na proa) e atrás (onde vai a encomenda), alças em arco nas pontas. Remo: pás vermelhas, cabo e anéis marrons.

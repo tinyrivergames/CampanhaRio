@@ -1,7 +1,7 @@
 {
     "asset": "CaiaqueA",
     "family": "Kayak",
-    "source": "ArtSource/Kayak/CaiaqueA/CaiaqueA_v006.blend",
+    "source": "ArtSource/Kayak/CaiaqueA/CaiaqueA_v007.blend",
     "material": {
         "_BaseColor": "#FFFFFF",
         "_Wrap": 0.35,
@@ -52,8 +52,8 @@
         }
     ],
     "triangles": {
-        "LOD0": 852,
-        "LOD1": 504,
+        "LOD0": 1040,
+        "LOD1": 422,
         "LOD2": 112
     },
     "waterMasks": [
@@ -64,8 +64,8 @@
                 -0.1
             ],
             "radii": [
-                0.27892399430274967,
-                0.5451696252281015
+                0.30611599415540697,
+                0.5983176249401136
             ]
         }
     ]

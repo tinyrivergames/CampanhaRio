@@ -152,12 +152,17 @@ namespace CampanhaRio.Editor
         {
             var paddle = Child(visual, "Paddle");
             paddle.localScale = Vector3.one * PaddleScale;
-            var dark = GrayboxMaterials.Get("Dark", new Color(0.18f, 0.17f, 0.16f));
-            var blade = GrayboxMaterials.Get("Blade", new Color(0.95f, 0.66f, 0.23f));
+            var dark = GrayboxMaterials.Get("PaddleShaft", new Color(0.29f, 0.19f, 0.16f)); // the reference: brown shaft, red blades
+            var blade = GrayboxMaterials.Get("PaddleBlade", new Color(0.83f, 0.17f, 0.16f));
             var shaft = Primitive(PrimitiveType.Cylinder, "Shaft", paddle, Vector3.zero, new Vector3(0.035f, 1.05f, 0.035f), dark);
             shaft.localRotation = Quaternion.Euler(0f, 0f, 90f);
             Primitive(PrimitiveType.Cube, "BladeLeft", paddle, new Vector3(-1.05f, 0f, 0f), new Vector3(0.42f, 0.02f, 0.17f), blade);
             Primitive(PrimitiveType.Cube, "BladeRight", paddle, new Vector3(1.05f, 0f, 0f), new Vector3(0.42f, 0.02f, 0.17f), blade);
+            foreach (float x in new[] { -0.84f, 0.84f }) // the collars where the blades meet the shaft
+            {
+                var collar = Primitive(PrimitiveType.Cylinder, "Collar", paddle, new Vector3(x, 0f, 0f), new Vector3(0.06f, 0.03f, 0.06f), dark);
+                collar.localRotation = Quaternion.Euler(0f, 0f, 90f);
+            }
             // Grips a little behind and above the shaft, so the hands sit on it
             Child(paddle, "Grip_L").localPosition = new Vector3(-0.36f, 0.035f, -0.06f);
             Child(paddle, "Grip_R").localPosition = new Vector3(0.36f, 0.035f, -0.06f);

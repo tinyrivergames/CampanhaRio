@@ -283,6 +283,15 @@ def build_kayak(name, lod, p, col):
     n_ell = {2: 20, 1: 14, 0: 10}[detail]
     if openings and p["exact_cut"]:
         bm, bands, colours = boolean_cut(bm, bands, C, p, name, col, openings, n_ell)
+    if p["facets"] and detail:
+        tri = bmesh.ops.triangulate(bm, faces=[f for f in bands if f.is_valid])
+        for new, old in tri["face_map"].items():
+            if old in bands:
+                bands[new] = bands[old]
+                colours[new] = colours.get(old, C["deck"])
+        for f in [f for f in bands if not f.is_valid]:
+            bands.pop(f)
+            colours.pop(f, None)
     for cx, cy, rx, ry in (openings if not p["exact_cut"] else []):
         rim = ellipse(cx, cy, rx, ry, n_ell)
         tops = [deck_z(v.x, v.y) for v in rim]
@@ -313,7 +322,7 @@ def build_kayak(name, lod, p, col):
     for idx, (cx, cy, rx, ry) in enumerate(openings):
         is_cockpit = idx == 0
         # The hole left by the deleted faces is a jagged quad outline: a wide coaming flange covers it
-        out = ellipse(cx, cy, rx * 1.28 + 0.03, ry * 1.12 + 0.03, n_ell) if not p["exact_cut"] else ellipse(cx, cy, rx * 1.14 + 0.02, ry * 1.07 + 0.02, n_ell)
+        out = ellipse(cx, cy, rx * 1.28 + 0.03, ry * 1.12 + 0.03, n_ell) if not p["exact_cut"] else ellipse(cx, cy, rx * p["coaming_w"] + 0.02, ry * (1 + (p["coaming_w"] - 1) * 0.5) + 0.02, n_ell)
         centre = Vector((cx, cy))
         for i, v in enumerate(out if not p["exact_cut"] else []):  # push the flange out wherever the hole reaches further (no gap between them)
             d = (v.xy - centre)
@@ -323,11 +332,11 @@ def build_kayak(name, lod, p, col):
         p["_masks"].append([cx, cy, max(((v.x - cx) / rx) ** 2 + ((v.y - cy) / ry) ** 2 for v in out) ** 0.5])
         inner = ellipse(cx, cy, rx, ry, n_ell) if not p["exact_cut"] else ellipse(cx, cy, rx * 0.96, ry * 0.97, n_ell)
         z_out = [deck_z(v.x, v.y) + 0.006 for v in out]
-        lip_h = 0.035 if is_cockpit else 0.018
+        lip_h = (p["coaming_h"] if is_cockpit else 0.018)
         flange = [Vector((v.x, v.y, z)) for v, z in zip(out, z_out)]
         top_in = [Vector((v.x, v.y, max(z_out[i], deck_z(v.x, v.y)) + lip_h)) for i, v in enumerate(inner)]
         top_mid = [a.lerp(b, 0.25) + Vector((0, 0, lip_h * 0.9)) for a, b in zip(flange, top_in)]
-        coaming = C["lip"] if is_cockpit else C["deck_dark"]
+        coaming = C["coaming"] if is_cockpit else C["deck_dark"]
         parts.loft([flange, top_mid, top_in], coaming)
         # Inside: the rim's inner wall and the tub, down to a floor
         floor_z = station(p, cy / (p["length"] / 2))[1] + 0.07 if is_cockpit else max(z_out) - 0.09
@@ -339,7 +348,7 @@ def build_kayak(name, lod, p, col):
         else:
             parts.loft([top_in, under, tub_mid, tub_floor], C["tub"], cap_end=True)
 
-    if detail and p["solid_well"]:
+    if detail and p["solid_well"] and p["cargo_panel"]:
         # The cargo well as a SOLID panel on the rear deck (no opening: nothing of the water can show through)
         cx, cy, rx, ry = well
         n = n_ell
@@ -357,17 +366,21 @@ def build_kayak(name, lod, p, col):
     if detail:
         # The seat: a padded pan and a backrest of three padded ribs (the reference's black seat)
         pan_c = Vector((0.0, HIPS.y - 0.02, max(-0.035, station(p, HIPS.y / (p["length"] / 2))[1] + 0.1)))
-        parts.box(pan_c, (0.36, 0.40, 0.07), C["seat"], taper=0.93)
+        parts.box(pan_c, (0.38, 0.42, 0.09) if p["chunky_seat"] else (0.36, 0.40, 0.07), C["seat"], taper=0.9 if p["chunky_seat"] else 0.93)
         if detail == 2 and not p["simple"]:
             parts.box(pan_c + Vector((0, -0.02, 0.045)), (0.31, 0.31, 0.025), C["seat_pad"], taper=0.92)
         back = Matrix.Rotation(math.radians(-16), 3, "X")
         base = Vector((0.0, HIPS.y + 0.2, pan_c.z + 0.035))
-        ribs = 3 if detail == 2 and not p["simple"] else 1
-        for k in range(ribs):
-            h = 0.3 / ribs
-            c = base + back @ Vector((0, 0, h * (k + 0.5)))
-            parts.box(c, (0.34 - 0.03 * k, 0.06, h * 0.86), C["seat_pad"] if k % 2 == 0 else C["seat"], rot=back, taper=0.94)
-        parts.box(base + back @ Vector((0, 0.04, 0.15)), (0.3, 0.025, 0.3), C["seat"], rot=back)
+        if p["chunky_seat"]:
+            # the reference's seat: a thick backrest, narrower at the top, and a thicker pan
+            parts.box(base + back @ Vector((0, 0.02, 0.17)), (0.36, 0.09, 0.32), C["seat"], rot=back, taper=0.82)
+        else:
+            ribs = 3 if detail == 2 and not p["simple"] else 1
+            for k in range(ribs):
+                h = 0.3 / ribs
+                c = base + back @ Vector((0, 0, h * (k + 0.5)))
+                parts.box(c, (0.34 - 0.03 * k, 0.06, h * 0.86), C["seat_pad"] if k % 2 == 0 else C["seat"], rot=back, taper=0.94)
+            parts.box(base + back @ Vector((0, 0.04, 0.15)), (0.3, 0.025, 0.3), C["seat"], rot=back)
 
     if detail == 2 and not p["simple"]:
         # Front hatch: a round lid with a rim and a centre boss, sitting on the front deck
@@ -388,6 +401,11 @@ def build_kayak(name, lod, p, col):
             parts.tube(pts, 0.009, C["cord"])
 
         def fitting(x, y):
+            if p["round_fittings"]:
+                base_ = [on_deck(v.x, v.y, -0.003) for v in ellipse(x, y, p["fit_r"], p["fit_r"], 6)]
+                top_ = [on_deck(v.x, v.y, 0.016) for v in ellipse(x, y, p["fit_r"] * 0.8, p["fit_r"] * 0.8, 6)]
+                parts.loft([base_, top_], C["fit"], cap_end=True)
+                return
             c = on_deck(x, y, 0.008)
             parts.box(c, (0.04, 0.03, 0.018), C["lip"], taper=0.7)
 
@@ -398,7 +416,12 @@ def build_kayak(name, lod, p, col):
         fore = [deck_pt(f, s) for f, s in ((0.64, -0.28), (-0.64, -0.28), (0.55, -0.58), (-0.55, -0.58))]
         for a, b in ((fore[0], fore[3]), (fore[1], fore[2])) + (() if p["simple"] else ((fore[0], fore[1]), (fore[2], fore[3]))):
             cord(a, b)
-        if not p["simple"]:
+        if p["bow_triangle"]:
+            apex_ = deck_pt(0.0, -0.8)
+            for v in fore[2:]:
+                cord(v, apex_)
+            fitting(apex_.x, apex_.y)
+        if not p["simple"] or p["round_fittings"]:
             for v in fore:
                 fitting(v.x, v.y)
         # The cargo net: a perimeter around the well and a cross over it, to hold a parcel (or a second rider's bag)
@@ -406,9 +429,15 @@ def build_kayak(name, lod, p, col):
         net = [deck_pt(f, (wy + d) / (p["length"] / 2)) for f, d in ((0.7, -wl - 0.06), (-0.7, -wl - 0.06), (0.62, wl + 0.08), (-0.62, wl + 0.08))]
         for a, b in ((net[0], net[3]), (net[1], net[2])) + (() if p["simple"] else ((net[0], net[2]), (net[1], net[3]), (net[2], net[3]))):
             cord(a, b)
-        if not p["simple"]:
+        if not p["simple"] or p["round_fittings"]:
             for v in net:
                 fitting(v.x, v.y)
+        if p["arch_handles"]:
+            for end in (-1, 1):  # the reference's arched carry handles at both tips
+                y = end * (p["length"] / 2 - 0.16)
+                c = on_deck(0, y, 0.0)
+                arc = [c + Vector((math.cos(a) * 0.05, 0, math.sin(a) * 0.05)) for a in (math.pi * k / 6 for k in range(7))]
+                parts.tube(arc, 0.015, C["fit"], sides=4)
     if detail == 2 and not p["simple"]:
         # Behind the cockpit, a short strap for the paddle
         strap = [deck_pt(f, (p["cockpit_y"] + p["cockpit_l"] / 2 + 0.12) / (p["length"] / 2)) for f in (0.55, -0.55)]
@@ -518,6 +547,15 @@ def main():
         "lift": f("lift", 0.0),
         "simple": int(args.get("simple", 0)),
         "solid_well": int(args.get("solid_well", 0)),
+        "cargo_panel": int(args.get("cargo_panel", 1)),
+        "facets": int(args.get("facets", 0)),
+        "coaming_h": f("coaming_h", 0.035),
+        "coaming_w": f("coaming_w", 1.14),
+        "chunky_seat": int(args.get("chunky_seat", 0)),
+        "round_fittings": int(args.get("round_fittings", 0)),
+        "fit_r": f("fit_r", 0.026),
+        "bow_triangle": int(args.get("bow_triangle", 0)),
+        "arch_handles": int(args.get("arch_handles", 0)),
         "exact_cut": int(args.get("exact_cut", 0)),
         "solver": args.get("solver", "FLOAT"),
         "floor": f("floor", 0.09),
@@ -535,7 +573,7 @@ def main():
         "wrap": f("wrap", 0.35),
         "colours": {
             "deck": args.get("deck", "#EE7424"), "deck_dark": "#C95E1C", "side": "#DD6620", "hull": "#2B2B2E", "lip": "#1F1F22",
-            "tub": "#38383B", "seat": "#26272A", "seat_pad": "#3A3C40", "cord": "#18181A", "hatch": "#2E2E31",
+            "tub": "#38383B", "seat": "#26272A", "seat_pad": "#3A3C40", "cord": "#18181A", "hatch": "#2E2E31", "coaming": "#1F1F22", "fit": "#1F1F22",
         },
     }
     for k in p["colours"]:  # any colour can be overridden: --c_deck "#D9773A"
