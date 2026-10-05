@@ -8,6 +8,7 @@ Shared helpers for every CampanhaRio asset script (run inside Blender: blender.e
     so the preview sheet and the game agree. Only the received sun shadow comes from EEVEE.
   - Vertex colours, gradients, naming rules, LOD helpers (decimate, merge, normals), versioning.
 """
+import copy
 import json
 import math
 import os
@@ -480,3 +481,31 @@ def save_new_version(family, asset, version=None):
         raise RuntimeError(f"{paths['blend']} already exists: versions are never overwritten (use the next number).")
     bpy.ops.wm.save_as_mainfile(filepath=paths["blend"], compress=True)
     return version, paths
+
+
+# ---------------------------------------------------------------- times of day
+# A copy of the DayCycle keys (Assets/_Project/Scripts/Rendering/DayCycle.cs DefaultKeys): keep them in sync
+# until the keys move into lookdev_rig.json. "afternoon" is the rig itself.
+TIMES = {
+    "afternoon": None,  # the rig itself
+    "golden": dict(elevation=17, azimuth=-52, color="#FFC985", intensity=1.1, sky="#A7B2D6", equator="#CBAE8E", ground="#6B5444",
+                   strength=0.5, tint="#6A5E9E", tintStrength=0.42, top="#6E9BD0", horizon="#F3D3A4"),
+    "sunset": dict(elevation=4, azimuth=-62, color="#FF965A", intensity=0.85, sky="#8E8DB8", equator="#C98F78", ground="#4F3E3E",
+                   strength=0.48, tint="#6A4E8E", tintStrength=0.5, top="#4D6AA8", horizon="#F59A6B"),
+    "dusk": dict(elevation=-3, azimuth=-68, color="#C77B8F", intensity=0.22, sky="#4F5788", equator="#6E5872", ground="#2E2A3A",
+                 strength=0.5, tint="#3B3A6A", tintStrength=0.55, top="#26305E", horizon="#8E6684"),
+}
+
+
+def rig_at(time):
+    rig = load_rig()
+    k = TIMES[time]
+    if not k:
+        return rig
+    rig = copy.deepcopy(rig)
+    rig["sun"].update(elevationDeg=max(k["elevation"], 0.5), azimuthDeg=k["azimuth"], color=k["color"], intensity=k["intensity"])
+    rig["ambient"].update(sky=k["sky"], equator=k["equator"], ground=k["ground"], strength=k["strength"])
+    rig["shadowTint"], rig["shadowTintStrength"] = k["tint"], k["tintStrength"]
+    rig["background"].update(top=k["top"], horizon=k["horizon"])
+    return rig
+

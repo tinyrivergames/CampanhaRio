@@ -1,8 +1,8 @@
 """
 The preview sheet for an asset version (one PNG the developer reviews):
 
-    row 1:  FRENTE | LADO | TRAS | 3/4                  (the same 4 angles the Unity LookDev capture renders)
-    row 2:  CLOSE  | SILHUETA | ESCALA (0,9 m animal) | LODs side by side
+    row 1:  FRENTE | LADO | TRAS | 3/4 | CLOSE       (the 4 angles are the ones the Unity LookDev capture renders)
+    row 2:  SILHUETA | ESCALA (0,9 m animal) | LODs side by side | HORA DOURADA | POR DO SOL (3/4, relit)
     header: asset, version, triangles per LOD (and collider), size in meters, date
 
 Rendered with EEVEE under the standard lookdev rig, then composed with numpy (no extra installs). The text is rendered
@@ -104,7 +104,29 @@ def render_tiles(name, parts, rig, tmp):
     tiles.append((render_tile(os.path.join(tmp, "lods.exr")), f"LODs: {counts} tris", "sky", camcfg["pitchDeg"]))
     for o, loc in zip(lods, saved):
         o.location = loc
+    bpy.context.view_layer.update()
+
+    # The same 3/4 view at golden hour and at sunset (the descents happen then): every SoftToon material is relit
+    show_only([lod0])
+    for time, label in (("golden", "HORA DOURADA"), ("sunset", "POR DO SOL")):
+        relight(common.rig_at(time))
+        lookdev.frame(cam, [lod0], rig["views"][3]["yawDeg"], camcfg["pitchDeg"], camcfg["fovDeg"], camcfg["margin"])
+        tiles.append((render_tile(os.path.join(tmp, f"{time}.exr")), label, "sky", camcfg["pitchDeg"], time))
+    relight(rig)
     return tiles
+
+
+def relight(rig):
+    """Rebuilds every SoftToon preview material and the sun for another light (a time of day)."""
+    import json
+    for mat in bpy.data.materials:
+        if "cr_softtoon" in mat:
+            p = json.loads(mat["cr_softtoon"])
+            preset = p.pop("preset", "Default")
+            common.soft_toon_material(mat.name, rig, preset=preset, **p)
+    sun = bpy.data.objects.get("LookDev_Sun")
+    if sun:
+        sun.rotation_euler = common.sun_direction_blender(rig).to_track_quat("Z", "Y").to_euler()
 
 
 # ---------------------------------------------------------------- composing
@@ -169,14 +191,14 @@ def over_sky(rgba, rig, pitch):
 
 def compose(tiles, header_lines, rig, out_path, tmp):
     t = rig["tileSize"]
-    cols, rows = 4, 2
+    cols, rows = 5, 2
     W = cols * t + (cols + 1) * MARGIN
     H = HEADER + rows * t + (rows + 1) * MARGIN
     sheet = np.ones((H, W, 3), dtype=np.float32) * np.array(common.hex_srgb("#ECE7DD"), dtype=np.float32)
     sheet[:HEADER] = np.array(common.hex_srgb("#2B2F36"), dtype=np.float32)
 
     labels = []
-    for i, (path, label, kind, pitch) in enumerate(tiles):
+    for i, (path, label, kind, pitch, *time) in enumerate(tiles):
         r, c = divmod(i, cols)
         x = MARGIN + c * (t + MARGIN)
         y = HEADER + MARGIN + r * (t + MARGIN)
@@ -185,7 +207,7 @@ def compose(tiles, header_lines, rig, out_path, tmp):
         if kind == "silhouette":
             tile = np.ones((t, t, 3), dtype=np.float32) * (1.0 - alpha) + np.array([0.11, 0.12, 0.14], dtype=np.float32) * alpha
         else:
-            tile = over_sky(rgba, rig, pitch)
+            tile = over_sky(rgba, common.rig_at(time[0]) if time else rig, pitch)
         tile[:LABEL_BAND] = tile[:LABEL_BAND] * 0.55  # a darker band for the label
         sheet[y:y + t, x:x + t] = tile
         labels.append((x + 14, y + 31, label, 24))

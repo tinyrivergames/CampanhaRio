@@ -40,7 +40,7 @@ Shader "CampanhaRio/SoftToon"
         [Toggle(_ALPHATEST_ON)] _AlphaClip ("Alpha Clip", Float) = 0
         _Cutoff ("Alpha Cutoff", Range(0, 1)) = 0.5
         _Translucency ("Translucency (backlight)", Range(0, 1)) = 0
-        [Toggle(_WIND)] _Wind ("Wind Sway (vertex colour R = weight)", Float) = 0
+        [Toggle(_WIND)] _Wind ("Wind Sway (vertex colour alpha = weight)", Float) = 0
         _WindStrength ("Wind Strength (m)", Range(0, 0.5)) = 0.08
         _WindSpeed ("Wind Speed", Range(0, 4)) = 1.2
 
@@ -65,13 +65,13 @@ Shader "CampanhaRio/SoftToon"
             half _TopTintAmount, _TopTintSharpness, _Cutoff, _Translucency, _WindStrength, _WindSpeed, _Preset, _Cull;
         CBUFFER_END
 
-        // Gentle sway: weight from vertex colour R (0 at the trunk, 1 at the tips), phase from the world position
+        // Gentle sway: weight from the vertex colour ALPHA (0 at the trunk, 1 at the tips; RGB is the colour), phase from the world position
         float3 ApplyWind(float3 positionOS, half4 color)
         {
             #if defined(_WIND)
                 float3 world = TransformObjectToWorld(positionOS);
                 float phase = _Time.y * _WindSpeed + dot(world.xz, float2(0.35, 0.21));
-                float3 sway = float3(sin(phase), 0, cos(phase * 0.8)) * _WindStrength * color.r;
+                float3 sway = float3(sin(phase), 0, cos(phase * 0.8)) * _WindStrength * color.a;
                 positionOS += TransformWorldToObjectDir(sway, false);
             #endif
             return positionOS;
