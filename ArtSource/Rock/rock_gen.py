@@ -108,12 +108,14 @@ def build_rock(name, lod, p, col):
     attr = mesh.color_attributes.new("Col", "BYTE_COLOR", "CORNER")
     mesh.color_attributes.active_color = attr
     hues, kinds = {}, {}
+    faces = set()  # the big planes (the rest are bevel strips and corners)
     for poly in mesh.polygons:
         h, pick, mix = rnd.uniform(-1, 1), rnd.random(), rnd.random()
         a, b = rnd.sample(stones, 2)
         if poly.area > big * 0.15:  # each big face: its own tone and stone
             stone = a.lerp(b, mix * p["variety"])
             hues[poly.index], kinds[poly.index] = h * p["tone"], stone
+            faces.add(poly.index)
     # Bevel strips and corners take the average of their big neighbours, so edges never show as light stripes
     by_edge = {}
     for poly in mesh.polygons:
@@ -135,7 +137,7 @@ def build_rock(name, lod, p, col):
             co = mesh.vertices[mesh.loops[li].vertex_index].co
             t = co.z / max(height, 1e-3)
             c = shadow.lerp(stone, min(1.0, t * 2.2)).lerp(top, max(0.0, (t - 0.45) * 1.4) * 0.45)
-            c = mul(c, tone) * (1.0 + 0.16 * p["variety"] * noise.noise(co * 0.9 + seed_v))  # big soft patches
+            c = mul(c, tone) * (1.0 + p["patches"] * p["variety"] * noise.noise(co * 0.9 + seed_v))  # big soft patches
             # Rust stains (warmth): soft ochre/orange patches flowing across faces, the old warm colour as an accent
             stain = max(0.0, min(1.0, noise.noise(co * 1.6 + seed_v * 3.0) * 3.5 - 1.0))
             c = c.lerp(mul(ochre.lerp(orange, stain), tone), p["warmth"] * stain)
@@ -143,6 +145,8 @@ def build_rock(name, lod, p, col):
             patch = max(0.0, min(1.0, noise.noise(co * 1.7 + seed_v * 2.0) * 2.2 + p["moss_cover"]))
             m = p["moss"] * patch * max(0.0, min(1.0, (up - p["moss_up"]) / 0.35))
             c = c.lerp(moss_dark.lerp(moss_light, patch), m)
+            if poly.index not in faces:  # worn, lighter edges: they draw the shape of each plane (less "clay")
+                c = c.lerp(top * 1.12, p["edge_light"])
             attr.data[li].color_srgb = (min(c.x, 1), min(c.y, 1), min(c.z, 1), 1.0)
     return obj
 
@@ -153,7 +157,7 @@ def build(asset, p):
     col = common.collection(asset)
     parts = {k: build_rock(f"{asset}_{k}", k, p, col) for k in ("LOD0", "LOD1", "LOD2", "COL")}
     mat = common.soft_toon_material("M_" + asset, rig, preset="Rock", _BaseColor="#FFFFFF", _UseVertexColor=1.0,
-                                    _TopTintAmount=0.0)  # the moss is in the vertex colours (patches)
+                                    _TopTintAmount=0.0, _RampSoftness=p["ramp"], _Wrap=p["wrap"])  # the moss is in the vertex colours (patches)
     for k, o in parts.items():
         o.data.materials.append(mat)
     parts["COL"].hide_render = True
@@ -201,6 +205,10 @@ def main():
         "jitter": float(args.get("jitter", 0.18)),
         "bevel": float(args.get("bevel", 0.05)),
         "inflate": float(args.get("inflate", 0.3)),
+        "patches": float(args.get("patches", 0.16)),
+        "edge_light": float(args.get("edge_light", 0.0)),
+        "ramp": float(args.get("ramp", 0.32)),
+        "wrap": float(args.get("wrap", 0.4)),
         "flat": float(args.get("flat", 0.75)),
         "edge_angle": float(args.get("edge_angle", 0.0)),
         "tone": float(args.get("tone", 0.8)),
