@@ -32548,9 +32548,9 @@ MonoBehaviour:
   pivotHeight: 0.75
   pivotLead: 0.6
   shoulderOffset: 0.35
-  distance: 3.2
+  distance: 4.6
   distanceRange: {x: 2.5, y: 5.5}
-  pitch: 11
+  pitch: 16
   pitchRange: {x: -8, y: 40}
   aimHeight: 0.3
   baseFov: 62

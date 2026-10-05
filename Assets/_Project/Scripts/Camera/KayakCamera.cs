@@ -39,10 +39,10 @@ namespace CampanhaRio.CameraSystem
         public float pivotLead = 0.6f;
         [Tooltip("Over-the-shoulder offset to the camera's right (m), so the paddler doesn't hide the line ahead.")]
         public float shoulderOffset = 0.35f;
-        public float distance = 3.2f;
+        public float distance = 4.6f; // a wider view of what happens around (parcels in the water, the other boats)
         public Vector2 distanceRange = new Vector2(2.5f, 5.5f);
         [Tooltip("Default pitch (degrees, + = looking down).")]
-        public float pitch = 11f;
+        public float pitch = 16f;
         public Vector2 pitchRange = new Vector2(-8f, 40f);
         [Tooltip("The camera aims this far above the pivot (m). Negative puts the paddler lower in the frame.")]
         public float aimHeight = 0.3f;

@@ -1,0 +1,55 @@
+{
+    "asset": "CaiaqueA",
+    "family": "Kayak",
+    "source": "ArtSource/Kayak/CaiaqueA/CaiaqueA_v002.blend",
+    "material": {
+        "_BaseColor": "#FFFFFF",
+        "_Wrap": 0.35,
+        "_RampCenter": 0.45,
+        "_RampSoftness": 0.16,
+        "_ReceiveShadows": 0.85,
+        "_RimStrength": 0.16,
+        "_RimPower": 3.5,
+        "_UseVertexColor": 1.0,
+        "_GradientBottom": "#FFFFFF",
+        "_GradientTop": "#FFFFFF",
+        "_GradientHeights": [
+            0.0,
+            1.0
+        ],
+        "_TopTint": "#FFFFFF",
+        "_TopTintAmount": 0.0,
+        "_TopTintSharpness": 0.35,
+        "_Translucency": 0.0,
+        "preset": "Default"
+    },
+    "materialList": [
+        {
+            "name": "M_CaiaqueA",
+            "_BaseColor": "#FFFFFF",
+            "_Wrap": 0.35,
+            "_RampCenter": 0.45,
+            "_RampSoftness": 0.16,
+            "_ReceiveShadows": 0.85,
+            "_RimStrength": 0.16,
+            "_RimPower": 3.5,
+            "_UseVertexColor": 1.0,
+            "_GradientBottom": "#FFFFFF",
+            "_GradientTop": "#FFFFFF",
+            "_GradientHeights": [
+                0.0,
+                1.0
+            ],
+            "_TopTint": "#FFFFFF",
+            "_TopTintAmount": 0.0,
+            "_TopTintSharpness": 0.35,
+            "_Translucency": 0.0,
+            "preset": "Default"
+        }
+    ],
+    "triangles": {
+        "LOD0": 1596,
+        "LOD1": 612,
+        "LOD2": 112
+    }
+}

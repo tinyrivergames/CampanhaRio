@@ -70,8 +70,20 @@ namespace CampanhaRio.Editor
             root.AddComponent<KayakAutopilot>(); // idle (Off) until F2 or a test turns it on
         }
 
+        const string HullModelPath = "Assets/_Project/Art/Models/Kayak/CaiaqueA.fbx";
+
         static void BuildHull(Transform visual)
         {
+            // The approved art kayak when it exists (its origin and size match the capsule; the physics keep the capsule)
+            var model = AssetDatabase.LoadAssetAtPath<GameObject>(HullModelPath);
+            if (model)
+            {
+                var art = (GameObject)PrefabUtility.InstantiatePrefab(model, visual);
+                art.name = "Hull";
+                art.transform.localPosition = Vector3.zero;
+                art.transform.localRotation = Quaternion.identity;
+                return;
+            }
             var hull = Primitive(PrimitiveType.Capsule, "Hull", visual, new Vector3(0f, 0.02f, 0f), new Vector3(0.68f, 1.62f, 0.34f),
                 GrayboxMaterials.Get("Hull", new Color(0.85f, 0.32f, 0.22f)));
             hull.localRotation = Quaternion.Euler(90f, 0f, 0f);

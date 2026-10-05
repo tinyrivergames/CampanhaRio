@@ -65,5 +65,5 @@
 - Gerado com: `--seed 7 --size 2.7 --depth 0.8 --height 0.74 --points 22 --merge 18.0 --jitter 0.22 --bevel 0.016 --inflate 0.05 --patches 0.08 --edge_light 0.22 --ramp 0.14 --wrap 0.3 --flat 1.0 --edge_angle 24.0 --tone 0.8 --moss 0.8 --variety 0.6 --warmth 0.4 --moss_cover -0.15 --moss_up 0.5`
 - Triângulos: LOD0 346, LOD1 152, LOD2 18, COL 20
 - Prévia: `RochaA_v008_preview.png`
-- **Feedback do desenvolvedor (literal):** _(aguardando)_
+- **Feedback do desenvolvedor (literal):** "acho que ficou legal, seguimos. ok" → **APROVADA** (matacão-mestre da família Rock)
 - **O que mudou:** Igual à v007, com a aresta clara mais fina (chanfro 0,028 para 0,016).
