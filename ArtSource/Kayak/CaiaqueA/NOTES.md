@@ -29,5 +29,15 @@
 - Gerado com: `--length 3.3 --width 0.68 --widest 0.06 --rocker 0.11 --sheer_rise 0.07 --end_rise 0.13 --lift 0.08 --simple 1 --stations 12 --cockpit_y 0.1 --cockpit_l 0.86 --cockpit_w 0.44 --well_y 0.98 --well_l 0.52 --well_w 0.36 --hatch_y -1.17 --flat 0.75 --tone 0.04 --ramp 0.16 --wrap 0.35`
 - Triângulos: LOD0 972, LOD1 584, LOD2 112
 - Prévia: `CaiaqueA_v003_preview.png`
-- **Feedback do desenvolvedor (literal):** _(aguardando)_
+- **Feedback do desenvolvedor (literal):** "caiaque ainda ta com uma especie de "furo" na parte de tras dele, onde fica aparecendo a textura da agua. o resto foi corrigido. Arruma isso porfavor."
 - **O que mudou:** Mais simples, para mesclar com o pinheiro e a pedra: menos facetas (12 estações), sem presilhas, tampa, alças e tira do remo; só o X de cabos na frente e a rede cruzada na carga; assento em bloco; laranja mais terroso e grafite quente no lugar do preto. Fundo do cockpit e assento não atravessam mais o casco.
+
+
+
+
+### v004
+- Gerado com: `--length 3.3 --width 0.68 --widest 0.06 --rocker 0.11 --sheer_rise 0.07 --end_rise 0.13 --lift 0.08 --simple 1 --stations 12 --cockpit_y 0.1 --cockpit_l 0.86 --cockpit_w 0.44 --well_y 0.98 --well_l 0.52 --well_w 0.36 --hatch_y -1.17 --flat 0.75 --tone 0.04 --ramp 0.16 --wrap 0.35`
+- Triângulos: LOD0 1296, LOD1 828, LOD2 112
+- Prévia: `CaiaqueA_v004_preview.png`
+- **Feedback do desenvolvedor (literal):** _(aguardando)_
+- **O que mudou:** Corrige o 'furo' atrás: o casco ganhou um forro interno escuro (qualquer abertura mostra o interior do barco, nunca a água), a borda cobre melhor o recorte do deck e a máscara da água cobre a borda inteira em todos os LODs. Visual igual à v003.

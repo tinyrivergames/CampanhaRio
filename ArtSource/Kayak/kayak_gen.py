@@ -166,6 +166,22 @@ class Parts:
         self.loft(loops, colour, cap_start=True, cap_end=True)
 
 
+def hole_reach(segments, centre, direction):
+    """How far from centre, along direction, the hole outline reaches (2D)."""
+    best = 0.0
+    for a, b in segments:
+        e = b - a
+        den = direction.x * e.y - direction.y * e.x
+        if abs(den) < 1e-9:
+            continue
+        w = a - centre
+        t = (w.x * e.y - w.y * e.x) / den      # along the ray
+        u = (w.x * direction.y - w.y * direction.x) / den  # along the segment
+        if t > 0 and 0 <= u <= 1:
+            best = max(best, t)
+    return best
+
+
 def build_kayak(name, lod, p, col):
     detail = {"LOD0": 2, "LOD1": 1, "LOD2": 0}[lod]
     stations = {2: p["stations"], 1: max(9, p["stations"] * 3 // 5), 0: 7}[detail]
@@ -195,6 +211,7 @@ def build_kayak(name, lod, p, col):
     ck = (0.0, p["cockpit_y"], p["cockpit_w"] / 2, p["cockpit_l"] / 2)
     well = (0.0, p["well_y"], p["well_w"] / 2, p["well_l"] / 2)
     openings = [ck, well] if detail else []
+    holes = []
     n_ell = {2: 20, 1: 14, 0: 10}[detail]
     for cx, cy, rx, ry in openings:
         rim = ellipse(cx, cy, rx, ry, n_ell)
@@ -202,15 +219,38 @@ def build_kayak(name, lod, p, col):
         # cut: delete the hull faces whose centre is inside the ellipse and above the sheer (the deck faces)
         kill = [f for f in bm.faces if f in bands and bands[f] == "deck"
                 and ((f.calc_center_median().x - cx) / (rx * 1.02)) ** 2 + ((f.calc_center_median().y - cy) / (ry * 1.02)) ** 2 < 1.0]
+        kill_edges = {e for f in kill for e in f.edges}
         for f in kill:
             colours.pop(f, None)
         bmesh.ops.delete(bm, geom=kill, context="FACES_ONLY")
+        # the hole's real outline (2D segments): the coaming flange must cover all of it, or the inside shows through
+        holes.append([(e.verts[0].co.xy.copy(), e.verts[1].co.xy.copy()) for e in kill_edges if e.is_valid and e.is_boundary])
 
+    if openings:
+        # A dark liner inside the hull (its faces copied, turned inward): whatever shows through an opening is the boat's
+        # dark inside, never the water or the ground under it
+        hull_faces = [f for f in bands if f.is_valid]
+        dup = bmesh.ops.duplicate(bm, geom=hull_faces)
+        new_faces = [g for g in dup["geom"] if isinstance(g, bmesh.types.BMFace)]
+        bmesh.ops.reverse_faces(bm, faces=new_faces)
+        new_verts = [g for g in dup["geom"] if isinstance(g, bmesh.types.BMVert)]
+        mid = (station(p, 0)[1] + station(p, 0)[3]) / 2
+        for v in new_verts:  # shrunk a little toward the hull's axis (a normal offset would poke out at the tips)
+            v.co = Vector((v.co.x * 0.96, v.co.y * 0.985, mid + (v.co.z - mid) * 0.95))
+        for f in new_faces:
+            colours[f] = C["tub"] * 0.7
     parts = Parts(bm, colours)
     for idx, (cx, cy, rx, ry) in enumerate(openings):
         is_cockpit = idx == 0
         # The hole left by the deleted faces is a jagged quad outline: a wide coaming flange covers it
         out = ellipse(cx, cy, rx * 1.28 + 0.03, ry * 1.12 + 0.03, n_ell)
+        centre = Vector((cx, cy))
+        for i, v in enumerate(out):  # push the flange out wherever the hole reaches further (no gap between them)
+            d = (v.xy - centre)
+            reach = hole_reach(holes[idx], centre, d.normalized())
+            if reach + 0.03 > d.length:  # (a little only: the dark liner below takes care of the rest)
+                out[i] = Vector((*(centre + d.normalized() * min(reach + 0.03, d.length + 0.05)), 0.0))
+        p["_masks"].append([cx, cy, max(((v.x - cx) / rx) ** 2 + ((v.y - cy) / ry) ** 2 for v in out) ** 0.5])
         inner = ellipse(cx, cy, rx, ry, n_ell)
         z_out = [deck_z(v.x, v.y) + 0.006 for v in out]
         lip_h = 0.035 if is_cockpit else 0.018
@@ -369,7 +409,7 @@ def write_notes(asset, version, parts, args, paths, changes):
     tris = ", ".join(f"{k} {common.triangle_count(o)}" for k, o in parts.items())
     with open(notes, "a", encoding="utf-8", newline="\n") as f:
         f.write(f"\n### v{version:03d}\n"
-                f"- Gerado com: `{' '.join(f'--{k} {v}' for k, v in args.items() if k != 'colours')}`\n"
+                f"- Gerado com: `{' '.join(f'--{k} {v}' for k, v in args.items() if k not in ('colours', '_masks'))}`\n"
                 f"- Triângulos: {tris}\n"
                 f"- Prévia: `{os.path.basename(paths['preview'])}`\n"
                 "- **Feedback do desenvolvedor (literal):** _(aguardando)_\n"
@@ -408,11 +448,14 @@ def main():
     }
     for k in p["colours"]:  # any colour can be overridden: --c_deck "#D9773A"
         p["colours"][k] = args.get("c_" + k, p["colours"][k])
+    p["_masks"] = []
     parts = build(asset, p)
     # The openings the game masks from the river water (cockpit, cargo well): centre and radii, Blender space
-    deck = station(p, p["cockpit_y"] / (p["length"] / 2))[3]
-    bpy.context.scene["cr_water_masks"] = [[0.0, p["cockpit_y"], p["cockpit_w"] / 2 * 1.28 + 0.03, p["cockpit_l"] / 2 * 1.12 + 0.03, deck + 0.02],
-                                          [0.0, p["well_y"], p["well_w"] / 2 * 1.28 + 0.03, p["well_l"] / 2 * 1.12 + 0.03, station(p, p["well_y"] / (p["length"] / 2))[3] + 0.01]]
+    deck = lambda y: station(p, y / (p["length"] / 2))[3]  # noqa: E731
+    sizes = [(p["cockpit_w"] / 2, p["cockpit_l"] / 2, 0.03), (p["well_w"] / 2, p["well_l"] / 2, 0.02)]
+    bpy.context.scene["cr_water_masks"] = [[cx, cy, rx * k * 1.03, ry * k * 1.03, deck(cy) + lift]
+                                          for (cx, cy, k), (rx, ry, lift) in zip(
+                                              [[*p["_masks"][i][:2], max(m[2] for m in p["_masks"][i::2])] for i in range(2)], sizes)]
     tris = {k: common.triangle_count(o) for k, o in parts.items()}
     print(f"[kayak] tris {tris}")
     if "draft" in args:
