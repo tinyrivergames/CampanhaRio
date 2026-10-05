@@ -43,5 +43,5 @@
 - Gerado com: `--seed 7 --size 2.7 --depth 0.8 --height 0.74 --points 16 --merge 22.0 --jitter 0.18 --bevel 0.035 --inflate 0.3 --flat 0.75 --edge_angle 24.0 --tone 0.8 --moss 0.8 --variety 0.6 --warmth 0.4 --moss_cover -0.15 --moss_up 0.5`
 - Triângulos: LOD0 234, LOD1 100, LOD2 16, COL 20
 - Prévia: `RochaA_v005_preview.png`
-- **Feedback do desenvolvedor (literal):** _(aguardando)_
+- **Feedback do desenvolvedor (literal):** "parece bom, coloca tambem no jogo de forma bem distribuida para eu ver la dentro. Depois do meu ok nos seguimos."
 - **O que mudou:** Cor de pedra de rio de floresta: base cinza-quente (cada face sorteia cinza, cinza-claro, cinza-frio ou bege), topo cinza-claro, base cinza-escuro; o laranja antigo virou só manchas de ferrugem suaves (warmth 0.4). Forma e musgo iguais à v004.

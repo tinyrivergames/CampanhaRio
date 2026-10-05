@@ -1,0 +1,56 @@
+{
+    "asset": "RochaA",
+    "family": "Rock",
+    "source": "ArtSource/Rock/RochaA/RochaA_v005.blend",
+    "material": {
+        "_BaseColor": "#FFFFFF",
+        "_Wrap": 0.4,
+        "_RampCenter": 0.45,
+        "_RampSoftness": 0.32,
+        "_ReceiveShadows": 0.85,
+        "_RimStrength": 0.1,
+        "_RimPower": 3.5,
+        "_UseVertexColor": 1.0,
+        "_GradientBottom": "#FFFFFF",
+        "_GradientTop": "#FFFFFF",
+        "_GradientHeights": [
+            0.0,
+            1.0
+        ],
+        "_TopTint": "#FFFFFF",
+        "_TopTintAmount": 0.0,
+        "_TopTintSharpness": 0.35,
+        "_Translucency": 0.0,
+        "preset": "Rock"
+    },
+    "materialList": [
+        {
+            "name": "M_RochaA",
+            "_BaseColor": "#FFFFFF",
+            "_Wrap": 0.4,
+            "_RampCenter": 0.45,
+            "_RampSoftness": 0.32,
+            "_ReceiveShadows": 0.85,
+            "_RimStrength": 0.1,
+            "_RimPower": 3.5,
+            "_UseVertexColor": 1.0,
+            "_GradientBottom": "#FFFFFF",
+            "_GradientTop": "#FFFFFF",
+            "_GradientHeights": [
+                0.0,
+                1.0
+            ],
+            "_TopTint": "#FFFFFF",
+            "_TopTintAmount": 0.0,
+            "_TopTintSharpness": 0.35,
+            "_Translucency": 0.0,
+            "preset": "Rock"
+        }
+    ],
+    "triangles": {
+        "COL": 20,
+        "LOD0": 234,
+        "LOD1": 100,
+        "LOD2": 16
+    }
+}
