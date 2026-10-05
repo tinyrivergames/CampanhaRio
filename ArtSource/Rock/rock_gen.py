@@ -61,7 +61,8 @@ def build_rock(name, lod, p, col):
     bmesh.ops.dissolve_limit(bm, angle_limit=math.radians(p["merge"]), verts=bm.verts, edges=bm.edges)  # merge near-coplanar faces into big planes
     segments = {"LOD0": 2, "LOD1": 1, "LOD2": 0, "COL": 0}[lod]
     if segments:
-        bmesh.ops.bevel(bm, geom=list(bm.edges) + list(bm.verts), offset=p["bevel"] * p["size"] * (1.0 if lod == "LOD0" else 0.8),
+        sharp = [e for e in bm.edges if e.calc_face_angle(0.0) > math.radians(p["edge_angle"])]  # round only real edges: no creases inside flat planes
+        bmesh.ops.bevel(bm, geom=sharp + list({v for e in sharp for v in e.verts}), offset=p["bevel"] * p["size"] * (1.0 if lod == "LOD0" else 0.8),
                         offset_type="OFFSET", segments=segments, profile=0.5, affect="EDGES", clamp_overlap=True)
     # (no triangulation: each big plane stays one polygon, so it gets one tone; the FBX/Unity import triangulates)
     lo_z = min(v.co.z for v in bm.verts)
@@ -88,7 +89,7 @@ def build_rock(name, lod, p, col):
             vi = mesh.loops[li].vertex_index
             co = mesh.vertices[vi].co
             smooth = mesh.vertices[vi].normal
-            n = smooth.lerp(poly.normal, 0.75 * flatness)
+            n = smooth.lerp(poly.normal, p["flat"] * flatness)
             d = co - center
             ell = Vector((d.x / axes.x ** 2, d.y / axes.y ** 2, d.z / axes.z ** 2)).normalized()
             normals.append(n.normalized().lerp(ell, p["inflate"]).normalized())
@@ -99,16 +100,32 @@ def build_rock(name, lod, p, col):
     rnd = random.Random(p["seed"] * 31 + 5)
     base, sand, shadow = srgb(common.palette("rock_orange")), srgb(common.palette("rock_sand")), srgb(common.palette("rock_shadow"))
     red = srgb("#B5653F")
-    moss_dark, moss_light = srgb("#5E7A35"), srgb(common.palette("moss"))
+    moss_dark, moss_light = srgb("#3F5A2E"), srgb("#5C7A38")  # darker, toward the pine greens (v004)
     warm, cool = Vector((1.06, 1.02, 0.9)), Vector((0.92, 0.97, 1.06))
     seed_v = Vector((p["seed"] * 1.37, p["seed"] * 0.71, 3.3))
     attr = mesh.color_attributes.new("Col", "BYTE_COLOR", "CORNER")
     mesh.color_attributes.active_color = attr
+    hues, kinds = {}, {}
     for poly in mesh.polygons:
-        big_face = poly.area > big * 0.15
-        hue = rnd.uniform(-1, 1) * p["tone"] * (1.0 if big_face else 0.0)  # bevel strips stay neutral: no stripes
+        h, k = rnd.uniform(-1, 1), rnd.uniform(-1, 1)
+        if poly.area > big * 0.15:  # each big face: its own tone and stone (+ sandier, - redder)
+            hues[poly.index], kinds[poly.index] = h * p["tone"], k * p["variety"]
+    # Bevel strips and corners take the average of their big neighbours, so edges never show as light stripes
+    by_edge = {}
+    for poly in mesh.polygons:
+        for ek in poly.edge_keys:
+            by_edge.setdefault(ek, []).append(poly.index)
+    for _ in range(3):
+        for poly in mesh.polygons:
+            if poly.index in hues:
+                continue
+            nb = [n for ek in poly.edge_keys for n in by_edge[ek] if n != poly.index and n in hues]
+            if nb:
+                hues[poly.index] = sum(hues[n] for n in nb) / len(nb)
+                kinds[poly.index] = sum(kinds[n] for n in nb) / len(nb)
+    for poly in mesh.polygons:
+        hue, kind = hues.get(poly.index, 0.0), kinds.get(poly.index, 0.0)
         tone = Vector((1, 1, 1)).lerp(warm if hue > 0 else cool, abs(hue))
-        kind = rnd.uniform(-1, 1) * p["variety"] if big_face else 0.0  # + sandier stone, - redder stone
         stone = base.lerp(sand, kind) if kind > 0 else base.lerp(red, -kind)
         up = max(0.0, poly.normal.z)
         for li in poly.loop_indices:
@@ -117,8 +134,8 @@ def build_rock(name, lod, p, col):
             c = shadow.lerp(stone, min(1.0, t * 2.2)).lerp(sand, max(0.0, (t - 0.45) * 1.4) * 0.6)
             c = mul(c, tone) * (1.0 + 0.16 * p["variety"] * noise.noise(co * 0.9 + seed_v))  # big soft patches
             # Moss: patches (3D noise, so they flow across faces) only where the rock looks up
-            patch = max(0.0, min(1.0, noise.noise(co * 1.7 + seed_v * 2.0) * 1.8 + 0.35))
-            m = p["moss"] * patch * max(0.0, min(1.0, (up - 0.35) / 0.4))
+            patch = max(0.0, min(1.0, noise.noise(co * 1.7 + seed_v * 2.0) * 2.2 + p["moss_cover"]))
+            m = p["moss"] * patch * max(0.0, min(1.0, (up - p["moss_up"]) / 0.35))
             c = c.lerp(moss_dark.lerp(moss_light, patch), m)
             attr.data[li].color_srgb = (min(c.x, 1), min(c.y, 1), min(c.z, 1), 1.0)
     return obj
@@ -178,9 +195,13 @@ def main():
         "jitter": float(args.get("jitter", 0.18)),
         "bevel": float(args.get("bevel", 0.05)),
         "inflate": float(args.get("inflate", 0.3)),
+        "flat": float(args.get("flat", 0.75)),
+        "edge_angle": float(args.get("edge_angle", 0.0)),
         "tone": float(args.get("tone", 0.8)),
         "moss": float(args.get("moss", 0.8)),
         "variety": float(args.get("variety", 0.6)),
+        "moss_cover": float(args.get("moss_cover", 0.35)),
+        "moss_up": float(args.get("moss_up", 0.35)),
     }
     parts = build(asset, p)
     if "draft" in args:
