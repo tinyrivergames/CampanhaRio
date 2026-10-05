@@ -148,6 +148,8 @@ namespace CampanhaRio.Editor
             mat.SetFloat("_TopTintAmount", p._TopTintAmount);
             mat.SetFloat("_TopTintSharpness", p._TopTintSharpness);
             mat.SetFloat("_Translucency", p._Translucency);
+            mat.SetFloat("_StencilRef", p._StencilRef);
+            mat.SetFloat("_StencilWriteMask", p._StencilWriteMask);
 
             // A texture with alpha is clipped; a mesh without one never pays for alpha testing
             var tex = string.IsNullOrEmpty(p._BaseMap) ? null : AssetDatabase.LoadAssetAtPath<Texture2D>(p._BaseMap);
@@ -178,7 +180,7 @@ namespace CampanhaRio.Editor
         {
             public string name, preset, _BaseColor, _GradientBottom, _GradientTop, _TopTint, _BaseMap;
             public float _Wrap, _RampCenter, _RampSoftness, _ReceiveShadows, _RimStrength, _RimPower, _UseVertexColor;
-            public float _TopTintAmount, _TopTintSharpness, _Translucency;
+            public float _TopTintAmount, _TopTintSharpness, _Translucency, _StencilRef, _StencilWriteMask;
             public float[] _GradientHeights;
         }
     }

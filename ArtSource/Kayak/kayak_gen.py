@@ -220,7 +220,7 @@ def build_kayak(name, lod, p, col):
         coaming = C["lip"] if is_cockpit else C["deck_dark"]
         parts.loft([flange, top_mid, top_in], coaming)
         # Inside: the rim's inner wall and the tub, down to a floor
-        floor_z = -0.1 + p["lift"] * 0.5 if is_cockpit else max(z_out) - 0.09
+        floor_z = station(p, cy / (p["length"] / 2))[1] + 0.07 if is_cockpit else max(z_out) - 0.09
         under = [Vector((v.x, v.y, z - 0.03)) for v, z in zip(inner, (t.z for t in top_in))]
         tub_mid = [Vector((cx + (v.x - cx) * 0.92, cy + (v.y - cy) * 0.94, (floor_z + u.z) / 2)) for v, u in zip(inner, under)]
         tub_floor = [Vector((cx + (v.x - cx) * 0.78, cy + (v.y - cy) * 0.86, floor_z)) for v in inner]
@@ -228,20 +228,20 @@ def build_kayak(name, lod, p, col):
 
     if detail:
         # The seat: a padded pan and a backrest of three padded ribs (the reference's black seat)
-        pan_c = Vector((0.0, HIPS.y - 0.02, -0.035))
+        pan_c = Vector((0.0, HIPS.y - 0.02, max(-0.035, station(p, HIPS.y / (p["length"] / 2))[1] + 0.1)))
         parts.box(pan_c, (0.36, 0.40, 0.07), C["seat"], taper=0.93)
-        if detail == 2:
+        if detail == 2 and not p["simple"]:
             parts.box(pan_c + Vector((0, -0.02, 0.045)), (0.31, 0.31, 0.025), C["seat_pad"], taper=0.92)
         back = Matrix.Rotation(math.radians(-16), 3, "X")
-        base = Vector((0.0, HIPS.y + 0.2, 0.0))
-        ribs = 3 if detail == 2 else 1
+        base = Vector((0.0, HIPS.y + 0.2, pan_c.z + 0.035))
+        ribs = 3 if detail == 2 and not p["simple"] else 1
         for k in range(ribs):
             h = 0.3 / ribs
             c = base + back @ Vector((0, 0, h * (k + 0.5)))
             parts.box(c, (0.34 - 0.03 * k, 0.06, h * 0.86), C["seat_pad"] if k % 2 == 0 else C["seat"], rot=back, taper=0.94)
         parts.box(base + back @ Vector((0, 0.04, 0.15)), (0.3, 0.025, 0.3), C["seat"], rot=back)
 
-    if detail == 2:
+    if detail == 2 and not p["simple"]:
         # Front hatch: a round lid with a rim and a centre boss, sitting on the front deck
         hy = p["hatch_y"]
         hz = deck_z(0, hy)
@@ -250,6 +250,8 @@ def build_kayak(name, lod, p, col):
         lid = ellipse(0, hy, 0.083, 0.083, 14, hz + 0.03)
         parts.loft([[Vector((v.x, v.y, deck_z(v.x, v.y) - 0.005)) for v in rim], rim_top, lid], C["lip"], cap_end=False)
         parts.loft([lid, ellipse(0, hy, 0.03, 0.03, 14, hz + 0.038)], C["hatch"], cap_end=True)
+
+    if detail == 2:
 
         # Bungee cords (the reference's X over the front deck) and the cargo net over the well, on small fittings
         def cord(a, b, step=0.09):
@@ -266,17 +268,20 @@ def build_kayak(name, lod, p, col):
             return Vector((fx * w, s * p["length"] / 2, 0))
 
         fore = [deck_pt(f, s) for f, s in ((0.64, -0.28), (-0.64, -0.28), (0.55, -0.58), (-0.55, -0.58))]
-        for a, b in ((fore[0], fore[3]), (fore[1], fore[2]), (fore[0], fore[1]), (fore[2], fore[3])):
+        for a, b in ((fore[0], fore[3]), (fore[1], fore[2])) + (() if p["simple"] else ((fore[0], fore[1]), (fore[2], fore[3]))):
             cord(a, b)
-        for v in fore:
-            fitting(v.x, v.y)
+        if not p["simple"]:
+            for v in fore:
+                fitting(v.x, v.y)
         # The cargo net: a perimeter around the well and a cross over it, to hold a parcel (or a second rider's bag)
         wy, wl = p["well_y"], p["well_l"] / 2
         net = [deck_pt(f, (wy + d) / (p["length"] / 2)) for f, d in ((0.7, -wl - 0.06), (-0.7, -wl - 0.06), (0.62, wl + 0.08), (-0.62, wl + 0.08))]
-        for a, b in ((net[0], net[3]), (net[1], net[2]), (net[0], net[2]), (net[1], net[3]), (net[2], net[3])):
+        for a, b in ((net[0], net[3]), (net[1], net[2])) + (() if p["simple"] else ((net[0], net[2]), (net[1], net[3]), (net[2], net[3]))):
             cord(a, b)
-        for v in net:
-            fitting(v.x, v.y)
+        if not p["simple"]:
+            for v in net:
+                fitting(v.x, v.y)
+    if detail == 2 and not p["simple"]:
         # Behind the cockpit, a short strap for the paddle
         strap = [deck_pt(f, (p["cockpit_y"] + p["cockpit_l"] / 2 + 0.12) / (p["length"] / 2)) for f in (0.55, -0.55)]
         cord(strap[0], strap[1])
@@ -334,7 +339,8 @@ def build(asset, p):
     col = common.collection(asset)
     parts = {k: build_kayak(f"{asset}_{k}", k, p, col) for k in ("LOD0", "LOD1", "LOD2")}
     mat = common.soft_toon_material("M_" + asset, rig, preset="Default", _BaseColor="#FFFFFF", _UseVertexColor=1.0,
-                                    _RampSoftness=p["ramp"], _Wrap=p["wrap"])
+                                    _RampSoftness=p["ramp"], _Wrap=p["wrap"],
+                                    _StencilRef=1.0, _StencilWriteMask=1.0)  # marks the hull for the river water (no shore foam on it)
     for o in parts.values():
         o.data.materials.append(mat)
     parts["LOD1"].hide_set(True)
@@ -382,6 +388,7 @@ def main():
         "sheer_rise": f("sheer_rise", 0.07),
         "end_rise": f("end_rise", 0.13),
         "lift": f("lift", 0.0),
+        "simple": int(args.get("simple", 0)),
         "stations": int(args.get("stations", 18)),
         "cockpit_y": f("cockpit_y", 0.1),
         "cockpit_l": f("cockpit_l", 0.86),
@@ -399,7 +406,13 @@ def main():
             "tub": "#38383B", "seat": "#26272A", "seat_pad": "#3A3C40", "cord": "#18181A", "hatch": "#2E2E31",
         },
     }
+    for k in p["colours"]:  # any colour can be overridden: --c_deck "#D9773A"
+        p["colours"][k] = args.get("c_" + k, p["colours"][k])
     parts = build(asset, p)
+    # The openings the game masks from the river water (cockpit, cargo well): centre and radii, Blender space
+    deck = station(p, p["cockpit_y"] / (p["length"] / 2))[3]
+    bpy.context.scene["cr_water_masks"] = [[0.0, p["cockpit_y"], p["cockpit_w"] / 2 * 1.28 + 0.03, p["cockpit_l"] / 2 * 1.12 + 0.03, deck + 0.02],
+                                          [0.0, p["well_y"], p["well_w"] / 2 * 1.28 + 0.03, p["well_l"] / 2 * 1.12 + 0.03, station(p, p["well_y"] / (p["length"] / 2))[3] + 0.01]]
     tris = {k: common.triangle_count(o) for k, o in parts.items()}
     print(f"[kayak] tris {tris}")
     if "draft" in args:

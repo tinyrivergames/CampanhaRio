@@ -91,22 +91,9 @@ Shader "CampanhaRio/RiverWater"
     {
         Tags { "RenderType" = "Transparent" "Queue" = "Transparent" "RenderPipeline" = "UniversalPipeline" "IgnoreProjector" = "True" }
 
-        Pass
-        {
-            Name "ForwardLit"
-            Tags { "LightMode" = "UniversalForward" }
-            Blend SrcAlpha OneMinusSrcAlpha
-            ZWrite Off
-            Cull Back
-
-            HLSLPROGRAM
-            #pragma target 3.5
-            #pragma vertex Vert
-            #pragma fragment Frag
-            #pragma multi_compile_local _ _CAUSTICS
-            #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
-            #pragma multi_compile_fragment _ _SHADOWS_SOFT _SHADOWS_SOFT_LOW _SHADOWS_SOFT_MEDIUM _SHADOWS_SOFT_HIGH
-            #pragma multi_compile_fog
+        // Stencil (boats, SoftToon _StencilRef): bit 1 = a hull under the water (drawn by the second pass, without the shore
+        // foam the shallow depth would put on it), bit 2 = a boat's cockpit or cargo well (no water drawn inside)
+        HLSLINCLUDE
 
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
@@ -219,7 +206,7 @@ Shader "CampanhaRio/RiverWater"
                      + SAMPLE_TEXTURE2D(_FoamTex, sampler_FoamTex, uv1 + f.jump1) * f.weight1;
             }
 
-            half4 Frag(Varyings input) : SV_Target
+            half4 FragCore(Varyings input, bool shoreFoamOn)
             {
                 float R = saturate(input.color.r);   // current strength
                 float G = saturate(input.color.g);   // obstacle foam
@@ -372,7 +359,7 @@ Shader "CampanhaRio/RiverWater"
                 float shoreWidth = _ShoreFoamWidth * lerp(0.6, 1.8, R);
                 float shore = 1.0 - saturate(verticalDepth / max(shoreWidth, 1e-3));
                 float pulse = sin(t * _ShoreFoamPulse + foamNoise.b * 6.2831) * 0.15;
-                float shoreFoam = smoothstep(foamNoise.g * _ShoreFoamNoise, foamNoise.g * _ShoreFoamNoise + 0.25, shore + pulse) * step(0.001, shore);
+                float shoreFoam = smoothstep(foamNoise.g * _ShoreFoamNoise, foamNoise.g * _ShoreFoamNoise + 0.25, shore + pulse) * step(0.001, shore) * (shoreFoamOn ? 1.0 : 0.0);
 
                 // Obstacles: cushion + V tail baked into G, broken up by the foam cells
                 float obstacleFoam = smoothstep(0.25, 0.7, G * _ObstacleFoamStrength * (0.55 + foamNoise.g * 0.9));
@@ -406,6 +393,47 @@ Shader "CampanhaRio/RiverWater"
                 float alpha = saturate(thickness / _EdgeSoftness) * input.color.a; // (vertex alpha: a channel fading into a lake, Stage 12)
                 return half4(color, alpha);
             }
+            half4 Frag(Varyings input) : SV_Target { return FragCore(input, true); }
+            half4 FragHull(Varyings input) : SV_Target { return FragCore(input, false); }
+        ENDHLSL
+
+        Pass
+        {
+            Name "ForwardLit"
+            Tags { "LightMode" = "UniversalForward" }
+            Blend SrcAlpha OneMinusSrcAlpha
+            ZWrite Off
+            Cull Back
+            Stencil { Ref 0 ReadMask 3 Comp Equal }
+
+            HLSLPROGRAM
+            #pragma target 3.5
+            #pragma vertex Vert
+            #pragma multi_compile_local _ _CAUSTICS
+            #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
+            #pragma multi_compile_fragment _ _SHADOWS_SOFT _SHADOWS_SOFT_LOW _SHADOWS_SOFT_MEDIUM _SHADOWS_SOFT_HIGH
+            #pragma multi_compile_fog
+            #pragma fragment Frag
+            ENDHLSL
+        }
+
+        Pass
+        {
+            Name "OverHull"
+            Tags { "LightMode" = "SRPDefaultUnlit" }
+            Blend SrcAlpha OneMinusSrcAlpha
+            ZWrite Off
+            Cull Back
+            Stencil { Ref 1 ReadMask 3 Comp Equal }
+
+            HLSLPROGRAM
+            #pragma target 3.5
+            #pragma vertex Vert
+            #pragma multi_compile_local _ _CAUSTICS
+            #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
+            #pragma multi_compile_fragment _ _SHADOWS_SOFT _SHADOWS_SOFT_LOW _SHADOWS_SOFT_MEDIUM _SHADOWS_SOFT_HIGH
+            #pragma multi_compile_fog
+            #pragma fragment FragHull
             ENDHLSL
         }
     }

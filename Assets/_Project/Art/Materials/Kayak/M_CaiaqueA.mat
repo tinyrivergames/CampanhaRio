@@ -39,6 +39,8 @@ Material:
     - _ReceiveShadows: 0.85
     - _RimPower: 3.5
     - _RimStrength: 0.16
+    - _StencilRef: 1
+    - _StencilWriteMask: 1
     - _TopTintAmount: 0
     - _TopTintSharpness: 0.35
     - _Translucency: 0

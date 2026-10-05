@@ -46,6 +46,9 @@ Shader "CampanhaRio/SoftToon"
 
         [HideInInspector] _Preset ("Preset", Float) = 0
         [HideInInspector] _Cull ("Cull", Float) = 2
+        // Boats: stencil bit 1 marks the hull, so the river water drawn over it skips the shore foam (RiverWater.shader)
+        [HideInInspector] _StencilRef ("Stencil Ref", Float) = 0
+        [HideInInspector] _StencilWriteMask ("Stencil Write Mask", Float) = 0
     }
 
     SubShader
@@ -83,6 +86,7 @@ Shader "CampanhaRio/SoftToon"
             Name "ForwardLit"
             Tags { "LightMode" = "UniversalForward" }
             Cull [_Cull]
+            Stencil { Ref [_StencilRef] WriteMask [_StencilWriteMask] Comp Always Pass Replace }
 
             HLSLPROGRAM
             #pragma target 3.5

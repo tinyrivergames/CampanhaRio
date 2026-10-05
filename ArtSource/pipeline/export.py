@@ -81,6 +81,9 @@ def export(blend_path=None, impostor=False):
     }
     if "cr_lod_heights" in bpy.context.scene:  # per-asset LOD switch heights (screen fraction), set by the generator
         sidecar["lodHeights"] = [float(h) for h in bpy.context.scene["cr_lod_heights"]]
+    if "cr_water_masks" in bpy.context.scene:  # boats: openings hidden from the river water (Unity space: x, y up, z = -Blender y)
+        sidecar["waterMasks"] = [{"center": [float(m[0]), float(m[4]), -float(m[1])], "radii": [float(m[2]), float(m[3])]}
+                                 for m in bpy.context.scene["cr_water_masks"]]
     with open(os.path.join(out_dir, asset + ".softtoon.json"), "w", encoding="utf-8", newline="\n") as f:
         json.dump(sidecar, f, indent=4)
     print(f"[export] {fbx}  parts: {', '.join(sorted(o.name for o in parts))}")

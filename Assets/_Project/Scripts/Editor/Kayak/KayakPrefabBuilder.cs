@@ -71,6 +71,61 @@ namespace CampanhaRio.Editor
         }
 
         const string HullModelPath = "Assets/_Project/Art/Models/Kayak/CaiaqueA.fbx";
+        const string MaskMeshPath = "Assets/_Project/Art/Models/Kayak/CaiaqueA_WaterMask.asset";
+        const string MaskMaterialPath = "Assets/_Project/Art/Materials/Kayak/M_BoatWaterMask.mat";
+
+        [System.Serializable] class MaskSidecar { public Mask[] waterMasks; }
+        [System.Serializable] class Mask { public float[] center, radii; }
+
+        /// <summary>
+        /// Invisible caps over the cockpit and the cargo well (from the model's sidecar): they keep the river water from
+        /// being drawn inside the boat (BoatWaterMask.shader, stencil bit 2).
+        /// </summary>
+        static void BuildWaterMasks(Transform visual)
+        {
+            string json = System.IO.Path.ChangeExtension(HullModelPath, ".softtoon.json");
+            if (!System.IO.File.Exists(json)) return;
+            var masks = JsonUtility.FromJson<MaskSidecar>(System.IO.File.ReadAllText(json)).waterMasks;
+            if (masks == null || masks.Length == 0) return;
+            const int segments = 24;
+            var verts = new System.Collections.Generic.List<Vector3>();
+            var tris = new System.Collections.Generic.List<int>();
+            foreach (var m in masks)
+            {
+                int c = verts.Count;
+                verts.Add(new Vector3(m.center[0], m.center[1], m.center[2]));
+                for (int i = 0; i < segments; i++)
+                {
+                    float a = i * Mathf.PI * 2f / segments;
+                    verts.Add(new Vector3(m.center[0] + Mathf.Cos(a) * m.radii[0], m.center[1], m.center[2] + Mathf.Sin(a) * m.radii[1]));
+                    tris.AddRange(new[] { c, c + 1 + (i + 1) % segments, c + 1 + i });
+                }
+            }
+            var mesh = AssetDatabase.LoadAssetAtPath<Mesh>(MaskMeshPath);
+            if (!mesh) { mesh = new Mesh(); AssetDatabase.CreateAsset(mesh, MaskMeshPath); }
+            mesh.Clear();
+            mesh.name = "CaiaqueA_WaterMask";
+            mesh.SetVertices(verts);
+            mesh.SetTriangles(tris, 0);
+            mesh.RecalculateBounds();
+            EditorUtility.SetDirty(mesh);
+
+            var mat = AssetDatabase.LoadAssetAtPath<Material>(MaskMaterialPath);
+            if (!mat)
+            {
+                System.IO.Directory.CreateDirectory(System.IO.Path.GetDirectoryName(MaskMaterialPath));
+                mat = new Material(Shader.Find("CampanhaRio/BoatWaterMask"));
+                AssetDatabase.CreateAsset(mat, MaskMaterialPath);
+            }
+            var go = new GameObject("WaterMask", typeof(MeshFilter), typeof(MeshRenderer));
+            go.transform.SetParent(visual, false);
+            go.GetComponent<MeshFilter>().sharedMesh = mesh;
+            var r = go.GetComponent<MeshRenderer>();
+            r.sharedMaterial = mat;
+            r.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.Off;
+            r.receiveShadows = false;
+            AssetDatabase.SaveAssets();
+        }
 
         static void BuildHull(Transform visual)
         {
@@ -82,6 +137,7 @@ namespace CampanhaRio.Editor
                 art.name = "Hull";
                 art.transform.localPosition = Vector3.zero;
                 art.transform.localRotation = Quaternion.identity;
+                BuildWaterMasks(visual);
                 return;
             }
             var hull = Primitive(PrimitiveType.Capsule, "Hull", visual, new Vector3(0f, 0.02f, 0f), new Vector3(0.68f, 1.62f, 0.34f),
