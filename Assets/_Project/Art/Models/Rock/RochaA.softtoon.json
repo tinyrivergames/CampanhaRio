@@ -1,12 +1,12 @@
 {
     "asset": "RochaA",
     "family": "Rock",
-    "source": "ArtSource/Rock/RochaA/RochaA_v006.blend",
+    "source": "ArtSource/Rock/RochaA/RochaA_v007.blend",
     "material": {
         "_BaseColor": "#FFFFFF",
-        "_Wrap": 0.4,
+        "_Wrap": 0.3,
         "_RampCenter": 0.45,
-        "_RampSoftness": 0.32,
+        "_RampSoftness": 0.14,
         "_ReceiveShadows": 0.85,
         "_RimStrength": 0.1,
         "_RimPower": 3.5,
@@ -27,9 +27,9 @@
         {
             "name": "M_RochaA",
             "_BaseColor": "#FFFFFF",
-            "_Wrap": 0.4,
+            "_Wrap": 0.3,
             "_RampCenter": 0.45,
-            "_RampSoftness": 0.32,
+            "_RampSoftness": 0.14,
             "_ReceiveShadows": 0.85,
             "_RimStrength": 0.1,
             "_RimPower": 3.5,
