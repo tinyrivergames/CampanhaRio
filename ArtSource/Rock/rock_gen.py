@@ -16,7 +16,7 @@ import sys
 
 import bpy
 import bmesh
-from mathutils import Vector
+from mathutils import Vector, noise
 
 sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "pipeline"))
 import common  # noqa: E402
@@ -94,21 +94,32 @@ def build_rock(name, lod, p, col):
             normals.append(n.normalized().lerp(ell, p["inflate"]).normalized())
     mesh.normals_split_custom_set(normals)
 
-    # Colour per face: a tone per big face (like each pine blade), sand toward the top, cooler and darker at the base
+    # Colour per corner: each big face its own stone (sandier, orange or redder) and tone, large soft patches of
+    # lighter/darker rock, sand toward the top, a cooler darker base, and MOSS in patches on the faces looking up
     rnd = random.Random(p["seed"] * 31 + 5)
     base, sand, shadow = srgb(common.palette("rock_orange")), srgb(common.palette("rock_sand")), srgb(common.palette("rock_shadow"))
+    red = srgb("#B5653F")
+    moss_dark, moss_light = srgb("#5E7A35"), srgb(common.palette("moss"))
     warm, cool = Vector((1.06, 1.02, 0.9)), Vector((0.92, 0.97, 1.06))
+    seed_v = Vector((p["seed"] * 1.37, p["seed"] * 0.71, 3.3))
     attr = mesh.color_attributes.new("Col", "BYTE_COLOR", "CORNER")
     mesh.color_attributes.active_color = attr
     for poly in mesh.polygons:
-        hue = rnd.uniform(-1, 1) * p["tone"] * (1.0 if poly.area > big * 0.15 else 0.0)  # bevel strips stay neutral: no stripes
+        big_face = poly.area > big * 0.15
+        hue = rnd.uniform(-1, 1) * p["tone"] * (1.0 if big_face else 0.0)  # bevel strips stay neutral: no stripes
         tone = Vector((1, 1, 1)).lerp(warm if hue > 0 else cool, abs(hue))
-        shade = rnd.uniform(0.95, 1.05)
+        kind = rnd.uniform(-1, 1) * p["variety"] if big_face else 0.0  # + sandier stone, - redder stone
+        stone = base.lerp(sand, kind) if kind > 0 else base.lerp(red, -kind)
+        up = max(0.0, poly.normal.z)
         for li in poly.loop_indices:
             co = mesh.vertices[mesh.loops[li].vertex_index].co
             t = co.z / max(height, 1e-3)
-            c = shadow.lerp(base, min(1.0, t * 2.2)).lerp(sand, max(0.0, (t - 0.45) * 1.4) * 0.8)
-            c = mul(c, tone) * shade
+            c = shadow.lerp(stone, min(1.0, t * 2.2)).lerp(sand, max(0.0, (t - 0.45) * 1.4) * 0.6)
+            c = mul(c, tone) * (1.0 + 0.16 * p["variety"] * noise.noise(co * 0.9 + seed_v))  # big soft patches
+            # Moss: patches (3D noise, so they flow across faces) only where the rock looks up
+            patch = max(0.0, min(1.0, noise.noise(co * 1.7 + seed_v * 2.0) * 1.8 + 0.35))
+            m = p["moss"] * patch * max(0.0, min(1.0, (up - 0.35) / 0.4))
+            c = c.lerp(moss_dark.lerp(moss_light, patch), m)
             attr.data[li].color_srgb = (min(c.x, 1), min(c.y, 1), min(c.z, 1), 1.0)
     return obj
 
@@ -119,7 +130,7 @@ def build(asset, p):
     col = common.collection(asset)
     parts = {k: build_rock(f"{asset}_{k}", k, p, col) for k in ("LOD0", "LOD1", "LOD2", "COL")}
     mat = common.soft_toon_material("M_" + asset, rig, preset="Rock", _BaseColor="#FFFFFF", _UseVertexColor=1.0,
-                                    _TopTint=common.palette("moss"), _TopTintAmount=p["moss"], _TopTintSharpness=0.3)
+                                    _TopTintAmount=0.0)  # the moss is in the vertex colours (patches)
     for k, o in parts.items():
         o.data.materials.append(mat)
     parts["COL"].hide_render = True
@@ -168,7 +179,8 @@ def main():
         "bevel": float(args.get("bevel", 0.05)),
         "inflate": float(args.get("inflate", 0.3)),
         "tone": float(args.get("tone", 0.8)),
-        "moss": float(args.get("moss", 0.25)),
+        "moss": float(args.get("moss", 0.8)),
+        "variety": float(args.get("variety", 0.6)),
     }
     parts = build(asset, p)
     if "draft" in args:
