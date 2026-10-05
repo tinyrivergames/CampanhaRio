@@ -24,7 +24,7 @@ import lookdev  # noqa: E402
 import preview  # noqa: E402
 
 FAMILY = "Pine"
-BUDGET = {"LOD0": 700, "LOD1": 250}
+BUDGET = {"LOD0": 1500, "LOD1": 500}  # raised from 700/250 at v002 (the developer asked for more detailed foliage)
 
 # Skirt profile: (radius fraction, height fraction of the skirt) from the tip down to the hidden inner ring
 PROFILE = {
@@ -140,12 +140,149 @@ def build_tree(name, lod, p, col):
     return obj
 
 
+def branch_plan(p):
+    """Where every branch goes (the same for every LOD, so LODs swap without popping)."""
+    rnd = random.Random(p["seed"])
+    plan = []
+    top = p["height"] - 1.3
+    for w in range(p["whorls"]):
+        t = w / max(1, p["whorls"] - 1)
+        h = 1.6 + (top - 1.6) * t ** 0.95
+        k = max(3, round(7 - 3.5 * t))
+        base_yaw = w * 2.4
+        for j in range(k):
+            L = (p["radius"] * (1.0 - 0.72 * t ** 0.9) + 0.35) * rnd.uniform(0.85, 1.12)
+            plan.append(dict(
+                h=h + rnd.uniform(-0.12, 0.12), yaw=base_yaw + j * 2 * math.pi / k + rnd.uniform(-0.25, 0.25), L=L,
+                W=L * 0.3 + 0.1, droop=(0.34 - 0.2 * t) * rnd.uniform(0.8, 1.2), lift=0.22, t=t, shade=rnd.uniform(0.94, 1.06)))
+    return plan
+
+
+def build_tree_tufts(name, lod, p, col):
+    """
+    The pine as individual branch TUFTS: each branch is a long, slightly drooping leaf clump with a raised crest and a
+    serrated (notched) outline, the needle clumps. Branches sit in whorls around a visible trunk, shorter toward the
+    top; a dark inner core hides the gaps and a small leader caps the tip.
+    """
+    bm = bmesh.new()
+    colors = {}
+    dark, mid, light, bark = srgb(common.palette("pine_dark")), srgb(common.palette("pine_mid")), srgb(common.palette("pine_light")), srgb(common.palette("bark"))
+    samples = 5 if lod == "LOD0" else 3
+    serrate = lod == "LOD0"
+    up = Vector((0, 0, 1))
+
+    def lean(y):
+        return Vector((p["lean"] * y, 0.0, 0.0))
+
+    def ring(y, r, sides, color, alpha):
+        out = []
+        for j in range(sides):
+            a = 2 * math.pi * j / sides
+            v = bm.verts.new(Vector((math.cos(a) * r, math.sin(a) * r, y)) + lean(y))
+            colors[v] = (*color, alpha)
+            out.append(v)
+        return out
+
+    def bridge(a, b):
+        n = len(a)
+        for j in range(n):
+            bm.faces.new((a[j], a[(j + 1) % n], b[(j + 1) % n], b[j]))
+
+    # Trunk, a bit sturdier and more visible than v001
+    sides = 6 if lod == "LOD0" else 4
+    t0, t1, t2 = ring(0.0, 0.22, sides, bark, 0.0), ring(2.0, 0.16, sides, bark, 0.0), ring(p["height"] - 1.0, 0.05, sides, bark, 0.0)
+    bridge(t0, t1)
+    bridge(t1, t2)
+
+    # The dark core: a slim cone inside the branches, so no sky shows through the middle
+    core_sides = 7 if lod == "LOD0" else 5
+    c0 = ring(1.5, p["radius"] * 0.45, core_sides, dark * 0.8, 0.0)
+    c1 = ring(p["height"] * 0.6, p["radius"] * 0.3, core_sides, dark * 0.85, 0.2)
+    bridge(c0, c1)
+    cap = bm.verts.new(Vector((0, 0, p["height"] - 0.9)) + lean(p["height"] - 0.9))
+    colors[cap] = (*dark, 0.4)
+    for j in range(core_sides):
+        bm.faces.new((cap, c1[j], c1[(j + 1) % core_sides]))
+
+    # The branches
+    for b in branch_plan(p):
+        d = Vector((math.cos(b["yaw"]), math.sin(b["yaw"]), 0.0))
+        side = Vector((-d.y, d.x, 0.0))
+        origin = Vector((0, 0, b["h"])) + lean(b["h"]) + d * 0.08
+        rows = []
+        for i in range(samples - 1):
+            s = i / (samples - 1)
+            c = origin + d * b["L"] * s + up * b["L"] * (b["lift"] * s - b["droop"] * s * s)
+            w = b["W"] * math.sin(math.pi * (0.18 + 0.82 * s)) ** 0.7
+            if serrate and 0 < i:
+                w *= 1.28 if i % 2 == 1 else 0.82  # the notches between needle clumps
+            h = b["W"] * 0.32 * (1.0 - 0.6 * s)
+            pts = {"l": c - side * w - up * h * 0.25, "t": c + up * h, "r": c + side * w - up * h * 0.25, "b": c - up * h * 0.45}
+            row = {}
+            for key, pt in pts.items():
+                v = bm.verts.new(pt)
+                crest = {"t": 1.0, "l": 0.45, "r": 0.45, "b": 0.0}[key]
+                col_ = dark.lerp(mid, 0.35 + 0.65 * s) if key != "b" else dark * 0.9
+                col_ = col_.lerp(light, crest * (0.25 + 0.55 * s) * (0.7 + 0.3 * b["t"]))
+                col_ = col_ * b["shade"]
+                colors[v] = (min(col_.x, 1), min(col_.y, 1), min(col_.z, 1), s * (0.4 + 0.6 * b["t"]))
+                row[key] = v
+            rows.append(row)
+        tip_pos = origin + d * b["L"] + up * b["L"] * (b["lift"] - b["droop"])
+        tip = bm.verts.new(tip_pos)
+        c_tip = mid.lerp(light, 0.55) * b["shade"]
+        colors[tip] = (min(c_tip.x, 1), min(c_tip.y, 1), min(c_tip.z, 1), 0.4 + 0.6 * b["t"])
+        order = ("l", "t", "r", "b")
+        for i in range(len(rows) - 1):
+            for q in range(4):
+                a_k, b_k = order[q], order[(q + 1) % 4]
+                bm.faces.new((rows[i][a_k], rows[i][b_k], rows[i + 1][b_k], rows[i + 1][a_k]))
+        for q in range(4):
+            bm.faces.new((rows[-1][order[q]], rows[-1][order[(q + 1) % 4]], tip))
+
+    # The leader: a small upward tuft at the top
+    lead_sides = 6 if lod == "LOD0" else 4
+    l0 = ring(p["height"] - 1.5, 0.32, lead_sides, mid, 0.6)
+    lt = bm.verts.new(Vector((0, 0, p["height"])) + lean(p["height"]))
+    colors[lt] = (*light, 1.0)
+    for j in range(lead_sides):
+        bm.faces.new((lt, l0[j], l0[(j + 1) % lead_sides]))
+
+    bmesh.ops.recalc_face_normals(bm, faces=bm.faces)
+    bmesh.ops.triangulate(bm, faces=bm.faces)
+    mesh = bpy.data.meshes.new(name)
+    vert_colors = [colors[v] for v in bm.verts]
+    bm.to_mesh(mesh)
+    bm.free()
+    obj = common.mesh_object(name, mesh, col)
+    for poly in mesh.polygons:
+        poly.use_smooth = True
+    center = Vector((0, 0, p["height"] * 0.5))
+    axes = Vector((p["radius"] * 1.2, p["radius"] * 1.2, p["height"] * 0.55))
+    normals = []
+    for v, c in zip(mesh.vertices, vert_colors):
+        own = v.normal.copy()
+        if c[:3] == tuple(bark):
+            normals.append(own)
+            continue
+        dv = v.co - center - Vector((p["lean"] * v.co.z, 0, 0))
+        ell = Vector((dv.x / axes.x ** 2, dv.y / axes.y ** 2, dv.z / axes.z ** 2)).normalized()
+        normals.append(own.lerp(ell, p["inflate"]).normalized())
+    mesh.normals_split_custom_set_from_vertices(normals)
+    attr = mesh.color_attributes.new("Col", "BYTE_COLOR", "CORNER")
+    mesh.color_attributes.active_color = attr
+    for loop in mesh.loops:
+        attr.data[loop.index].color_srgb = vert_colors[loop.vertex_index]
+    return obj
+
+
 def build(asset, p):
     rig = common.load_rig()
     common.reset_scene()
     col = common.collection(asset)
-    lod0 = build_tree(asset + "_LOD0", "LOD0", p, col)
-    lod1 = build_tree(asset + "_LOD1", "LOD1", p, col)
+    make = build_tree_tufts if p["style"] == "tufts" else build_tree
+    lod0 = make(asset + "_LOD0", "LOD0", p, col)
+    lod1 = make(asset + "_LOD1", "LOD1", p, col)
     mat = common.soft_toon_material("M_" + asset, rig, preset="Foliage", _BaseColor="#FFFFFF", _UseVertexColor=1.0,
                                     _Translucency=0.3, _RimStrength=0.14)
     for o in (lod0, lod1):
@@ -155,7 +292,7 @@ def build(asset, p):
     return {"LOD0": lod0, "LOD1": lod1}
 
 
-def write_notes(asset, version, parts, args, paths):
+def write_notes(asset, version, parts, args, paths, changes):
     notes = os.path.join(paths["dir"], "NOTES.md")
     if not os.path.exists(notes):
         with open(notes, "w", encoding="utf-8", newline="\n") as f:
@@ -177,13 +314,15 @@ def write_notes(asset, version, parts, args, paths):
                 f"- Triângulos: {tris}\n"
                 f"- Prévia: `{os.path.basename(paths['preview'])}`\n"
                 "- **Feedback do desenvolvedor (literal):** _(aguardando)_\n"
-                f"- **O que mudou:** {'primeira versão.' if version == 1 else '_(descrever)_'}\n")
+                f"- **O que mudou:** {'primeira versão.' if version == 1 else changes}\n")
 
 
 def main():
     args = common.script_args()
     asset = args.get("asset", "PinheiroA")
     p = {
+        "style": args.get("style", "tufts"),
+        "whorls": int(args.get("whorls", 9)),
         "seed": int(args.get("seed", 4)),
         "height": float(args.get("height", 9.0)),
         "radius": float(args.get("radius", 2.0)),
@@ -191,12 +330,12 @@ def main():
         "lean": float(args.get("lean", 0.04)),
         "scallop": float(args.get("scallop", 0.28)),
         "droop": float(args.get("droop", 0.12)),
-        "inflate": float(args.get("inflate", 0.45)),
+        "inflate": float(args.get("inflate", 0.4)),
     }
     parts = build(asset, p)
     version, paths = common.save_new_version(FAMILY, asset, int(args["version"]) if "version" in args else None)
     preview.render_sheet(paths["preview"], f"v{version:03d}")
-    write_notes(asset, version, parts, p, paths)
+    write_notes(asset, version, parts, p, paths, args.get("changes", "_(descrever)_"))
     print(f"[pine] {paths['blend']}")
 
 
