@@ -153,7 +153,7 @@ namespace CampanhaRio.Editor
             var paddle = Child(visual, "Paddle");
             paddle.localScale = Vector3.one * PaddleScale;
             var dark = GrayboxMaterials.Get("PaddleShaft", new Color(0.29f, 0.19f, 0.16f)); // the reference: brown shaft, red blades
-            var blade = GrayboxMaterials.Get("PaddleBlade", new Color(0.83f, 0.17f, 0.16f));
+            var blade = GrayboxMaterials.Get("PaddleBlade", new Color(0.40f, 0.08f, 0.13f));
             var shaft = Primitive(PrimitiveType.Cylinder, "Shaft", paddle, Vector3.zero, new Vector3(0.035f, 1.05f, 0.035f), dark);
             shaft.localRotation = Quaternion.Euler(0f, 0f, 90f);
             Primitive(PrimitiveType.Cube, "BladeLeft", paddle, new Vector3(-1.05f, 0f, 0f), new Vector3(0.42f, 0.02f, 0.17f), blade);
