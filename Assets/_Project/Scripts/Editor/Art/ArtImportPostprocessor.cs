@@ -82,13 +82,16 @@ namespace CampanhaRio.Editor
             {
                 if (!path.StartsWith(ModelsDir) || !path.EndsWith(".softtoon.json")) continue;
                 string fbx = path.Replace(".softtoon.json", ".fbx");
-                var mat = BuildMaterial(path);
                 var importer = AssetImporter.GetAtPath(fbx) as ModelImporter;
-                if (!mat || !importer) continue;
+                if (!importer) continue;
+                var data = JsonUtility.FromJson<Sidecar>(File.ReadAllText(path));
+                var entries = data.materialList != null && data.materialList.Length > 0 ? data.materialList : new[] { data.material };
+                if (string.IsNullOrEmpty(entries[0].name)) entries[0].name = "M_" + data.asset;
                 bool changed = false;
-                foreach (var source in AssetDatabase.LoadAllAssetsAtPath(fbx).OfType<Material>())
+                foreach (var entry in entries)
                 {
-                    var id = new AssetImporter.SourceAssetIdentifier(typeof(Material), source.name);
+                    var mat = BuildMaterial(data.family, entry);
+                    var id = new AssetImporter.SourceAssetIdentifier(typeof(Material), entry.name);
                     if (importer.GetExternalObjectMap().TryGetValue(id, out var existing) && existing == mat) continue;
                     importer.AddRemap(id, mat);
                     changed = true;
@@ -97,14 +100,25 @@ namespace CampanhaRio.Editor
             }
         }
 
-        /// <summary>M_&lt;Asset&gt;.mat from the sidecar: the SoftToon shader with the Blender preview's parameters.</summary>
-        static Material BuildMaterial(string sidecarPath)
+        /// <summary>Baked textures (impostors, background cards): sRGB colour with an alpha that is clipped.</summary>
+        void OnPreprocessTexture()
         {
-            var data = JsonUtility.FromJson<Sidecar>(File.ReadAllText(sidecarPath));
-            var p = data.material;
-            string dir = MaterialsDir + data.family;
+            if (!assetPath.StartsWith("Assets/_Project/Art/Textures/") || assetPath.Contains("/Water/")) return;
+            var t = (TextureImporter)assetImporter;
+            t.sRGBTexture = true;
+            t.alphaIsTransparency = true;
+            t.wrapMode = TextureWrapMode.Clamp;
+            t.mipmapEnabled = true;
+            t.mipMapsPreserveCoverage = true; // alpha-clipped edges don't thin out with distance
+            t.alphaTestReferenceValue = 0.5f;
+        }
+
+        /// <summary>Art/Materials/&lt;Family&gt;/&lt;name&gt;.mat on the SoftToon shader, with the Blender preview's parameters.</summary>
+        static Material BuildMaterial(string family, Params p)
+        {
+            string dir = MaterialsDir + family;
             Directory.CreateDirectory(dir);
-            string matPath = $"{dir}/M_{data.asset}.mat";
+            string matPath = $"{dir}/{p.name}.mat";
             var shader = Shader.Find("CampanhaRio/SoftToon");
             var mat = AssetDatabase.LoadAssetAtPath<Material>(matPath);
             if (!mat) { mat = new Material(shader); AssetDatabase.CreateAsset(mat, matPath); }
@@ -125,21 +139,35 @@ namespace CampanhaRio.Editor
             mat.SetFloat("_TopTintAmount", p._TopTintAmount);
             mat.SetFloat("_TopTintSharpness", p._TopTintSharpness);
             mat.SetFloat("_Translucency", p._Translucency);
+
+            // A texture with alpha is clipped; a mesh without one never pays for alpha testing
+            var tex = string.IsNullOrEmpty(p._BaseMap) ? null : AssetDatabase.LoadAssetAtPath<Texture2D>(p._BaseMap);
+            mat.SetTexture("_BaseMap", tex);
+            SetKeyword(mat, "_ALPHATEST_ON", "_AlphaClip", tex != null);
+            mat.SetFloat("_Cutoff", 0.5f);
+            // Wind only where the vertex alpha carries its weight (a mesh without colours would sway from the ground up)
+            SetKeyword(mat, "_WIND", "_Wind", mat.IsKeywordEnabled("_WIND") && p._UseVertexColor > 0.5f);
             mat.enableInstancing = true;
             EditorUtility.SetDirty(mat);
             AssetDatabase.SaveAssetIfDirty(mat);
             return mat;
         }
 
+        static void SetKeyword(Material mat, string keyword, string property, bool on)
+        {
+            if (on) mat.EnableKeyword(keyword); else mat.DisableKeyword(keyword);
+            mat.SetFloat(property, on ? 1f : 0f);
+        }
+
         static Color Hex(string hex) => ColorUtility.TryParseHtmlString(hex, out var c) ? c : Color.white;
 
         [System.Serializable]
-        class Sidecar { public string asset, family, source; public Params material; }
+        class Sidecar { public string asset, family, source; public Params material; public Params[] materialList; }
 
         [System.Serializable]
         class Params
         {
-            public string preset, _BaseColor, _GradientBottom, _GradientTop, _TopTint;
+            public string name, preset, _BaseColor, _GradientBottom, _GradientTop, _TopTint, _BaseMap;
             public float _Wrap, _RampCenter, _RampSoftness, _ReceiveShadows, _RimStrength, _RimPower, _UseVertexColor;
             public float _TopTintAmount, _TopTintSharpness, _Translucency;
             public float[] _GradientHeights;

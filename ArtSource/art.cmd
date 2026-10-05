@@ -43,7 +43,7 @@ exit /b %ERRORLEVEL%
 exit /b %ERRORLEVEL%
 
 :export
-"%BLENDER%" --background "%ROOT%%~2" --python "%ROOT%pipeline\export.py"
+"%BLENDER%" --background "%ROOT%%~2" --python "%ROOT%pipeline\export.py" -- %3 %4
 exit /b %ERRORLEVEL%
 
 :compare

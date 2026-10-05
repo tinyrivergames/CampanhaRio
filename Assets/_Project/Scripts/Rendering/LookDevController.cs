@@ -73,6 +73,8 @@ namespace CampanhaRio.Rendering
                 if (!subjects[i]) continue;
                 Show(i);
                 var renderers = SubjectRenderers(i);
+                var settle = LookDevCapture.Render(captureCamera, 64); // the first frame after a switch is not settled yet
+                if (Application.isPlaying) Destroy(settle); else DestroyImmediate(settle);
                 if (renderers.Count > 0) files.AddRange(LookDevCapture.CaptureViews(rig, captureCamera, renderers, folder, subjects[i].name));
             }
             if (scaleReference) scaleReference.SetActive(true);
@@ -81,6 +83,10 @@ namespace CampanhaRio.Rendering
             {
                 if (!subjects[i]) continue;
                 Show(i);
+                // A wide 3/4 shot framed on this subject (and the scale animal beside it), as the scene camera would
+                var wide = SubjectRenderers(i);
+                if (scaleReference) wide.AddRange(scaleReference.GetComponentsInChildren<Renderer>());
+                LookDevCapture.Place(viewCamera, LookDevCapture.Bounds(wide), 205f, 10f, 40f, 1.15f, 1f);
                 foreach (var (name, t) in new[] { ("tarde", DayCycle.Afternoon), ("hora_dourada", DayCycle.GoldenHour), ("por_do_sol", DayCycle.Sunset), ("crepusculo", DayCycle.Dusk) })
                 {
                     day.progress = t;

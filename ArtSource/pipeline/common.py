@@ -252,6 +252,11 @@ def soft_toon_material(name, rig=None, preset="Default", **overrides):
 
     # Albedo: base * vertex colour * height gradient * top tint
     albedo = g.vec(Vector(lin(params["_BaseColor"])[:3]))
+    tex = None
+    if params.get("_BaseMap"):  # a painted/baked texture (impostors, background cards); its alpha is clipped
+        tex = g.node("ShaderNodeTexImage")
+        tex.image = bpy.data.images.load(params["_BaseMap"], check_existing=True)
+        albedo = g.vmul(albedo, tex.outputs["Color"])
     if params["_UseVertexColor"] > 0.5:
         vc = g.node("ShaderNodeVertexColor")
         albedo = g.vmul(albedo, vc.outputs["Color"])
@@ -284,7 +289,17 @@ def soft_toon_material(name, rig=None, preset="Default", **overrides):
     emission.inputs["Strength"].default_value = 1.0
     g.link(color, emission.inputs["Color"])
     out = g.node("ShaderNodeOutputMaterial")
-    g.link(emission.outputs[0], out.inputs["Surface"])
+    if tex is not None and params.get("_AlphaClip", 1) > 0.5:
+        # Alpha clip, like the Unity shader: transparent where the texture's alpha is under the cutoff
+        keep = g.math("GREATER_THAN", tex.outputs["Alpha"], params.get("_Cutoff", 0.5))
+        clear = g.node("ShaderNodeBsdfTransparent")
+        mix = g.node("ShaderNodeMixShader")
+        g.link(keep, mix.inputs[0])
+        g.link(clear.outputs[0], mix.inputs[1])
+        g.link(emission.outputs[0], mix.inputs[2])
+        g.link(mix.outputs[0], out.inputs["Surface"])
+    else:
+        g.link(emission.outputs[0], out.inputs["Surface"])
     return mat
 
 

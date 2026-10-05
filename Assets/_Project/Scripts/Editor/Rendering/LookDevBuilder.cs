@@ -57,11 +57,12 @@ namespace CampanhaRio.Editor
 
             var turntable = new GameObject("Turntable").AddComponent<Turntable>();
             var subjects = new List<Transform> { MatchTest(turntable.transform) };
-            var pebble = AssetDatabase.LoadAssetAtPath<GameObject>(PebblePath);
-            if (pebble)
+            // Every exported model is a subject (Art/Models/<Family>/<Asset>.fbx)
+            foreach (string guid in AssetDatabase.FindAssets("t:Model", new[] { "Assets/_Project/Art/Models" }))
             {
-                var p = (GameObject)PrefabUtility.InstantiatePrefab(pebble, turntable.transform);
-                p.name = "Pebble";
+                var model = AssetDatabase.LoadAssetAtPath<GameObject>(AssetDatabase.GUIDToAssetPath(guid));
+                var p = (GameObject)PrefabUtility.InstantiatePrefab(model, turntable.transform);
+                p.name = model.name;
                 subjects.Add(p.transform);
             }
             var scaleRef = ScaleReference(rig);
