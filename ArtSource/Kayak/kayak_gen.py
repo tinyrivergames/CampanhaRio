@@ -210,7 +210,7 @@ def build_kayak(name, lod, p, col):
     # Openings: the cockpit and the cargo well (an elliptic cutter through the deck only)
     ck = (0.0, p["cockpit_y"], p["cockpit_w"] / 2, p["cockpit_l"] / 2)
     well = (0.0, p["well_y"], p["well_w"] / 2, p["well_l"] / 2)
-    openings = [ck, well] if detail else []
+    openings = ([ck] if p["solid_well"] else [ck, well]) if detail else []
     holes = []
     n_ell = {2: 20, 1: 14, 0: 10}[detail]
     for cx, cy, rx, ry in openings:
@@ -265,6 +265,21 @@ def build_kayak(name, lod, p, col):
         tub_mid = [Vector((cx + (v.x - cx) * 0.92, cy + (v.y - cy) * 0.94, (floor_z + u.z) / 2)) for v, u in zip(inner, under)]
         tub_floor = [Vector((cx + (v.x - cx) * 0.78, cy + (v.y - cy) * 0.86, floor_z)) for v in inner]
         parts.loft([top_in, under, tub_mid, tub_floor], C["tub"], cap_end=True)
+
+    if detail and p["solid_well"]:
+        # The cargo well as a SOLID panel on the rear deck (no opening: nothing of the water can show through)
+        cx, cy, rx, ry = well
+        n = n_ell
+        base = [Vector((v.x, v.y, deck_z(v.x, v.y) - 0.004)) for v in ellipse(cx, cy, rx, ry, n)]
+        rim = [Vector((v.x, v.y, deck_z(v.x, v.y) + 0.01)) for v in ellipse(cx, cy, rx * 0.97, ry * 0.97, n)]
+        top = [Vector((v.x, v.y, deck_z(v.x, v.y) + 0.004)) for v in ellipse(cx, cy, rx * 0.86, ry * 0.88, n)]
+        parts.loft([base, rim, top], C["deck_dark"])
+        mid = Vector((cx, cy, deck_z(cx, cy) + 0.004))
+        tv = [parts.bm.verts.new(v) for v in top]
+        mv = parts.bm.verts.new(mid)
+        for i in range(n):
+            f = parts.bm.faces.new((tv[i], tv[(i + 1) % n], mv))
+            parts.colours[f] = C["deck_dark"] * 0.92
 
     if detail:
         # The seat: a padded pan and a backrest of three padded ribs (the reference's black seat)
@@ -429,6 +444,7 @@ def main():
         "end_rise": f("end_rise", 0.13),
         "lift": f("lift", 0.0),
         "simple": int(args.get("simple", 0)),
+        "solid_well": int(args.get("solid_well", 0)),
         "stations": int(args.get("stations", 18)),
         "cockpit_y": f("cockpit_y", 0.1),
         "cockpit_l": f("cockpit_l", 0.86),
@@ -452,10 +468,11 @@ def main():
     parts = build(asset, p)
     # The openings the game masks from the river water (cockpit, cargo well): centre and radii, Blender space
     deck = lambda y: station(p, y / (p["length"] / 2))[3]  # noqa: E731
-    sizes = [(p["cockpit_w"] / 2, p["cockpit_l"] / 2, 0.03), (p["well_w"] / 2, p["well_l"] / 2, 0.02)]
+    sizes = [(p["cockpit_w"] / 2, p["cockpit_l"] / 2, 0.03)] + ([] if p["solid_well"] else [(p["well_w"] / 2, p["well_l"] / 2, 0.02)])
+    count = len(sizes)
     bpy.context.scene["cr_water_masks"] = [[cx, cy, rx * k * 1.03, ry * k * 1.03, deck(cy) + lift]
                                           for (cx, cy, k), (rx, ry, lift) in zip(
-                                              [[*p["_masks"][i][:2], max(m[2] for m in p["_masks"][i::2])] for i in range(2)], sizes)]
+                                              [[*p["_masks"][i][:2], max(m[2] for m in p["_masks"][i::count])] for i in range(count)], sizes)]
     tris = {k: common.triangle_count(o) for k, o in parts.items()}
     print(f"[kayak] tris {tris}")
     if "draft" in args:

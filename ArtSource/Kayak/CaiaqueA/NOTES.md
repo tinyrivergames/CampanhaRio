@@ -39,5 +39,12 @@
 - Gerado com: `--length 3.3 --width 0.68 --widest 0.06 --rocker 0.11 --sheer_rise 0.07 --end_rise 0.13 --lift 0.08 --simple 1 --stations 12 --cockpit_y 0.1 --cockpit_l 0.86 --cockpit_w 0.44 --well_y 0.98 --well_l 0.52 --well_w 0.36 --hatch_y -1.17 --flat 0.75 --tone 0.04 --ramp 0.16 --wrap 0.35`
 - Triângulos: LOD0 1296, LOD1 828, LOD2 112
 - Prévia: `CaiaqueA_v004_preview.png`
-- **Feedback do desenvolvedor (literal):** _(aguardando)_
+- **Feedback do desenvolvedor (literal):** "ainda o fundo ta um pouco bugado com a textura da agua, corrige deixando essa parte solida ou arrumando ate o caiaque em si;"
 - **O que mudou:** Corrige o 'furo' atrás: o casco ganhou um forro interno escuro (qualquer abertura mostra o interior do barco, nunca a água), a borda cobre melhor o recorte do deck e a máscara da água cobre a borda inteira em todos os LODs. Visual igual à v003.
+
+### v005
+- Gerado com: `--length 3.3 --width 0.68 --widest 0.06 --rocker 0.11 --sheer_rise 0.07 --end_rise 0.13 --lift 0.08 --simple 1 --solid_well 1 --stations 12 --cockpit_y 0.1 --cockpit_l 0.86 --cockpit_w 0.44 --well_y 0.98 --well_l 0.52 --well_w 0.36 --hatch_y -1.17 --flat 0.75 --tone 0.04 --ramp 0.16 --wrap 0.35`
+- Triângulos: LOD0 1186, LOD1 754, LOD2 112
+- Prévia: `CaiaqueA_v005_preview.png`
+- **Feedback do desenvolvedor (literal):** _(aguardando)_
+- **O que mudou:** Espaço de carga sólido: no lugar do buraco, um painel laranja-escuro sobre o deck com a rede de cabos por cima (não há mais abertura por onde a água possa aparecer). O resto igual à v004.
