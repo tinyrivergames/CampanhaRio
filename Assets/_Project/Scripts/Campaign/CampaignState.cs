@@ -67,6 +67,14 @@ namespace CampanhaRio.Campaign
             Write($"job {jobId}: {(completed ? $"done {time:0.0} s, {stars} star(s), +{pay} money, +{reputation} rep" : "failed")}");
         }
 
+        /// <summary>The group arrived at the end of a river: one more for Seu Alce's jokes. Returns the count.</summary>
+        public int CountArrival()
+        {
+            Save.arrivals++;
+            Write("arrival " + Save.arrivals);
+            return Save.arrivals;
+        }
+
         public void AddSticker(string id) { if (!Save.vanStickers.Contains(id)) { Save.vanStickers.Add(id); Write("sticker " + id); } }
         public void AddTrophy(string id) { if (!Save.vanTrophies.Contains(id)) { Save.vanTrophies.Add(id); Write("trophy " + id); } }
 

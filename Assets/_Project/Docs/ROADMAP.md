@@ -7,7 +7,7 @@ paralelo. Cada fase termina com um relatório curto, e a próxima só começa qu
 |---|---|---|---|
 | **0. Fundação nova** | Projeto, sistemas portados, pipeline do Blender, shader macio, ciclo do dia, trechos carregados aos poucos, save, regra do pôr do sol | Um objeto feito no Blender aparece no Unity com a luz certa | ✅ **2026-10-03** |
 | **1. Âncoras de estilo** | **Pinheiro → rocha → caiaque**, pelo ciclo de aprovação (`ART_PIPELINE.md`), vistos também na hora dourada e no pôr do sol | O desenvolvedor aprova os 3 | ✅ **2026-10-05** |
-| **2. Caixa cinza do vertical slice** | Agência (hub), estrada curta, Rio do Moinho, chegada; **o sistema de trabalhos** (quadro de pedidos, modificadores de carga e passageiro, avaliação ⭐); **2 trabalhos no mesmo rio** (carta urgente, bode medroso); Seu Alce simples | Dá para jogar os 2 trabalhos com os amigos, e o mesmo rio parece diferente | **Em andamento** (2026-10-06) |
+| **2. Caixa cinza do vertical slice** | Agência (hub), estrada curta, Rio do Moinho, chegada; **o sistema de trabalhos** (quadro de pedidos, modificadores de carga e passageiro, avaliação ⭐); **2 trabalhos no mesmo rio** (carta urgente, bode medroso); Seu Alce simples | Dá para jogar os 2 trabalhos com os amigos, e o mesmo rio parece diferente | ✅ **2026-10-06** (falta o teste do desenvolvedor com os amigos) |
 | **3. Kit da floresta** | Lotes 2 e 3: variações de pinheiro, árvores de folha, arbustos, tufos, troncos, rochas, falésias, montanhas de fundo; terreno, margens, seixos, a água turquesa | A floresta aprovada | |
 | **4. Personagens e passageiros** | Os 4 amigos + os passageiros (bode, coruja, urso…): MeshAI → limpeza, rig e integração | Os 4 amigos + o bode animados no jogo | |
 | **5. Barcos, van e cargas** | Canoa, bote, boia, a van, remos, as encomendas (caixas, ovos, galinhas, piano…) | Aprovados | |
@@ -42,8 +42,8 @@ Também: câmera um pouco mais afastada (4,6 m, 16°); floresta e pedras de test
 - **C. Os lugares:** `Agencia` (o hub com o quadro e a van), `Estrada_Vale` (curta), `Rio_Moinho` (corredeiras, remansos e
   a primeira cachoeirinha) e a chegada, como cenas carregadas aos poucos. ✅ (o Rio do Moinho reaproveita o rio do KayakTest)
 - **D. O ciclo inteiro:** agência → quadro → van → largada → descida → chegada → avaliação → de volta à agência. ✅ (host + cliente, os 2 pedidos; `-cc-script slice`)
-- **E. O Seu Alce simples:** um boneco cinza na chegada, com uma piada diferente a cada chegada.
-- **F. Teste em grupo:** host + clientes (e bots) jogando os 2 trabalhos; o mesmo rio tem que parecer diferente.
+- **E. O Seu Alce simples:** um boneco cinza na chegada, com uma piada diferente a cada chegada. ✅
+- **F. Teste em grupo:** host + clientes (e bots) jogando os 2 trabalhos; o mesmo rio tem que parecer diferente. ✅ (host + 2 clientes + 1 bot, os 2 pedidos, `-cc-script slice -cc-players 3 -cc-bots 1`; o "parece diferente" é o teste do desenvolvedor)
 
 ## Pendências conhecidas
 - O terreno do KayakTest usa o shader de terreno do URP: ganha um shader no estilo SoftToon na Fase 3.

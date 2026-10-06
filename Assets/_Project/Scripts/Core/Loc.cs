@@ -83,6 +83,12 @@ namespace CampanhaRio.Core
             { "in the water! Fetch him!", "na água! Vão buscar!" },
 
             // ---- the slice's loop (AgencyFlow)
+            { "I took the shortcut. The shortcut took longer.", "Peguei o atalho. O atalho demorou mais." },
+            { "The van and I are the same age. She aged better.", "A van e eu temos a mesma idade. Ela envelheceu melhor." },
+            { "I waved at a bear on the road. He waved back. I think.", "Acenei para um urso na estrada. Ele acenou de volta. Acho." },
+            { "I parked on the first try. Don't ask about the other tries.", "Estacionei de primeira. Não perguntem das outras vezes." },
+            { "Seu Alce never gets lost. The road does.", "O Seu Alce nunca se perde. A estrada é que se perde." },
+            { "I brought snacks. I ate the snacks. It was a long road.", "Trouxe lanche. Comi o lanche. A estrada era longa." },
             { "Pick an order at the board (E)", "Escolha um pedido no quadro (E)" },
             { "The host picks the order at the board", "Quem criou a sala escolhe o pedido no quadro" },
             { "Everyone to the van! (E next to it)", "Todos para a van! (E perto dela)" },

@@ -21,6 +21,8 @@ namespace CampanhaRio.Campaign
         [Tooltip("The agency's money and reputation (from the jobs).")]
         public int money;
         public int reputation;
+        [Tooltip("Arrivals at the end of a river (Seu Alce has a new joke for each).")]
+        public int arrivals;
         public List<JobRecord> jobs = new List<JobRecord>();
         public string updatedUtc = "";
 

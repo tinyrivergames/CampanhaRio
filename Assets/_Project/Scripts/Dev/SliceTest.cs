@@ -72,7 +72,8 @@ namespace CampanhaRio.Dev
                 Debug.Log($"[Test] slice ({who}): {jobs[n]} arrived");
                 yield return Until(() => flow.Current == AgencyFlow.Phase.ReturnBoarding, 30f, "ashore");
                 yield return new WaitForSeconds(1.5f);
-                if (n == 0) yield return Shot("5_vila_chegada");
+                Debug.Log($"[Test] slice ({who}): arrival {flow.Arrivals}, Seu Alce: \"{Core.Loc.T(SeuAlce.JokeFor(flow.Arrivals - 1))}\"");
+                yield return Shot($"5_vila_chegada_{jobs[n]}");
                 if (flow.IsServer) flow.BoardEveryone();
                 yield return Until(() => flow.Current == AgencyFlow.Phase.Hub, 90f, "back at the agency");
                 Debug.Log($"[Test] slice ({who}): back at the agency after {jobs[n]}");

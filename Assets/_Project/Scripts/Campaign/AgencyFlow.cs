@@ -40,8 +40,11 @@ namespace CampanhaRio.Campaign
         readonly NetworkVariable<float> dayProgress = new NetworkVariable<float>(DayCycle.Afternoon);
         readonly NetworkVariable<float> fade = new NetworkVariable<float>();
         readonly NetworkVariable<GoatNet> goat = new NetworkVariable<GoatNet>();
+        readonly NetworkVariable<int> arrivals = new NetworkVariable<int>();
 
         public Phase Current => phase.Value;
+        /// <summary>How many times the group arrived at the end of a river (Seu Alce's jokes go in this order).</summary>
+        public int Arrivals => arrivals.Value;
         public string Message => message.Value.ToString();
         public JobDefinition Job { get; private set; }
         public JobRun Run { get; private set; }
@@ -61,6 +64,7 @@ namespace CampanhaRio.Campaign
             if (!IsServer) return;
             board.Accepted += Accept;
             NetworkPlayer.Interacted += OnInteract;
+            if (CampaignState.Current != null) arrivals.Value = CampaignState.Current.Save.arrivals;
             StartCoroutine(Begin());
         }
 
@@ -178,6 +182,13 @@ namespace CampanhaRio.Campaign
                 session.SpawnKayak(p.OwnerClientId, new Pose(s.point + s.right * side, Quaternion.LookRotation(s.direction)));
                 p.SetMode(NetworkPlayer.PlayerMode.Kayak);
             }
+            int bots = Mathf.RoundToInt(Dev.TestSwitches.Number("-cc-bots", 0f)); // test groups: autopilot kayaks owned by the host
+            for (int b = 0; b < bots; b++)
+            {
+                int i = NetworkPlayer.All.Count + b;
+                float side = ((i % 2 == 0) ? 1f : -1f) * 2.2f * ((i + 1) / 2);
+                session.SpawnKayak(NetworkManager.ServerClientId, new Pose(s.point + s.right * side - s.direction * 4f, Quaternion.LookRotation(s.direction)), bot: true);
+            }
             ParkVanAt(WorldMarker.Kind.VanStopArrival); // Seu Alce takes the van round to the village
             yield return new WaitForSeconds(1f); // the kayaks spawn everywhere
             Run.Finished -= Finished;
@@ -213,6 +224,9 @@ namespace CampanhaRio.Campaign
                 p.SetMode(NetworkPlayer.PlayerMode.Walk);
                 if (landing) p.Teleport(landing.transform.position + landing.transform.right * (1.6f * i) + Vector3.up);
             }
+            if (CampaignState.Current != null) arrivals.Value = CampaignState.Current.CountArrival();
+            else arrivals.Value++;
+            Debug.Log($"[Flow] arrival {arrivals.Value}: Seu Alce says '{SeuAlce.JokeFor(arrivals.Value - 1)}'");
             ready.Clear();
             phase.Value = Phase.ReturnBoarding;
             Say("Back to the agency: everyone to the van (E)");
