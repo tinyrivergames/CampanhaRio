@@ -9,7 +9,7 @@ namespace CampanhaRio.Campaign
     /// </summary>
     public class WorldMarker : MonoBehaviour
     {
-        public enum Kind { Entry, JobBoard, VanStopAgency, VanStopPutIn, VanStopArrival, SeuAlce, Landing, RoadPoint }
+        public enum Kind { Entry, JobBoard, VanStopAgency, VanStopPutIn, VanStopArrival, SeuAlce, Landing, RoadPoint, UpgradeBoard }
 
         static readonly List<WorldMarker> all = new List<WorldMarker>();
         public static IReadOnlyList<WorldMarker> All => all;

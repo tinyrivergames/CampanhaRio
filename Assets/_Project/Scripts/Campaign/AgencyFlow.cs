@@ -41,6 +41,7 @@ namespace CampanhaRio.Campaign
         readonly NetworkVariable<float> fade = new NetworkVariable<float>();
         readonly NetworkVariable<GoatNet> goat = new NetworkVariable<GoatNet>();
         readonly NetworkVariable<int> arrivals = new NetworkVariable<int>();
+        readonly NetworkVariable<int> upgradesOwned = new NetworkVariable<int>(); // one bit per AgencyUpgrades.All entry
 
         public Phase Current => phase.Value;
         /// <summary>How many times the group arrived at the end of a river (Seu Alce's jokes go in this order).</summary>
@@ -52,6 +53,7 @@ namespace CampanhaRio.Campaign
         public int JobsDone { get; private set; }
 
         JobBoard board;
+        UpgradesPanel upgrades;
         DayCycle day;
         readonly HashSet<ulong> ready = new HashSet<ulong>();
 
@@ -61,11 +63,14 @@ namespace CampanhaRio.Campaign
         public override void OnNetworkSpawn()
         {
             board = GetComponent<JobBoard>();
+            upgrades = GetComponent<UpgradesPanel>();
             if (!IsServer) return;
             board.Accepted += Accept;
             NetworkPlayer.Interacted += OnInteract;
             NetworkPlayer.SpawnedOnServer += Joined;
             if (CampaignState.Current != null) arrivals.Value = CampaignState.Current.Save.arrivals;
+            if (upgrades) upgrades.Bought += id => upgradesOwned.Value = OwnedMask();
+            upgradesOwned.Value = OwnedMask();
             StartCoroutine(Begin());
         }
 
@@ -99,6 +104,13 @@ namespace CampanhaRio.Campaign
             switch (phase.Value)
             {
                 case Phase.Hub:
+                    var shop = WorldMarker.Find(WorldMarker.Kind.UpgradeBoard);
+                    if (shop && upgrades && (shop.transform.position - p).sqrMagnitude <= reach * reach)
+                    {
+                        if (player.OwnerClientId == NetworkManager.ServerClientId) upgrades.Open();
+                        else Say("The host buys the upgrades");
+                        return;
+                    }
                     var spot = WorldMarker.Find(WorldMarker.Kind.JobBoard);
                     if (!spot || (spot.transform.position - p).sqrMagnitude > reach * reach) return;
                     if (player.OwnerClientId == NetworkManager.ServerClientId) board.Open();
@@ -292,6 +304,21 @@ namespace CampanhaRio.Campaign
             Debug.Log($"[Flow] {p.name} joined during the descent: a kayak at {s.point} ({behind - 8f:0} m down the river)");
         }
 
+        static int OwnedMask()
+        {
+            int mask = 0;
+            for (int i = 0; i < AgencyUpgrades.All.Count; i++) if (AgencyUpgrades.Owned(AgencyUpgrades.All[i].id)) mask |= 1 << i;
+            return mask;
+        }
+
+        /// <summary>Owned on the host (every machine knows it through the flow).</summary>
+        public bool UpgradeOwned(AgencyUpgrades.Effect effect)
+        {
+            for (int i = 0; i < AgencyUpgrades.All.Count; i++)
+                if (AgencyUpgrades.All[i].effect == effect && (upgradesOwned.Value & (1 << i)) != 0) return true;
+            return false;
+        }
+
         void ParkVanAt(WorldMarker.Kind kind)
         {
             var m = WorldMarker.Find(kind);
@@ -311,6 +338,8 @@ namespace CampanhaRio.Campaign
             }
             if (Time.unscaledTime < nextHud) return;
             nextHud = Time.unscaledTime + 0.1f;
+            int owned = OwnedMask();
+            if (owned != upgradesOwned.Value) upgradesOwned.Value = owned; // (bought at the panel, or by anything else)
             if (Run && Run.Job && (phase.Value == Phase.Kayaking || phase.Value == Phase.Arrived)) hud.Value = Run.Hud();
             if (Run && Run.Rule is ScaredGoatRule g)
             {
@@ -335,11 +364,16 @@ namespace CampanhaRio.Campaign
                 if (day) day.progress = dayProgress.Value;
             }
             Cameras();
+            AgencySign();
             if (!IsServer) GoatView();
         }
 
+        /// <summary>Tests and captures: leave the camera alone.</summary>
+        public static bool CameraOverride;
+
         void Cameras()
         {
+            if (CameraOverride) return;
             var cam = Camera.main;
             if (!cam) return;
             if (!coreView) coreView = cam.GetComponent<CoreView>();
@@ -347,6 +381,21 @@ namespace CampanhaRio.Campaign
             bool kayaking = NetworkPlayer.Local && NetworkPlayer.Local.Mode == NetworkPlayer.PlayerMode.Kayak && KayakRegistry.Local;
             if (coreView) coreView.enabled = !kayaking;
             if (kayakCamera) kayakCamera.enabled = kayaking;
+        }
+
+        Transform sign;
+        bool signNew;
+
+        /// <summary>The "new sign" upgrade: Grandma Nina's sign, repainted (bigger, golden), on every machine.</summary>
+        void AgencySign()
+        {
+            if (!sign) { var go = GameObject.Find("AgencySign"); if (!go) return; sign = go.transform; signNew = false; }
+            bool want = UpgradeOwned(AgencyUpgrades.Effect.AgencySign);
+            if (want == signNew) return;
+            signNew = want;
+            sign.localScale = want ? new Vector3(9f, 1.8f, 0.25f) : new Vector3(7f, 1.2f, 0.2f);
+            var r = sign.GetComponent<Renderer>();
+            if (r) r.material.SetColor("_BaseColor", want ? new Color(0.95f, 0.78f, 0.3f) : new Color(0.93f, 0.9f, 0.8f));
         }
 
         void GoatView()
@@ -374,7 +423,7 @@ namespace CampanhaRio.Campaign
             if (!IsSpawned) return;
             JobHud.Draw(hud.Value, showResult.Value ? result.Value : (JobResult?)null);
             string msg = message.Value.ToString();
-            if (!string.IsNullOrEmpty(msg) && !board.IsOpen)
+            if (!string.IsNullOrEmpty(msg) && !board.IsOpen && !(upgrades && upgrades.IsOpen))
             {
                 note ??= new GUIStyle(GUI.skin.box) { fontSize = Mathf.RoundToInt(20 * Screen.height / 1080f), alignment = TextAnchor.MiddleCenter, wordWrap = true };
                 float w = Screen.width * 0.42f, h = Screen.height * 0.06f;

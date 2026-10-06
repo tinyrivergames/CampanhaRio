@@ -75,6 +75,14 @@ namespace CampanhaRio.Campaign
             return Save.arrivals;
         }
 
+        public void BuyUpgrade(string id, int cost)
+        {
+            if (Save.upgrades.Contains(id)) return;
+            Save.money -= cost;
+            Save.upgrades.Add(id);
+            Write($"upgrade {id} (-{cost} money)");
+        }
+
         public void AddSticker(string id) { if (!Save.vanStickers.Contains(id)) { Save.vanStickers.Add(id); Write("sticker " + id); } }
         public void AddTrophy(string id) { if (!Save.vanTrophies.Contains(id)) { Save.vanTrophies.Add(id); Write("trophy " + id); } }
 

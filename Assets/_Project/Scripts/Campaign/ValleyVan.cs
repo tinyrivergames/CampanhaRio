@@ -57,7 +57,7 @@ namespace CampanhaRio.Campaign
                     flat.y = 0f;
                     float dist = flat.magnitude;
                     if (dist < (last ? 0.3f : 2.5f)) break;
-                    float v = speed * (last ? Mathf.Clamp(dist / arriveSlowdown, 0.2f, 1f) : 1f);
+                    float v = speed * (1f + AgencyUpgrades.Value(AgencyUpgrades.Effect.VanSpeed)) * (last ? Mathf.Clamp(dist / arriveSlowdown, 0.2f, 1f) : 1f);
                     var dir = flat / dist;
                     var rot = Quaternion.Slerp(transform.rotation, Quaternion.LookRotation(dir), 1f - Mathf.Exp(-3f * Time.deltaTime));
                     var pos = transform.position + dir * Mathf.Min(v * Time.deltaTime, dist);

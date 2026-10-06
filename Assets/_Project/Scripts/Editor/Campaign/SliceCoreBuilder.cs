@@ -55,6 +55,7 @@ namespace CampanhaRio.Editor
             flow.AddComponent<JobBoard>().catalog = AssetDatabase.LoadAssetAtPath<JobCatalog>("Assets/_Project/Resources/JobCatalog.asset");
             flow.AddComponent<AgencyFlow>();
             flow.AddComponent<SeuAlce>();
+            flow.AddComponent<UpgradesPanel>();
 
             // The kayak camera on Core's camera (AgencyFlow switches between it and CoreView)
             var cam = Camera.main;

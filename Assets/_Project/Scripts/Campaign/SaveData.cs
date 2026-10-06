@@ -24,6 +24,8 @@ namespace CampanhaRio.Campaign
         [Tooltip("Arrivals at the end of a river (Seu Alce has a new joke for each).")]
         public int arrivals;
         public List<JobRecord> jobs = new List<JobRecord>();
+        [Tooltip("The agency's and the van's upgrades bought (AgencyUpgrades ids).")]
+        public List<string> upgrades = new List<string>();
         public string updatedUtc = "";
 
         public RiverRecord River(string id)

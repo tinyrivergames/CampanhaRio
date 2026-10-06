@@ -55,7 +55,7 @@ namespace CampanhaRio.Editor
             Solid(shed, "FrontL", new Vector3(-23.5f, Ground + 3f, -340f), new Vector3(5f, 6f, 0.4f), plank);
             Solid(shed, "FrontR", new Vector3(-12.5f, Ground + 3f, -340f), new Vector3(5f, 6f, 0.4f), plank);
             KayakPrefabBuilder.Primitive(PrimitiveType.Cube, "Roof", shed, new Vector3(-18f, Ground + 6.3f, -346f), new Vector3(17f, 0.5f, 13f), roof);
-            KayakPrefabBuilder.Primitive(PrimitiveType.Cube, "Sign", shed, new Vector3(-18f, Ground + 5f, -339.7f), new Vector3(7f, 1.2f, 0.2f), paper);
+            KayakPrefabBuilder.Primitive(PrimitiveType.Cube, "AgencySign", shed, new Vector3(-18f, Ground + 5f, -339.7f), new Vector3(7f, 1.2f, 0.2f), paper);
             // Kayaks resting on a rack beside the shed
             for (int i = 0; i < 4; i++)
                 KayakPrefabBuilder.Primitive(PrimitiveType.Capsule, "RackKayak", shed, new Vector3(-31f, Ground + 0.6f + i * 0.5f, -346f), new Vector3(0.6f, 1.6f, 0.3f),
@@ -70,6 +70,12 @@ namespace CampanhaRio.Editor
             for (int i = 0; i < 3; i++)
                 KayakPrefabBuilder.Primitive(PrimitiveType.Cube, "Order", board, new Vector3(4.9f + i * 1.1f, Ground + 1.7f, -330.1f), new Vector3(0.7f, 0.9f, 0.05f), paper);
             Marker(root, WorldMarker.Kind.JobBoard, new Vector3(6f, Ground, -331.6f), 0f);
+            // The upgrades board by the shed's door
+            var shop = new GameObject("QuadroDeMelhorias").transform;
+            shop.SetParent(root, false);
+            Solid(shop, "Post", new Vector3(-8.5f, Ground + 1f, -337f), new Vector3(0.2f, 2f, 0.2f), wood);
+            KayakPrefabBuilder.Primitive(PrimitiveType.Cube, "Board", shop, new Vector3(-8.5f, Ground + 1.7f, -337f), new Vector3(1.6f, 1.1f, 0.12f), GrayboxMaterials.Get("VanBody", new Color(0.36f, 0.55f, 0.62f)));
+            Marker(root, WorldMarker.Kind.UpgradeBoard, new Vector3(-8.5f, Ground, -335.4f), 0f);
 
             // The van's stop at the yard's gate (facing the road)
             Solid(root, "Gravel", new Vector3(0f, Ground - 0.45f, -290f), new Vector3(10f, 1f, 50f), GrayboxMaterials.Get("Gravel", new Color(0.62f, 0.58f, 0.5f)));

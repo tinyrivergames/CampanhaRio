@@ -83,6 +83,18 @@ namespace CampanhaRio.Core
             { "in the water! Fetch him!", "na água! Vão buscar!" },
 
             // ---- the slice's loop (AgencyFlow)
+            { "Upgrades", "Melhorias" },
+            { "Buy ({0})", "Comprar ({0})" },
+            { "Owned", "Comprado" },
+            { "Needs reputation {0}", "Precisa de reputação {0}" },
+            { "{0} coins", "{0} moedas" },
+            { "The host buys the upgrades", "Quem criou a sala compra as melhorias" },
+            { "Roof rack for the van", "Bagageiro na van" },
+            { "Seu Alce drives a little faster with everything strapped on top.", "Com tudo amarrado em cima, o Seu Alce dirige um pouco mais rápido." },
+            { "A bigger orders board", "Um quadro de pedidos maior" },
+            { "Room for one more order on the board.", "Cabe mais um pedido no quadro." },
+            { "A new sign for the agency", "Uma placa nova para a agência" },
+            { "Grandma Nina's old sign, repainted. The village notices.", "A placa velha da Vó Nina, repintada. A vila repara." },
             { "I took the shortcut. The shortcut took longer.", "Peguei o atalho. O atalho demorou mais." },
             { "The van and I are the same age. She aged better.", "A van e eu temos a mesma idade. Ela envelheceu melhor." },
             { "I waved at a bear on the road. He waved back. I think.", "Acenei para um urso na estrada. Ele acenou de volta. Acho." },

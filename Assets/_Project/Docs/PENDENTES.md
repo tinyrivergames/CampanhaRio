@@ -30,3 +30,15 @@ Prints: `Assets/_Project/Docs/Screenshots/2026-10-06_fase2_*`.
 - O Rio do Moinho reaproveita o rio de teste (corredeiras, degrau, remansos). A "primeira cachoeirinha" ainda não
   existe: vem com o rio de verdade.
 - Um amigo que entra no meio de uma descida aparece a pé, junto do grupo (o "entrar no meio" de verdade é da Fase 7).
+
+## 3. As melhorias da agência e da van (Fase 7, primeiro rascunho)
+Compradas no **quadro azul ao lado da porta do galpão** (E; só quem criou a sala compra), com as moedas dos pedidos e
+liberadas pela reputação. As 3 de agora são provisórias (`Scripts/Campaign/AgencyUpgrades.cs`):
+| Melhoria | Custo | Reputação | O que faz |
+|---|---|---|---|
+| Bagageiro na van | 60 | 2 | a van do Seu Alce 25% mais rápida |
+| Um quadro de pedidos maior | 90 | 3 | 1 pedido a mais no quadro (3 → 4) |
+| Uma placa nova para a agência | 40 | 1 | a placa do galpão maior e dourada (só visual) |
+
+**Aprovar:** a lista, os preços e o que você quer que as melhorias façam (barcos novos? mais assentos na van? a
+agência crescendo em estágios?). Hoje um pedido paga 40 a 86 moedas.

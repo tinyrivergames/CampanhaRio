@@ -14,7 +14,9 @@ namespace CampanhaRio.Jobs
     public class JobBoard : MonoBehaviour
     {
         public JobCatalog catalog;
-        [Range(2, 4)] public int maxOffers = 4;
+        [Tooltip("Orders on the board at once (the \"bigger board\" upgrade adds one).")]
+        [Range(2, 4)] public int maxOffers = 3;
+        public int MaxOffers => Mathf.Clamp(maxOffers + Mathf.RoundToInt(Campaign.AgencyUpgrades.Value(Campaign.AgencyUpgrades.Effect.BoardSlot)), 2, 5);
 
         public bool IsOpen { get; private set; }
 
@@ -34,7 +36,7 @@ namespace CampanhaRio.Jobs
                 (Done(e.job) ? again : fresh).Add(e.job);
             }
             fresh.AddRange(again); // new orders first, then the ones to play again (for better stars)
-            if (fresh.Count > maxOffers) fresh.RemoveRange(maxOffers, fresh.Count - maxOffers);
+            if (fresh.Count > MaxOffers) fresh.RemoveRange(MaxOffers, fresh.Count - MaxOffers);
             return fresh;
         }
 
