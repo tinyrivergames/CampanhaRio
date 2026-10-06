@@ -12,7 +12,7 @@ paralelo. Cada fase termina com um relatório curto, e a próxima só começa qu
 | **4. Personagens e passageiros** | Os 4 amigos + os passageiros (bode, coruja, urso…): MeshAI → limpeza, rig e integração | Os 4 amigos + o bode animados no jogo | |
 | **5. Barcos, van e cargas** | Canoa, bote, boia, a van, remos, as encomendas (caixas, ovos, galinhas, piano…) | Aprovados | |
 | **6. Montagem do vertical slice** | Arte no lugar da caixa cinza; o prólogo (tempestade, galpão, caderneta); a primeira chegada do Seu Alce; a agência crescendo um estágio | Bonito do início ao fim | |
-| **7. Sistemas da campanha** | Save do host, reputação e dinheiro, melhorias da agência e da van, o mapa revelando o vale, amigo entrando no meio | Fechar, voltar e continuar | **Em andamento** (entrar no meio ✅, melhorias ✅ rascunho, mapa do vale ✅ rascunho) |
+| **7. Sistemas da campanha** | Save do host, reputação e dinheiro, melhorias da agência e da van, o mapa revelando o vale, amigo entrando no meio | Fechar, voltar e continuar | **Em andamento** (save do host e "fechar e voltar" ✅, entrar no meio ✅, melhorias ✅ rascunho, mapa do vale ✅ rascunho; a lista final de melhorias e lugares espera aprovação) |
 | **8. 🧪 Teste com amigos** | O vertical slice | **Querem o próximo pedido?** O mesmo rio com outro trabalho pareceu novo? | |
 | **9. Completar o Vale da Floresta** | Trabalhos 2 a 4, o especial do bote, os vilarejos, a festa | A região completa | |
 
@@ -33,6 +33,14 @@ As 3 âncoras aprovadas pelo ciclo de versões (notas literais em `ArtSource/<Fa
   não aparece sobre o casco nem dentro do barco (stencil). Remo provisório em vinho e marrom.
 Também: câmera um pouco mais afastada (4,6 m, 16°); floresta e pedras de teste no KayakTest; repositório no GitHub
 (`tinyrivergames/CampanhaRio`, privado).
+
+## O que a Fase 2 entregou (2026-10-06)
+O vertical slice inteiro em caixa cinza, jogável em grupo: a agência com o quadro de pedidos, a van do Seu Alce pela
+estrada, o Rio do Moinho (o rio de teste) com a largada e a Vila do Moinho na chegada, e o ciclo completo (pedido →
+van → descida → avaliação ⭐ → vila → de volta). Os 2 pedidos: a carta urgente (não pode molhar) e o bode medroso (o
+medo enche; ele pula e alguém busca). Tudo sincronizado (pedido, relógio, HUD, resultado, céu, bode). Testes:
+`-cc-script jobrun | jobrules | slice` (host + clientes + bots). Fase 7 adiantada: entrar no meio, melhorias, mapa do
+vale e "fechar e voltar" (`-cc-script upgrades | map | resume`). O que precisa do desenvolvedor: `PENDENTES.md`.
 
 ## Fase 2: o roteiro (uma parte por commit; tudo em caixa cinza, verificado em build de release)
 - **A. Sistema de trabalhos:** o pedido (rio + trabalho + prazo + pagamento), o quadro de pedidos (2 a 4, o
