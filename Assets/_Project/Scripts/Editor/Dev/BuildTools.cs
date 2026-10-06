@@ -21,6 +21,9 @@ namespace CampanhaRio.Editor
             "Assets/_Project/Scenes/Segments/Test_A.unity",
             "Assets/_Project/Scenes/Segments/Test_B.unity",
             "Assets/_Project/Scenes/Segments/Test_C.unity",
+            "Assets/_Project/Scenes/Segments/Agencia.unity",
+            "Assets/_Project/Scenes/Segments/Estrada_Vale.unity",
+            "Assets/_Project/Scenes/Segments/Rio_Moinho.unity",
             "Assets/_Project/Scenes/Dev/KayakTest.unity",
             "Assets/_Project/Scenes/Dev/LookDev.unity",
         };
