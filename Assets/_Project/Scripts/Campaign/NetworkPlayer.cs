@@ -29,6 +29,9 @@ namespace CampanhaRio.Campaign
         readonly NetworkVariable<byte> seat = new NetworkVariable<byte>();
         public PlayerMode Mode => mode.Value;
 
+        /// <summary>Host: a body appeared (a player joined, maybe in the middle of something).</summary>
+        public static event System.Action<NetworkPlayer> SpawnedOnServer;
+
         /// <summary>Host: this player pressed E (on foot).</summary>
         public static event System.Action<NetworkPlayer> Interacted;
 
@@ -40,6 +43,7 @@ namespace CampanhaRio.Campaign
             name = $"Player {OwnerClientId}";
             mode.OnValueChanged += (a, b) => ShowBody(b != PlayerMode.Kayak);
             ShowBody(mode.Value != PlayerMode.Kayak);
+            if (IsServer) SpawnedOnServer?.Invoke(this);
         }
 
         public override void OnNetworkDespawn()

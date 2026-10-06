@@ -12,7 +12,7 @@ paralelo. Cada fase termina com um relatório curto, e a próxima só começa qu
 | **4. Personagens e passageiros** | Os 4 amigos + os passageiros (bode, coruja, urso…): MeshAI → limpeza, rig e integração | Os 4 amigos + o bode animados no jogo | |
 | **5. Barcos, van e cargas** | Canoa, bote, boia, a van, remos, as encomendas (caixas, ovos, galinhas, piano…) | Aprovados | |
 | **6. Montagem do vertical slice** | Arte no lugar da caixa cinza; o prólogo (tempestade, galpão, caderneta); a primeira chegada do Seu Alce; a agência crescendo um estágio | Bonito do início ao fim | |
-| **7. Sistemas da campanha** | Save do host, reputação e dinheiro, melhorias da agência e da van, o mapa revelando o vale, amigo entrando no meio | Fechar, voltar e continuar | |
+| **7. Sistemas da campanha** | Save do host, reputação e dinheiro, melhorias da agência e da van, o mapa revelando o vale, amigo entrando no meio | Fechar, voltar e continuar | **Em andamento** (entrar no meio ✅) |
 | **8. 🧪 Teste com amigos** | O vertical slice | **Querem o próximo pedido?** O mesmo rio com outro trabalho pareceu novo? | |
 | **9. Completar o Vale da Floresta** | Trabalhos 2 a 4, o especial do bote, os vilarejos, a festa | A região completa | |
 

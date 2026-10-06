@@ -34,6 +34,7 @@ namespace CampanhaRio.Dev
             var flow = AgencyFlow.Instance;
             who = flow.IsServer ? "host" : "client";
             Debug.Log($"[Test] slice ({who}): flow is up");
+            if (TestSwitches.Has("-cc-late")) { yield return LateJoin(flow); yield break; }
             string[] jobs = { "carta_urgente", "bode_medroso" };
             for (int n = 0; n < jobs.Length; n++)
             {
@@ -85,6 +86,24 @@ namespace CampanhaRio.Dev
                 yield return new WaitForSeconds(5f); // the clients finish first
             }
             Debug.Log($"[Test] slice ({who}): done");
+            Application.Quit();
+        }
+
+        /// <summary>-cc-late: this client joined in the middle of a descent (join-in-progress).</summary>
+        IEnumerator LateJoin(AgencyFlow flow)
+        {
+            Debug.Log($"[Test] slice (late): joined in phase {flow.Current}");
+            yield return Until(() => KayakRegistry.Local, 40f, "my kayak (late)");
+            var k = KayakRegistry.Local;
+            Debug.Log($"[Test] slice (late): my kayak is on the river at {k.RiverSample.distanceAlong:0} m, with {KayakRegistry.All.Count} kayak(s); my body mode {NetworkPlayer.Local?.Mode}");
+            var auto = k.GetComponent<KayakAutopilot>();
+            if (auto) auto.SetActive(true);
+            yield return new WaitForSeconds(3f);
+            yield return Shot("late_rio");
+            yield return Until(() => flow.Current == AgencyFlow.Phase.Arrived, 300f, "arrived (late)");
+            Debug.Log("[Test] slice (late): saw the arrival");
+            yield return Until(() => flow.Current == AgencyFlow.Phase.ReturnBoarding, 30f, "ashore (late)");
+            Debug.Log($"[Test] slice (late): ashore, mode {NetworkPlayer.Local?.Mode}");
             Application.Quit();
         }
 

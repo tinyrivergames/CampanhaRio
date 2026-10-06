@@ -64,6 +64,7 @@ namespace CampanhaRio.Campaign
             if (!IsServer) return;
             board.Accepted += Accept;
             NetworkPlayer.Interacted += OnInteract;
+            NetworkPlayer.SpawnedOnServer += Joined;
             if (CampaignState.Current != null) arrivals.Value = CampaignState.Current.Save.arrivals;
             StartCoroutine(Begin());
         }
@@ -72,6 +73,7 @@ namespace CampanhaRio.Campaign
         {
             if (board) board.Accepted -= Accept;
             NetworkPlayer.Interacted -= OnInteract;
+            NetworkPlayer.SpawnedOnServer -= Joined;
         }
 
         // ================================================================ host
@@ -255,6 +257,39 @@ namespace CampanhaRio.Campaign
             fade.Value = 0f;
             Debug.Log("[Flow] back at the agency");
             ToHub();
+        }
+
+        /// <summary>
+        /// Host: someone joined in the middle (Phase 7, join-in-progress): in the van while it drives, a kayak just behind
+        /// the group while it paddles (a moment ghosted, so it never lands on a friend), on foot otherwise.
+        /// </summary>
+        void Joined(NetworkPlayer p)
+        {
+            switch (phase.Value)
+            {
+                case Phase.Driving:
+                    p.SetMode(NetworkPlayer.PlayerMode.Van, IndexOf(p));
+                    Debug.Log($"[Flow] {p.name} joined during the drive: in the van");
+                    break;
+                case Phase.Kayaking:
+                    StartCoroutine(KayakForLateJoiner(p));
+                    break;
+            }
+        }
+
+        IEnumerator KayakForLateJoiner(NetworkPlayer p)
+        {
+            var challenge = Run ? Run.Challenge : FindAnyObjectByType<RiverChallenge>();
+            var river = challenge.river ? challenge.river : FindAnyObjectByType<River.RiverPath>();
+            float behind = float.MaxValue;
+            foreach (var k in KayakRegistry.All) behind = Mathf.Min(behind, k.RiverSample.distanceAlong);
+            if (behind == float.MaxValue) behind = challenge.startAlong;
+            var s = river.GetPointAtDistance(Mathf.Max(challenge.startAlong, behind - 8f));
+            var sync = NetSession.Instance.SpawnKayak(p.OwnerClientId, new Pose(s.point, Quaternion.LookRotation(s.direction)));
+            p.SetMode(NetworkPlayer.PlayerMode.Kayak);
+            yield return new WaitForSeconds(0.5f);
+            if (sync) sync.Ghost(2f);
+            Debug.Log($"[Flow] {p.name} joined during the descent: a kayak at {s.point} ({behind - 8f:0} m down the river)");
         }
 
         void ParkVanAt(WorldMarker.Kind kind)
