@@ -117,3 +117,18 @@ but never use `-nographics` for anything visual.
   (+8%), then a pass with 1 of 2 kayaks finished in 91.3 s (gold) at day progress 0.48. The save recorded 4 attempts,
   3 failures, best 91.3 s, gold.
 - Not yet: syncing the timer and result to clients (Phase 2, with the Rio 1 graybox).
+
+## Boats over the water: stencil, and the D3D12 crash on quit (2026-10-06)
+- **Stencil for boats:** the hull material writes stencil bit 1 (the river water drawn over it skips the shore foam, which
+  the shallow depth would put on it); `BoatWaterMask.shader` caps the cockpit with bit 2 (no water drawn inside). Only the
+  boats turn it on: SoftToon's `_StencilComp` is 0 (off) by default, and the importer sets it from the sidecar's
+  `_StencilWriteMask`. `CampanhaRio > Art > Reimport Materials` rebuilds every pipeline material after such a change.
+- **The crash:** from the first stencil build on, the player crashed on quit (0xC0000005 in `D3D12Core.dll`, after
+  "CodeReloadManager destroyed"; DX11 was fine; it also happened when closing the window normally). Found by elimination
+  (no stencil: fine; any SoftToon stencil write: crash) and then by deleting the D3D12 pipeline cache
+  (`%TEMP%/TinyRiverGames/CampanhaRio/dx12_pso_cache_lib.bin`, 1.3 MB after dozens of builds): with a fresh cache every
+  build quits cleanly, also the older ones. The crashing runs never got to rewrite the cache: Unity crashed while saving
+  a corrupted pipeline library.
+- **Fix:** `BuildTools.BuildRelease` deletes this machine's cache after every build. **For release:** players' caches
+  could go bad the same way across updates; check Unity's D3D12 pipeline-cache options (or its issue tracker) before
+  shipping.

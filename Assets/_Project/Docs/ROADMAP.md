@@ -40,6 +40,7 @@ Também: câmera um pouco mais afastada (4,6 m, 16°); floresta e pedras de test
 - A regra do rio roda só no host: sincronizar o relógio e a avaliação com os clientes vem na Fase 2.
 - Os horários do dia no Blender (`review_scene.py`) copiam os do `DayCycle.cs`: mover a tabela para o `lookdev_rig.json`.
 - O remador ainda é o placeholder humano (os animais vêm na Fase 4; o rig já aceita outros ossos).
-- O jogo fecha com access violation no fim do encerramento (depois de salvar tudo; também na cena LookDev). Investigar.
+- Antes do lançamento: o cache de pipelines do D3D12 dos jogadores pode corromper entre atualizações (o crash ao fechar de
+  2026-10-06, `TECH_DECISIONS.md`); ver as opções do Unity para esse cache.
 - O remo é provisório (caixas): o remo definitivo vem na Fase 5.
 - Pinheiro LOD0 acima do orçamento (1.736 / 1.500): dá para tirar lâminas escondidas sem mudar o visual.

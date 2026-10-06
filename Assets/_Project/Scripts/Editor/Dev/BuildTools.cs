@@ -40,8 +40,22 @@ namespace CampanhaRio.Editor
                 options = BuildOptions.None,
             });
             var s = report.summary;
+            if (s.result == BuildResult.Succeeded) ClearPipelineCache();
             Debug.Log($"[Campanha] Build {s.result}: {s.outputPath} ({s.totalSize / (1024 * 1024)} MB, {s.totalErrors} errors, {s.totalTime.TotalSeconds:0} s)");
             if (Application.isBatchMode && s.result != BuildResult.Succeeded) EditorApplication.Exit(1);
+        }
+
+        /// <summary>
+        /// Deletes this machine's D3D12 pipeline cache of the player (%TEMP%/&lt;company&gt;/&lt;product&gt;/dx12_pso_cache_lib.bin).
+        /// After many builds with changing shader render states the cache got corrupted, and the player then crashed in
+        /// D3D12Core.dll while saving it on quit (TECH_DECISIONS, 2026-10-06). A fresh cache per build avoids that.
+        /// </summary>
+        static void ClearPipelineCache()
+        {
+            string path = Path.Combine(Path.GetTempPath(), PlayerSettings.companyName, PlayerSettings.productName, "dx12_pso_cache_lib.bin");
+            if (!File.Exists(path)) return;
+            try { File.Delete(path); Debug.Log($"[Campanha] Cleared the D3D12 pipeline cache ({path})."); }
+            catch (IOException e) { Debug.LogWarning($"[Campanha] Could not clear the D3D12 pipeline cache (is the game running?): {e.Message}"); }
         }
     }
 }

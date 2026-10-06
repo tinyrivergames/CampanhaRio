@@ -85,6 +85,20 @@ namespace CampanhaRio.Editor
             return h != null && h.Length > 0 ? h : null;
         }
 
+        /// <summary>Rebuilds every pipeline material from its sidecar (after a change to how materials are built).
+        /// Menu: CampanhaRio > Art > Reimport Materials. Batch: CampanhaRio.Editor.ArtImportPostprocessor.ReimportMaterials</summary>
+        [MenuItem("CampanhaRio/Art/Reimport Materials")]
+        public static void ReimportMaterials()
+        {
+            foreach (string guid in AssetDatabase.FindAssets("", new[] { ModelsDir.TrimEnd('/') }))
+            {
+                string path = AssetDatabase.GUIDToAssetPath(guid);
+                if (path.EndsWith(".softtoon.json")) AssetDatabase.ImportAsset(path, ImportAssetOptions.ForceUpdate);
+            }
+            AssetDatabase.SaveAssets();
+            Debug.Log("[Campanha] Pipeline materials rebuilt from their sidecars.");
+        }
+
         static void OnPostprocessAllAssets(string[] imported, string[] deleted, string[] moved, string[] movedFrom)
         {
             foreach (string path in imported)
@@ -150,6 +164,7 @@ namespace CampanhaRio.Editor
             mat.SetFloat("_Translucency", p._Translucency);
             mat.SetFloat("_StencilRef", p._StencilRef);
             mat.SetFloat("_StencilWriteMask", p._StencilWriteMask);
+            mat.SetFloat("_StencilComp", p._StencilWriteMask > 0f ? (float)UnityEngine.Rendering.CompareFunction.Always : 0f); // stencil off for everything but the boats (D3D12: see TECH_DECISIONS)
 
             // A texture with alpha is clipped; a mesh without one never pays for alpha testing
             var tex = string.IsNullOrEmpty(p._BaseMap) ? null : AssetDatabase.LoadAssetAtPath<Texture2D>(p._BaseMap);
