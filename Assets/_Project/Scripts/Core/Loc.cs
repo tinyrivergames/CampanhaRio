@@ -84,6 +84,12 @@ namespace CampanhaRio.Core
 
             // ---- the slice's loop (AgencyFlow)
             { "Upgrades", "Melhorias" },
+            { "Room", "Sala" },
+            { "Friends join with this address: {0}:{1}", "Os amigos entram com este endereço: {0}:{1}" },
+            { "Players: {0}", "Jogadores: {0}" },
+            { "Join a friend's room (their address):", "Entrar na sala de um amigo (o endereço dele):" },
+            { "Join", "Entrar" },
+            { "Online rooms with a code come later (they need the Unity Cloud link). For now: the same network, or a virtual LAN like Radmin VPN.", "Salas online com código vêm depois (precisam da Unity Cloud). Por enquanto: a mesma rede, ou uma rede virtual como o Radmin VPN." },
             { "The valley", "O vale" },
             { "(M closes the map)", "(M fecha o mapa)" },
             { "(coming soon)", "(em breve)" },

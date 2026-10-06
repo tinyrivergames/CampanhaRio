@@ -29,7 +29,7 @@ namespace CampanhaRio.Campaign
             string segs = SegmentStreamer.Instance ? string.Join(", ", SegmentStreamer.Instance.LoadedSegments) : "-";
             string cp = CampaignState.Current != null ? CampaignState.Current.Save.checkpoint : "(do host)";
             GUI.Label(new Rect(12, 8, 900, 22), $"CampanhaRio (graybox)   rede: {net}   jogadores: {NetworkPlayer.All.Count}");
-            GUI.Label(new Rect(12, 28, 900, 22), $"trechos carregados: {segs}   checkpoint: {cp}   WASD anda, Shift corre");
+            GUI.Label(new Rect(12, 28, 900, 22), $"trechos carregados: {segs}   checkpoint: {cp}   WASD anda, Shift corre, E usa, M mapa, Tab sala (convidar amigos)");
         }
     }
 }

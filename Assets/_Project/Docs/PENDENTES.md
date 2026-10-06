@@ -8,8 +8,11 @@ vila → volta à agência. Os 2 pedidos: **carta urgente** e **bode medroso**.
 
 **Como jogar** (pasta `Builds/CampanhaRio`):
 - Sozinho: `CampanhaRio.exe`
-- Com amigos: quem cria a sala abre `CampanhaRio.exe -cc-host`; os outros, `CampanhaRio.exe -cc-join <ip>`.
-- **WASD** anda, **Shift** corre, **E** usa o quadro (só quem criou a sala escolhe) e entra na van.
+- Com amigos: todo jogo já é uma sala. Aperte **Tab**: aparece o seu endereço (com o Radmin VPN, o 26.x.x.x).
+  Os amigos abrem o jogo, apertam **Tab**, digitam esse endereço e clicam em **Entrar** (o jogo reabre conectado).
+  (Ainda vale pela linha de comando: `-cc-host` e `-cc-join <ip>`.)
+- **WASD** anda, **Shift** corre, **E** usa o quadro (só quem criou a sala escolhe) e entra na van, **M** abre o mapa,
+  **Tab** a sala.
 - No caiaque, os controles de sempre.
 
 **O que eu queria saber:**
