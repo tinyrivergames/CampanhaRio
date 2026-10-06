@@ -56,6 +56,7 @@ namespace CampanhaRio.Editor
             flow.AddComponent<AgencyFlow>();
             flow.AddComponent<SeuAlce>();
             flow.AddComponent<UpgradesPanel>();
+            flow.AddComponent<ValleyMap>();
 
             // The kayak camera on Core's camera (AgencyFlow switches between it and CoreView)
             var cam = Camera.main;

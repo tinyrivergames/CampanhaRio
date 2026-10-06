@@ -42,10 +42,14 @@ namespace CampanhaRio.Campaign
         readonly NetworkVariable<GoatNet> goat = new NetworkVariable<GoatNet>();
         readonly NetworkVariable<int> arrivals = new NetworkVariable<int>();
         readonly NetworkVariable<int> upgradesOwned = new NetworkVariable<int>(); // one bit per AgencyUpgrades.All entry
+        readonly NetworkVariable<int> mapRevealed = new NetworkVariable<int>();
+        readonly NetworkVariable<FixedString128Bytes> toast = new NetworkVariable<FixedString128Bytes>();
 
         public Phase Current => phase.Value;
         /// <summary>How many times the group arrived at the end of a river (Seu Alce's jokes go in this order).</summary>
         public int Arrivals => arrivals.Value;
+        /// <summary>The valley map's revealed places (one bit per ValleyMap.Places entry).</summary>
+        public int MapRevealed => mapRevealed.Value;
         public string Message => message.Value.ToString();
         public JobDefinition Job { get; private set; }
         public JobRun Run { get; private set; }
@@ -63,6 +67,7 @@ namespace CampanhaRio.Campaign
         public override void OnNetworkSpawn()
         {
             board = GetComponent<JobBoard>();
+            toast.OnValueChanged += (a, b) => toastAt = Time.unscaledTime;
             upgrades = GetComponent<UpgradesPanel>();
             if (!IsServer) return;
             board.Accepted += Accept;
@@ -304,6 +309,25 @@ namespace CampanhaRio.Campaign
             Debug.Log($"[Flow] {p.name} joined during the descent: a kayak at {s.point} ({behind - 8f:0} m down the river)");
         }
 
+        /// <summary>Host: the map follows the save; each place shows up once with a "new on the map" note.</summary>
+        void MapUpdate()
+        {
+            var save = CampaignState.Current?.Save;
+            int mask = ValleyMap.RevealedMask(save);
+            if (mask != mapRevealed.Value) mapRevealed.Value = mask;
+            if (save == null) return;
+            int fresh = mask & ~save.mapSeen;
+            if (fresh == 0) return;
+            if (save.mapSeen != 0) // (the first places are simply known: no note at the very start)
+                for (int i = 0; i < ValleyMap.Places.Count; i++)
+                    if ((fresh & (1 << i)) != 0)
+                    {
+                        toast.Value = new FixedString128Bytes(ValleyMap.Places[i].name);
+                        Debug.Log($"[Flow] new on the map: {ValleyMap.Places[i].name}");
+                    }
+            CampaignState.Current.SetMapSeen(mask);
+        }
+
         static int OwnedMask()
         {
             int mask = 0;
@@ -338,6 +362,7 @@ namespace CampanhaRio.Campaign
             }
             if (Time.unscaledTime < nextHud) return;
             nextHud = Time.unscaledTime + 0.1f;
+            MapUpdate();
             int owned = OwnedMask();
             if (owned != upgradesOwned.Value) upgradesOwned.Value = owned; // (bought at the panel, or by anything else)
             if (Run && Run.Job && (phase.Value == Phase.Kayaking || phase.Value == Phase.Arrived)) hud.Value = Run.Hud();
@@ -417,6 +442,7 @@ namespace CampanhaRio.Campaign
         }
 
         GUIStyle note;
+        float toastAt = -100f;
 
         void OnGUI()
         {
@@ -428,6 +454,12 @@ namespace CampanhaRio.Campaign
                 note ??= new GUIStyle(GUI.skin.box) { fontSize = Mathf.RoundToInt(20 * Screen.height / 1080f), alignment = TextAnchor.MiddleCenter, wordWrap = true };
                 float w = Screen.width * 0.42f, h = Screen.height * 0.06f;
                 GUI.Box(new Rect((Screen.width - w) / 2f, Screen.height * 0.08f, w, h), Loc.T(msg), note);
+            }
+            if (Time.unscaledTime - toastAt < 6f && toast.Value.Length > 0)
+            {
+                note ??= new GUIStyle(GUI.skin.box) { fontSize = Mathf.RoundToInt(20 * Screen.height / 1080f), alignment = TextAnchor.MiddleCenter, wordWrap = true };
+                float tw = Screen.width * 0.3f, th = Screen.height * 0.06f;
+                GUI.Box(new Rect((Screen.width - tw) / 2f, Screen.height * 0.16f, tw, th), Loc.F("New on the map: {0}", Loc.T(toast.Value.ToString())) + "  (M)", note);
             }
             if (fade.Value > 0f)
             {

@@ -84,6 +84,16 @@ namespace CampanhaRio.Core
 
             // ---- the slice's loop (AgencyFlow)
             { "Upgrades", "Melhorias" },
+            { "The valley", "O vale" },
+            { "(M closes the map)", "(M fecha o mapa)" },
+            { "(coming soon)", "(em breve)" },
+            { "New on the map: {0}", "Novo no mapa: {0}" },
+            { "Grandma Nina's agency", "A agência da Vó Nina" },
+            { "The valley road", "A estrada do vale" },
+            { "Rio do Moinho", "Rio do Moinho" },
+            { "Vila do Moinho", "Vila do Moinho" },
+            { "Rio das Pedras", "Rio das Pedras" },
+            { "Vila das Pedras", "Vila das Pedras" },
             { "Buy ({0})", "Comprar ({0})" },
             { "Owned", "Comprado" },
             { "Needs reputation {0}", "Precisa de reputação {0}" },

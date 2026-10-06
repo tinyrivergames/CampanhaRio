@@ -26,6 +26,8 @@ namespace CampanhaRio.Campaign
         public List<JobRecord> jobs = new List<JobRecord>();
         [Tooltip("The agency's and the van's upgrades bought (AgencyUpgrades ids).")]
         public List<string> upgrades = new List<string>();
+        [Tooltip("The valley map's places already announced (a bit mask, ValleyMap.Places).")]
+        public int mapSeen;
         public string updatedUtc = "";
 
         public RiverRecord River(string id)

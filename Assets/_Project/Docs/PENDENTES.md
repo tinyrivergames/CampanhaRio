@@ -29,7 +29,8 @@ Prints: `Assets/_Project/Docs/Screenshots/2026-10-06_fase2_*`.
 - A volta da vila para a agência é um escurecer de tela (o Seu Alce leva vocês).
 - O Rio do Moinho reaproveita o rio de teste (corredeiras, degrau, remansos). A "primeira cachoeirinha" ainda não
   existe: vem com o rio de verdade.
-- Um amigo que entra no meio de uma descida aparece a pé, junto do grupo (o "entrar no meio" de verdade é da Fase 7).
+- Um amigo pode entrar a qualquer momento: durante a viagem vai direto para a van; durante a descida ganha um caiaque
+  logo atrás do grupo (Fase 7, já feito).
 
 ## 3. As melhorias da agência e da van (Fase 7, primeiro rascunho)
 Compradas no **quadro azul ao lado da porta do galpão** (E; só quem criou a sala compra), com as moedas dos pedidos e
@@ -42,3 +43,9 @@ liberadas pela reputação. As 3 de agora são provisórias (`Scripts/Campaign/A
 
 **Aprovar:** a lista, os preços e o que você quer que as melhorias façam (barcos novos? mais assentos na van? a
 agência crescendo em estágios?). Hoje um pedido paga 40 a 86 moedas.
+
+## 4. O mapa do vale (Fase 7, primeiro rascunho)
+**M** abre o mapa (todo mundo). Ele se revela com o save do host: começa com a agência, a estrada e o Rio do Moinho;
+a **Vila do Moinho** aparece depois da carta urgente; o **Rio das Pedras** com reputação 4 e a **Vila das Pedras** com
+6 (os dois "em breve"). Cada lugar novo avisa uma vez ("Novo no mapa: ..."). Lugares e regras em
+`Scripts/Campaign/ValleyMap.cs`. **Aprovar:** os lugares, os nomes e o que revela cada um. O desenho é caixa cinza.

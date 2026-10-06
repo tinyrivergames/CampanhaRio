@@ -75,6 +75,13 @@ namespace CampanhaRio.Campaign
             return Save.arrivals;
         }
 
+        public void SetMapSeen(int mask)
+        {
+            if (Save.mapSeen == mask) return;
+            Save.mapSeen = mask;
+            Write("map " + mask);
+        }
+
         public void BuyUpgrade(string id, int cost)
         {
             if (Save.upgrades.Contains(id)) return;
