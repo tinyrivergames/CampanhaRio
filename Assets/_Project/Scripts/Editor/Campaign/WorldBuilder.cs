@@ -31,6 +31,7 @@ namespace CampanhaRio.Editor
             BuildEstrada();
             BuildRioMoinho();
             PatchCore();
+            ForestDressing.Build(); // the river's forest and ground (Rio_Moinho is rebuilt from KayakTest above)
             Debug.Log("[Campanha] Vertical slice world built: " + string.Join(", ", Order));
         }
 
@@ -243,7 +244,7 @@ namespace CampanhaRio.Editor
         /// <summary>Graybox trees (the approved pine) scattered in a rect, away from a clearing.</summary>
         static void Trees(Transform root, Rect area, int count, int seed, Rect clear)
         {
-            var pine = AssetDatabase.LoadAssetAtPath<GameObject>("Assets/_Project/Art/Models/Pine/PinheiroA.fbx");
+            var pines = new[] { "PinheiroA", "PinheiroB", "PinheiroC" };
             var rng = new System.Random(seed);
             var trees = new GameObject("Trees").transform;
             trees.SetParent(root, false);
@@ -251,6 +252,7 @@ namespace CampanhaRio.Editor
             {
                 var p = new Vector3(area.x + (float)rng.NextDouble() * area.width, Ground - 0.1f, area.y + (float)rng.NextDouble() * area.height);
                 if (clear.Contains(new Vector2(p.x, p.z))) continue;
+                var pine = AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/_Project/Art/Models/Pine/{pines[rng.Next(pines.Length)]}.fbx");
                 var tree = (GameObject)PrefabUtility.InstantiatePrefab(pine, trees);
                 tree.transform.SetPositionAndRotation(p, Quaternion.Euler(0f, (float)rng.NextDouble() * 360f, 0f));
                 tree.transform.localScale = Vector3.one * (0.8f + (float)rng.NextDouble() * 0.5f);
