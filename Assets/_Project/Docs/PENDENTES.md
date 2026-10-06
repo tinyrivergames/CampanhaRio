@@ -65,3 +65,12 @@ referência, B, C, D).
 - **RochaD:** pedra alta (~2,3 m).
 
 **Aprovar:** quais entram (e o que mudar). Aprovadas, elas vão para a floresta e as margens do Rio do Moinho.
+
+## 6. A floresta, primeira passada (Fase 3, 2026-10-06 à noite)
+O Rio do Moinho agora tem: as variações aprovadas no jogo (3 pinheiros, 4 pedras), **3.000 pinheiros** misturados nas
+encostas visíveis do rio (até 70 m da água), **700 pedras** (seixos e lajes na margem, pedras altas na encosta), e o
+**chão texturizado**: grama com manchas, terra numa faixa da margem e nos barrancos, cascalho na beira d'água.
+Print: `Docs/Screenshots/2026-10-06_fase3/floresta_rio.png`. **Ainda falta** (cada um passa pela aprovação): tufos de
+grama, capim alto, arbustos, samambaias, flores, cogumelos, troncos caídos (a sua referência) e o shader de terreno no
+estilo SoftToon. **Pedido seu ainda na fila:** você dirigir a van + várias estradas saindo da agência (mapa "mundo
+aberto").
