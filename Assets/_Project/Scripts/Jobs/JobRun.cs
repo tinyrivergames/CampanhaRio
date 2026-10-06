@@ -5,14 +5,13 @@ using UnityEngine;
 
 namespace CampanhaRio.Jobs
 {
-    /// <summary>The rating of a finished job (PLANO_CAMPANHA 4): up to 3 stars, plus gold for Grandma's time.</summary>
+    /// <summary>The rating of a finished job (PLANO_CAMPANHA 4): up to 3 stars.</summary>
     [Serializable]
     public struct JobResult
     {
         public bool completed;
         [Tooltip("Before sunset (always, when completed) + cargo/passenger + time.")]
         public bool sunsetStar, conditionStar, timeStar;
-        public bool golden;
         public float time, condition;
         public int pay, reputation;
         public int Stars => (sunsetStar ? 1 : 0) + (conditionStar ? 1 : 0) + (timeStar ? 1 : 0);
@@ -22,8 +21,7 @@ namespace CampanhaRio.Jobs
             var r = new JobResult { completed = true, sunsetStar = true, time = time, condition = condition };
             r.conditionStar = condition >= job.conditionStar;
             r.timeStar = time <= job.TimeStar;
-            r.golden = time <= job.grandmaTime;
-            r.pay = job.pay + job.payPerStar * (r.Stars + (r.golden ? 1 : 0));
+            r.pay = job.pay + job.payPerStar * r.Stars;
             r.reputation = job.reputation + (r.Stars == 3 ? 1 : 0);
             return r;
         }
@@ -74,7 +72,7 @@ namespace CampanhaRio.Jobs
             Challenge.Passed += OnPassed;
             Challenge.Failed -= OnFailed;
             Challenge.Failed += OnFailed;
-            Debug.Log($"[Job] {job.id}: '{job.title}' on {Challenge.riverId}, rule {job.rule}, limit {job.timeLimit:0} s, Grandma's time {job.grandmaTime:0} s");
+            Debug.Log($"[Job] {job.id}: '{job.title}' on {Challenge.riverId}, rule {job.rule}, limit {job.timeLimit:0} s");
             Challenge.Begin();
         }
 
@@ -91,15 +89,15 @@ namespace CampanhaRio.Jobs
             Result = result;
             resultShownAt = Time.unscaledTime;
             Debug.Log($"[Job] {Job.id}: DONE in {time:0.0} s, condition {result.condition:0.00} -> {result.Stars} star(s)" +
-                      $" (sunset {result.sunsetStar}, cargo {result.conditionStar}, time {result.timeStar}){(result.golden ? " + GOLD (Grandma's time)" : "")}, pay {result.pay}, rep +{result.reputation}");
-            CampaignState.Current?.RecordJob(Job.id, true, time, result.Stars, result.golden, result.pay, result.reputation);
+                      $" (sunset {result.sunsetStar}, cargo {result.conditionStar}, time {result.timeStar}), pay {result.pay}, rep +{result.reputation}");
+            CampaignState.Current?.RecordJob(Job.id, true, time, result.Stars, result.pay, result.reputation);
             Finished?.Invoke(result);
         }
 
         void OnFailed()
         {
             Debug.Log($"[Job] {Job.id}: night fell, trying again");
-            CampaignState.Current?.RecordJob(Job.id, false, Challenge.Elapsed, 0, false, 0, 0);
+            CampaignState.Current?.RecordJob(Job.id, false, Challenge.Elapsed, 0, 0, 0);
         }
 
         // ---------------------------------------------------------------- graybox HUD
@@ -118,7 +116,6 @@ namespace CampanhaRio.Jobs
             GUILayout.Label(Loc.T(Job.title), big);
             float left = Mathf.Max(0f, Challenge.EffectiveLimit - Challenge.Elapsed);
             GUILayout.Label(Loc.F("Sunset in {0}", Clock(left)), small);
-            GUILayout.Label(Loc.F("Grandma's time: {0}", Clock(Job.grandmaTime)), small);
             if (Rule && !string.IsNullOrEmpty(Rule.Label))
             {
                 GUILayout.Label($"{Loc.T(Rule.Label)}: {Loc.T(Rule.State)}", small);
@@ -144,11 +141,10 @@ namespace CampanhaRio.Jobs
                 var r = Result.Value;
                 GUILayout.BeginArea(new Rect(1920 / 2 - 260, 300, 520, 260), GUI.skin.box);
                 GUILayout.Label(Loc.T("Delivered!"), big);
-                GUILayout.Label(new string('★', r.Stars) + new string('☆', 3 - r.Stars) + (r.golden ? "  ✦" : ""), new GUIStyle(big) { fontSize = 44 });
+                GUILayout.Label(new string('★', r.Stars) + new string('☆', 3 - r.Stars), new GUIStyle(big) { fontSize = 44 });
                 GUILayout.Label((r.sunsetStar ? "★ " : "☆ ") + Loc.T("Before sunset"), small);
                 GUILayout.Label((r.conditionStar ? "★ " : "☆ ") + Loc.T(Job.kind == JobKind.Passenger ? "Happy passenger" : "Cargo in one piece"), small);
                 GUILayout.Label((r.timeStar ? "★ " : "☆ ") + Loc.F("Within {0}", Clock(Job.TimeStar)), small);
-                if (r.golden) GUILayout.Label("✦ " + Loc.T("Faster than Grandma!"), small);
                 GUILayout.Label(Loc.F("+{0} coins, +{1} reputation", r.pay, r.reputation), small);
                 GUILayout.EndArea();
             }

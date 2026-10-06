@@ -32,7 +32,6 @@ namespace CampanhaRio.Editor
                 j.riverId = "Rio_Moinho";
                 j.timeLimit = 240f;
                 j.timeStarShare = 0.8f;
-                j.grandmaTime = 165f;
                 j.conditionStar = 0.6f;
                 j.pay = 40;
                 j.payPerStar = 10;
@@ -49,7 +48,6 @@ namespace CampanhaRio.Editor
                 j.riverId = "Rio_Moinho";
                 j.timeLimit = 300f;
                 j.timeStarShare = 0.85f;
-                j.grandmaTime = 210f;
                 j.conditionStar = 0.5f;
                 j.pay = 50;
                 j.payPerStar = 12;

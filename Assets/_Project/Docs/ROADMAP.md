@@ -12,7 +12,7 @@ paralelo. Cada fase termina com um relatório curto, e a próxima só começa qu
 | **4. Personagens e passageiros** | Os 4 amigos + os passageiros (bode, coruja, urso…): MeshAI → limpeza, rig e integração | Os 4 amigos + o bode animados no jogo | |
 | **5. Barcos, van e cargas** | Canoa, bote, boia, a van, remos, as encomendas (caixas, ovos, galinhas, piano…) | Aprovados | |
 | **6. Montagem do vertical slice** | Arte no lugar da caixa cinza; o prólogo (tempestade, galpão, caderneta); a primeira chegada do Seu Alce; a agência crescendo um estágio | Bonito do início ao fim | |
-| **7. Sistemas da campanha** | Save do host, reputação e dinheiro, melhorias da agência e da van, o mapa revelando o vale, o tempo da Vó, amigo entrando no meio | Fechar, voltar e continuar | |
+| **7. Sistemas da campanha** | Save do host, reputação e dinheiro, melhorias da agência e da van, o mapa revelando o vale, amigo entrando no meio | Fechar, voltar e continuar | |
 | **8. 🧪 Teste com amigos** | O vertical slice | **Querem o próximo pedido?** O mesmo rio com outro trabalho pareceu novo? | |
 | **9. Completar o Vale da Floresta** | Trabalhos 2 a 4, o especial do bote, os vilarejos, a festa | A região completa | |
 
@@ -35,9 +35,8 @@ Também: câmera um pouco mais afastada (4,6 m, 16°); floresta e pedras de test
 (`tinyrivergames/CampanhaRio`, privado).
 
 ## Fase 2: o roteiro (uma parte por commit; tudo em caixa cinza, verificado em build de release)
-- **A. Sistema de trabalhos:** o pedido (rio + trabalho + prazo + tempo da Vó + pagamento), o quadro de pedidos (2 a 4, o
-  host escolhe), o modificador em cima da regra do pôr do sol, a avaliação (⭐ pôr do sol, ⭐ carga/passageiro, ⭐ tempo;
-  ouro extra no tempo da Vó), o save. ✅ (a sincronização com os clientes vai para a parte D, junto com o rio em rede)
+- **A. Sistema de trabalhos:** o pedido (rio + trabalho + prazo + pagamento), o quadro de pedidos (2 a 4, o
+  host escolhe), o modificador em cima da regra do pôr do sol, a avaliação (⭐ pôr do sol, ⭐ carga/passageiro, ⭐ tempo), o save. ✅ (a sincronização com os clientes vai para a parte D, junto com o rio em rede)
 - **B. Os 2 trabalhos:** **carta urgente** (a regra básica: prazo apertado, a carta não pode molhar demais) e **bode
   medroso** (o medo enche com velocidade e pulos; cheio, ele pula na água e alguém tem que buscá-lo). ✅
 - **C. Os lugares:** `Agencia` (o hub com o quadro e a van), `Estrada_Vale` (curta), `Rio_Moinho` (corredeiras, remansos e

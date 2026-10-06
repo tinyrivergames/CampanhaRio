@@ -85,13 +85,13 @@ contexto e o que ler primeiro → objetivo → regras de processo → Partes (A,
 ### Os pilares
 1. **Cada descida é uma surpresa:** "Rio × Trabalho".
 2. **Juntos:** 4 amigos, com o progresso do host.
-3. **O rio é o desafio:** chegar antes do pôr do sol, com a carga inteira e o passageiro feliz. **Bater o tempo da Vó** é a maestria.
+3. **O rio é o desafio:** chegar antes do pôr do sol, com a carga inteira e o passageiro feliz.
 4. **Ver o mundo melhorar:** a agência cresce e os vilarejos revivem.
 5. **Bonito e macio.**
 
 ### Os personagens e o mundo
 - **Os 4 amigos são animais**, no espírito de *Ultimate Chicken Horse*. O Henrique cria no MeshAI e o engenheiro limpa, rigga e integra.
-- **A Vó Nina:** a lendária barqueira do vale, fundadora da agência. Está presente pela **caderneta** (anotações e fotos dela) e pelos **tempos dela entalhados** nas chegadas.
+- **A Vó Nina:** a lendária barqueira do vale, fundadora da agência. Está presente pela **caderneta** (anotações e fotos dela).
 - **O Seu Alce:** amigo da Vó, que leva a van até o fim de cada rio. **Isso se explica uma vez só**, e cada chegada tem uma piada diferente.
 - **Os moradores** (bichos do vale) fazem os pedidos e mostram os vilarejos revivendo.
 
@@ -104,7 +104,7 @@ contexto e o que ler primeiro → objetivo → regras de processo → Partes (A,
 - **Barcos (progressão):** caiaque → canoa dupla → bote de 4 → boia.
 
 ### O ciclo
-Quadro de pedidos → escolher o trabalho e o rio no mapa do vale → van até o rio → descer → chegada antes do pôr do sol (a van já está lá) → avaliação ⭐ (pôr do sol + carga ou passageiro + estilo/tempo da Vó) → dinheiro e reputação → melhorar a agência, a van e os barcos → novos pedidos e rios.
+Quadro de pedidos → escolher o trabalho e o rio no mapa do vale → van até o rio → descer → chegada antes do pôr do sol (a van já está lá) → avaliação ⭐ (pôr do sol + carga ou passageiro + estilo ou tempo) → dinheiro e reputação → melhorar a agência, a van e os barcos → novos pedidos e rios.
 - **Concluir** = pelo menos **metade do grupo** chega antes do pôr do sol. **Se falhar,** anoitece, a tela escurece, e volta-se à largada. Depois de 3 ou 4 falhas, o tempo afrouxa sem ninguém perceber.
 - **O progresso é do host.** As roupas e os recordes são de cada jogador.
 

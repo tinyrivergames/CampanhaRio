@@ -52,7 +52,7 @@ namespace CampanhaRio.Campaign
         }
 
         /// <summary>A job attempt ended. A completed one pays (money and reputation) every time, the best rating is kept.</summary>
-        public void RecordJob(string jobId, bool completed, float time, int stars, bool golden, int pay, int reputation)
+        public void RecordJob(string jobId, bool completed, float time, int stars, int pay, int reputation)
         {
             var j = Save.Job(jobId);
             j.attempts++;
@@ -60,12 +60,11 @@ namespace CampanhaRio.Campaign
             {
                 j.completions++;
                 if (stars > j.bestStars) j.bestStars = stars;
-                j.golden |= golden;
                 if (j.bestTime <= 0f || time < j.bestTime) j.bestTime = time;
                 Save.money += pay;
                 Save.reputation += reputation;
             }
-            Write($"job {jobId}: {(completed ? $"done {time:0.0} s, {stars} star(s){(golden ? " + gold" : "")}, +{pay} money, +{reputation} rep" : "failed")}");
+            Write($"job {jobId}: {(completed ? $"done {time:0.0} s, {stars} star(s), +{pay} money, +{reputation} rep" : "failed")}");
         }
 
         public void AddSticker(string id) { if (!Save.vanStickers.Contains(id)) { Save.vanStickers.Add(id); Write("sticker " + id); } }

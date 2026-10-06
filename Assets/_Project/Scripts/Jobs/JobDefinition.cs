@@ -9,7 +9,7 @@ namespace CampanhaRio.Jobs
 
     /// <summary>
     /// One order on the agency's board (PLANO_CAMPANHA 3 and 4): a river, the job's rule on top of the same kayak physics,
-    /// the deadline (the sunset), Grandma's time carved at the finish, and what it pays. The same river with another job
+    /// the deadline (the sunset) and what it pays. The same river with another job
     /// is another descent. Data only: <see cref="JobRun"/> plays it. Assets: Assets/_Project/Data/Jobs (JobsBuilder).
     /// </summary>
     [CreateAssetMenu(menuName = "CampanhaRio/Job", fileName = "Job")]
@@ -32,8 +32,6 @@ namespace CampanhaRio.Jobs
         public float timeLimit = 300f;
         [Tooltip("The time star: arrive within this share of the limit.")]
         [Range(0.3f, 1f)] public float timeStarShare = 0.8f;
-        [Tooltip("Grandma's time (s), carved on the finish post: beating it gives the golden star.")]
-        public float grandmaTime = 180f;
 
         [Header("Cargo or passenger")]
         [Tooltip("The cargo star: the rule's condition (1 = perfect) must end at or above this.")]

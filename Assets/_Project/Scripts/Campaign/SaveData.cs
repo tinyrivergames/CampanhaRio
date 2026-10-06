@@ -45,9 +45,8 @@ namespace CampanhaRio.Campaign
     {
         public string jobId;
         public int completions;
-        [Tooltip("Best rating, 0 to 3 stars; golden = beat Grandma's time.")]
+        [Tooltip("Best rating, 0 to 3 stars.")]
         public int bestStars;
-        public bool golden;
         public float bestTime;
         public int attempts;
     }

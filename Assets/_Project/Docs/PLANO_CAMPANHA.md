@@ -13,7 +13,7 @@
 ### Pilares
 1. **Cada descida é uma surpresa:** o mesmo caiaque, mas o **rio** e o **trabalho** mudam a forma de descer. "O que será que tem nesse?"
 2. **Juntos:** feito para 4 amigos, com o progresso do host. Cooperar (dividir a carga, salvar o passageiro, remar no bote) é parte do trabalho.
-3. **O rio é o desafio:** chegar **antes do pôr do sol**, com a carga inteira e o passageiro feliz. Bater o **tempo da Vó** é a maestria.
+3. **O rio é o desafio:** chegar **antes do pôr do sol**, com a carga inteira e o passageiro feliz.
 4. **Ver o mundo melhorar:** cada trabalho bem feito faz **a agência crescer** e **os vilarejos do vale voltarem à vida**.
 5. **Bonito e macio:** estilizado, formas suaves, cores vivas e naturais, luz quente (inspiração: *RV There Yet?*, só a estética).
 
@@ -33,7 +33,7 @@
 Então vem **a grande tempestade**: pontes caem, estradas ficam bloqueadas e **os vilarejos do vale ficam isolados**. O rio volta a ser o melhor caminho. O neto da Vó e três amigos (no **último verão juntos**) reabrem o galpão velho, com a van enferrujada, o mapa dela e a **caderneta** cheia de anotações sobre cada rio.
 
 - **O objetivo grande:** reconectar o vale, um vilarejo por vez, e transformar o galpão de novo num porto movimentado.
-- **A Vó continua presente** pela caderneta (*"esse rio eu desci com um bode no colo…"*), pelas fotos antigas e pelos **tempos dela entalhados** nos postes de chegada de cada rio.
+- **A Vó continua presente** pela caderneta (*"esse rio eu desci com um bode no colo…"*) e pelas fotos antigas.
 - **Seu Alce**, velho amigo da Vó, cuida da van: leva-a até o fim de cada rio, e cada chegada tem uma piada diferente. **Isso se explica uma vez só**, no prólogo.
 - **Os moradores** (bichos do vale) fazem os pedidos, contam histórias da Vó e mostram os vilarejos revivendo.
 - **O final da campanha** (a definir): a Vó volta para a festa de reabertura do vale, ou deixa uma última carta/rio secreto.
@@ -91,7 +91,7 @@ Agência (quadro de pedidos) → escolher o trabalho e o rio no mapa → van at�
 
 - **O quadro de pedidos:** 2 a 4 pedidos disponíveis por vez. O host escolhe. **Pedidos especiais** (da história) abrem rios novos, e os comuns variam para manter as coisas frescas.
 - **O mapa do vale:** revela rios, vilarejos e estradas conforme a agência cresce. O grupo escolhe para onde ir.
-- **A avaliação (até 3 ⭐):** chegou **antes do pôr do sol** (obrigatório para concluir) + **carga inteira / passageiro feliz** + **estilo ou tempo** (bater o **tempo da Vó** dá uma estrela de ouro extra).
+- **A avaliação (até 3 ⭐):** chegou **antes do pôr do sol** (obrigatório para concluir) + **carga inteira / passageiro feliz** + **estilo ou tempo**.
 - **Concluir** = pelo menos **metade do grupo** chega antes do pôr do sol, cumprindo o trabalho. **Falhou:** anoitece, a tela escurece, e volta-se à largada do rio. Depois de 3 ou 4 tentativas, o tempo afrouxa um pouco sem ninguém perceber.
 - **A van:** leva o grupo pela estrada do vale até o rio escolhido, com mirantes, moradores, atalhos e segredos no caminho. Os trechos são curtos.
 
@@ -104,7 +104,6 @@ Agência (quadro de pedidos) → escolher o trabalho e o rio no mapa → van at�
 | **Barcos e equipamento** | Abrem trabalhos e rios novos |
 | **A van como diário** | Adesivos, troféus e enfeites ganhos nos trabalhos |
 | **Personalização** | Roupas, chapéus e cores dos barcos (só visual, nunca deixa ninguém mais rápido) |
-| **O tempo da Vó** | O desafio de habilidade de cada rio |
 
 ### Progresso e grupo
 - **O progresso é do host:** a agência, os rios, a reputação, a van.
@@ -189,7 +188,7 @@ Detalhes técnicos em `ART_PIPELINE.md`.
 | **4. Personagens e passageiros** | Lote 4 | Os 4 amigos + o bode animados no jogo |
 | **5. Barcos, van e cargas** | Lote 5 | Aprovados |
 | **6. Montagem do vertical slice** | Arte no lugar da caixa cinza, o prólogo (tempestade, galpão, caderneta), a primeira chegada do Seu Alce, a agência crescendo um estágio | Bonito do início ao fim |
-| **7. Sistemas da campanha** | Save do host, reputação e dinheiro, melhorias da agência e da van, o mapa revelando o vale, o tempo da Vó, amigo entrando no meio | Fechar, voltar e continuar |
+| **7. Sistemas da campanha** | Save do host, reputação e dinheiro, melhorias da agência e da van, o mapa revelando o vale, amigo entrando no meio | Fechar, voltar e continuar |
 | **8. 🧪 Teste com amigos** | O vertical slice | **Querem o próximo pedido?** O mesmo rio com outro trabalho pareceu novo? |
 | **9. Completar o Vale da Floresta** | Trabalhos 2 a 4, o especial do bote, os vilarejos, a festa | A região completa |
 
@@ -205,6 +204,7 @@ Detalhes técnicos em `ART_PIPELINE.md`.
 5. **Tempo:** **chegar antes do pôr do sol.** Se anoitece, a tela escurece.
 6. **Progresso:** do host. Concluir = metade do grupo dentro do tempo.
 7. **Arte:** elemento por elemento no Blender, com aprovação. Árvores levíssimas, as do fundo como borrões. As referências são só inspiração.
+8. **Sem o "tempo da Vó":** a avaliação é só pôr do sol + carga/passageiro + estilo ou tempo (2026-10-06).
 
 ### Pendentes
 - O **nome** do jogo (o de trabalho é "CampanhaRio").

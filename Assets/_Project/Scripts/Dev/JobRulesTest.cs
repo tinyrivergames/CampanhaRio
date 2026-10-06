@@ -107,7 +107,7 @@ namespace CampanhaRio.Dev
         {
             if (!r.HasValue) { Debug.Log($"[Test] jobrules: {what} did NOT finish"); return; }
             var v = r.Value;
-            Debug.Log($"[Test] jobrules: {what} DONE in {v.time:0.0} s: {v.Stars} star(s) [sunset {v.sunsetStar}, cargo/passenger {v.conditionStar} ({v.condition:0.00}), time {v.timeStar}], golden {v.golden}, pay {v.pay}");
+            Debug.Log($"[Test] jobrules: {what} DONE in {v.time:0.0} s: {v.Stars} star(s) [sunset {v.sunsetStar}, cargo/passenger {v.conditionStar} ({v.condition:0.00}), time {v.timeStar}], pay {v.pay}");
         }
     }
 }

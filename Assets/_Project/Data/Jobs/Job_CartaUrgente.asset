@@ -22,7 +22,6 @@ MonoBehaviour:
   riverId: Rio_Moinho
   timeLimit: 240
   timeStarShare: 0.8
-  grandmaTime: 165
   conditionStar: 0.6
   pay: 40
   payPerStar: 10

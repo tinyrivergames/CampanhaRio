@@ -33,7 +33,7 @@ namespace CampanhaRio.Jobs
                 if (!e.job || !e.requires.TrueForAll(Done)) continue;
                 (Done(e.job) ? again : fresh).Add(e.job);
             }
-            fresh.AddRange(again); // new orders first, then the ones to play again (better stars, Grandma's time)
+            fresh.AddRange(again); // new orders first, then the ones to play again (for better stars)
             if (fresh.Count > maxOffers) fresh.RemoveRange(maxOffers, fresh.Count - maxOffers);
             return fresh;
         }
@@ -72,7 +72,7 @@ namespace CampanhaRio.Jobs
                 GUILayout.Label(Loc.T(job.title), title);
                 GUILayout.Label($"{Loc.T(job.client)} — {Loc.T(job.description)}", text);
                 var rec = save?.jobs.Find(r => r.jobId == job.id);
-                string best = rec != null && rec.completions > 0 ? "  " + new string('★', rec.bestStars) + (rec.golden ? " ✦" : "") : "  " + Loc.T("New!");
+                string best = rec != null && rec.completions > 0 ? "  " + new string('★', rec.bestStars) : "  " + Loc.T("New!");
                 GUILayout.Label(Loc.F("{0} · pays {1}", Loc.T(job.riverId.Replace('_', ' ')), job.pay) + best, text);
                 GUILayout.EndVertical();
                 if (GUILayout.Button(Loc.T("Accept"), GUILayout.Width(160), GUILayout.Height(60))) Accept(job);
