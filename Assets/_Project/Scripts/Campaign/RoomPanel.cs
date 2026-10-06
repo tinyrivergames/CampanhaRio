@@ -15,6 +15,7 @@ namespace CampanhaRio.Campaign
     {
         public bool IsOpen { get; private set; }
         string address = "";
+        string playerName;
         GUIStyle title, text;
 
         void Update()
@@ -41,6 +42,14 @@ namespace CampanhaRio.Campaign
                 GUILayout.Label(Loc.F("Players: {0}", NetworkPlayer.All.Count), text);
                 foreach (var info in session.Players.Values) GUILayout.Label("· " + info.name, text);
             }
+            GUILayout.Space(10);
+            playerName ??= NetSession.PlayerName;
+            GUILayout.BeginHorizontal();
+            GUILayout.Label(Loc.T("Your name:"), text, GUILayout.Width(140));
+            playerName = GUILayout.TextField(playerName, 16, GUILayout.Width(260), GUILayout.Height(34));
+            if (GUILayout.Button(Loc.T("Save"), GUILayout.Width(120), GUILayout.Height(34))) NetSession.PlayerName = playerName;
+            GUILayout.EndHorizontal();
+            GUILayout.Label(Loc.T("(the friends see it from the next time you join a room)"), text);
             GUILayout.Space(16);
             GUILayout.Label(Loc.T("Join a friend's room (their address):"), text);
             GUILayout.BeginHorizontal();

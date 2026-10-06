@@ -85,6 +85,9 @@ namespace CampanhaRio.Core
             // ---- the slice's loop (AgencyFlow)
             { "Upgrades", "Melhorias" },
             { "Room", "Sala" },
+            { "Your name:", "Seu nome:" },
+            { "Save", "Salvar" },
+            { "(the friends see it from the next time you join a room)", "(os amigos veem a partir da próxima vez que você entrar numa sala)" },
             { "Friends join with this address: {0}:{1}", "Os amigos entram com este endereço: {0}:{1}" },
             { "Players: {0}", "Jogadores: {0}" },
             { "Join a friend's room (their address):", "Entrar na sala de um amigo (o endereço dele):" },
