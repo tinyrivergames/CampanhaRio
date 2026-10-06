@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 742819cd4f5890f49ae28e26f57ce841, type: 3}
+  m_Name: Job_CartaUrgente
+  m_EditorClassIdentifier: CampanhaRio::CampanhaRio.Jobs.JobDefinition
+  id: carta_urgente
+  title: The urgent letter
+  description: 'The village is cut off since the storm: this letter must get there
+    before sunset. Keep it dry!'
+  client: The mayor of Vila do Moinho
+  kind: 0
+  rule: 1
+  riverId: Rio_Moinho
+  timeLimit: 240
+  timeStarShare: 0.8
+  grandmaTime: 165
+  conditionStar: 0.6
+  pay: 40
+  payPerStar: 10
+  reputation: 1

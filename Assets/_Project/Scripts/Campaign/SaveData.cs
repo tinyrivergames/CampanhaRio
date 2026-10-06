@@ -18,6 +18,10 @@ namespace CampanhaRio.Campaign
         public List<RiverRecord> rivers = new List<RiverRecord>();
         public List<string> vanStickers = new List<string>();
         public List<string> vanTrophies = new List<string>();
+        [Tooltip("The agency's money and reputation (from the jobs).")]
+        public int money;
+        public int reputation;
+        public List<JobRecord> jobs = new List<JobRecord>();
         public string updatedUtc = "";
 
         public RiverRecord River(string id)
@@ -26,6 +30,26 @@ namespace CampanhaRio.Campaign
             if (r == null) { r = new RiverRecord { riverId = id }; rivers.Add(r); }
             return r;
         }
+
+        public JobRecord Job(string id)
+        {
+            var j = jobs.Find(x => x.jobId == id);
+            if (j == null) { j = new JobRecord { jobId = id }; jobs.Add(j); }
+            return j;
+        }
+    }
+
+    /// <summary>One job of the board (a river with a rule): how it went so far.</summary>
+    [Serializable]
+    public class JobRecord
+    {
+        public string jobId;
+        public int completions;
+        [Tooltip("Best rating, 0 to 3 stars; golden = beat Grandma's time.")]
+        public int bestStars;
+        public bool golden;
+        public float bestTime;
+        public int attempts;
     }
 
     [Serializable]

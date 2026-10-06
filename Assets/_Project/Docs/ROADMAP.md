@@ -37,7 +37,7 @@ Também: câmera um pouco mais afastada (4,6 m, 16°); floresta e pedras de test
 ## Fase 2: o roteiro (uma parte por commit; tudo em caixa cinza, verificado em build de release)
 - **A. Sistema de trabalhos:** o pedido (rio + trabalho + prazo + tempo da Vó + pagamento), o quadro de pedidos (2 a 4, o
   host escolhe), o modificador em cima da regra do pôr do sol, a avaliação (⭐ pôr do sol, ⭐ carga/passageiro, ⭐ tempo;
-  ouro extra no tempo da Vó), o save, e a sincronização do pedido, do relógio e do resultado com os clientes.
+  ouro extra no tempo da Vó), o save. ✅ (a sincronização com os clientes vai para a parte D, junto com o rio em rede)
 - **B. Os 2 trabalhos:** **carta urgente** (a regra básica: prazo apertado, a carta não pode molhar demais) e **bode
   medroso** (o medo enche com velocidade e pulos; cheio, ele pula na água e alguém tem que buscá-lo).
 - **C. Os lugares:** `Agencia` (o hub com o quadro e a van), `Estrada_Vale` (curta), `Rio_Moinho` (corredeiras, remansos e

@@ -51,6 +51,8 @@ namespace CampanhaRio.Campaign
 
         public event Action<Medal, float> Passed;
         public event Action Failed;
+        /// <summary>A new attempt started (everyone back at the start line).</summary>
+        public event Action AttemptBegan;
 
         readonly Dictionary<KayakController, float> finished = new Dictionary<KayakController, float>();
         float black;
@@ -71,6 +73,7 @@ namespace CampanhaRio.Campaign
             PlaceGroupAtStart();
             if (day) day.progress = startProgress;
             Current = State.Running;
+            AttemptBegan?.Invoke();
             Debug.Log($"[River] {riverId}: attempt {Attempts} (limit {EffectiveLimit:0.0} s{(Assist > 0f ? $", assist +{Assist * 100f:0}%" : "")})");
         }
 

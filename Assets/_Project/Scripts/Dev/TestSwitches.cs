@@ -23,6 +23,13 @@ namespace CampanhaRio.Dev
 
         public static bool Has(string name) => Array.IndexOf(Args, name) >= 0;
 
+        /// <summary>Scripted tests and screenshot runs keep running when their window loses focus (else the player pauses).</summary>
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
+        static void KeepTestsRunning()
+        {
+            if (!string.IsNullOrEmpty(Script) || !string.IsNullOrEmpty(ShotsFolder) || Has("-cc-host") || Has("-cc-join")) Application.runInBackground = true;
+        }
+
         /// <summary>The value after a switch (or fallback when the switch is missing or has no value).</summary>
         public static string Value(string name, string fallback = null)
         {

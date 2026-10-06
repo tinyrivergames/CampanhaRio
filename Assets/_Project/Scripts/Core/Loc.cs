@@ -46,6 +46,25 @@ namespace CampanhaRio.Core
             { "Couldn't connect to the host. Check the address and the host's firewall.", "Não deu para conectar. Confira o endereço e o firewall de quem criou a sala." },
             { "The connection failed (network error).", "A conexão caiu (erro de rede)." },
             { "Connecting to Unity's online services…", "Conectando aos serviços online da Unity…" },
+
+            // ---- jobs (JobRun / JobBoard)
+            { "Sunset in {0}", "Pôr do sol em {0}" },
+            { "Grandma's time: {0}", "Tempo da Vó: {0}" },
+            { "Delivered!", "Entregue!" },
+            { "Before sunset", "Antes do pôr do sol" },
+            { "Happy passenger", "Passageiro feliz" },
+            { "Cargo in one piece", "Carga inteira" },
+            { "Within {0}", "Em menos de {0}" },
+            { "Faster than Grandma!", "Mais rápido que a Vó!" },
+            { "+{0} coins, +{1} reputation", "+{0} moedas, +{1} de reputação" },
+            { "Orders board", "Quadro de pedidos" },
+            { "{0} coins · reputation {1}", "{0} moedas · reputação {1}" },
+            { "{0} · pays {1}", "{0} · paga {1}" },
+            { "New!", "Novo!" },
+            { "Accept", "Aceitar" },
+            { "Close", "Fechar" },
+            { "Rio Moinho", "Rio do Moinho" },
+            { "Rio Teste", "Rio de teste" },
         };
     }
 }

@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 742819cd4f5890f49ae28e26f57ce841, type: 3}
+  m_Name: Job_BodeMedroso
+  m_EditorClassIdentifier: CampanhaRio::CampanhaRio.Jobs.JobDefinition
+  id: bode_medroso
+  title: The scared goat
+  description: 'Her goat must get to the fair downstream. He is scared of speed and
+    jumps: if he panics, he jumps out!'
+  client: Dona Cabra, the cheese maker
+  kind: 1
+  rule: 2
+  riverId: Rio_Moinho
+  timeLimit: 300
+  timeStarShare: 0.85
+  grandmaTime: 210
+  conditionStar: 0.5
+  pay: 50
+  payPerStar: 12
+  reputation: 1
