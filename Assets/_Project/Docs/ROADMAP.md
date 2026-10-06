@@ -41,7 +41,7 @@ Também: câmera um pouco mais afastada (4,6 m, 16°); floresta e pedras de test
   medroso** (o medo enche com velocidade e pulos; cheio, ele pula na água e alguém tem que buscá-lo). ✅
 - **C. Os lugares:** `Agencia` (o hub com o quadro e a van), `Estrada_Vale` (curta), `Rio_Moinho` (corredeiras, remansos e
   a primeira cachoeirinha) e a chegada, como cenas carregadas aos poucos. ✅ (o Rio do Moinho reaproveita o rio do KayakTest)
-- **D. O ciclo inteiro:** agência → quadro → van → largada → descida → chegada → avaliação → de volta à agência.
+- **D. O ciclo inteiro:** agência → quadro → van → largada → descida → chegada → avaliação → de volta à agência. ✅ (host + cliente, os 2 pedidos; `-cc-script slice`)
 - **E. O Seu Alce simples:** um boneco cinza na chegada, com uma piada diferente a cada chegada.
 - **F. Teste em grupo:** host + clientes (e bots) jogando os 2 trabalhos; o mesmo rio tem que parecer diferente.
 

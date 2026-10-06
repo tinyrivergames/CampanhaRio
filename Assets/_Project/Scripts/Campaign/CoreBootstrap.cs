@@ -30,7 +30,7 @@ namespace CampanhaRio.Campaign
                 return;
             }
             var campaign = CampaignState.Open();
-            if (session.HostDirect()) streamer.Begin(campaign.Save.checkpoint);
+            if (session.HostDirect()) streamer.Begin(""); // the campaign is hub-based: every session starts at the agency (order[0])
         }
 
         void OnDestroy() => CampaignState.Close();

@@ -81,6 +81,13 @@ namespace CampanhaRio.Core
             { "scared", "assustado" },
             { "about to jump!", "quase pulando!" },
             { "in the water! Fetch him!", "na água! Vão buscar!" },
+
+            // ---- the slice's loop (AgencyFlow)
+            { "Pick an order at the board (E)", "Escolha um pedido no quadro (E)" },
+            { "The host picks the order at the board", "Quem criou a sala escolhe o pedido no quadro" },
+            { "Everyone to the van! (E next to it)", "Todos para a van! (E perto dela)" },
+            { "Seu Alce drives you down to the river", "O Seu Alce leva vocês até o rio" },
+            { "Back to the agency: everyone to the van (E)", "De volta à agência: todos para a van (E)" },
         };
     }
 }

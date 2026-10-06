@@ -17,7 +17,8 @@ namespace CampanhaRio.Campaign
             var target = NetworkPlayer.Local;
             if (!target) return;
             Vector3 want = target.transform.position + offset;
-            transform.position = Vector3.Lerp(transform.position, want, 1f - Mathf.Exp(-smoothing * Time.deltaTime));
+            if ((transform.position - want).sqrMagnitude > 40f * 40f) transform.position = want; // a teleport (spawn, a trip back): no long glide
+            else transform.position = Vector3.Lerp(transform.position, want, 1f - Mathf.Exp(-smoothing * Time.deltaTime));
             transform.rotation = Quaternion.LookRotation(target.transform.position + Vector3.up - transform.position);
         }
 

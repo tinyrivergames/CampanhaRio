@@ -55,6 +55,8 @@ namespace CampanhaRio.Campaign
         public event Action AttemptBegan;
         /// <summary>A job can hold the finish back (e.g. the goat is in the water): no pass while this says false.</summary>
         public Func<bool> FinishAllowed;
+        /// <summary>The night fade (0..1) after a failed attempt (AgencyFlow shows it to the clients).</summary>
+        public float Black => black;
 
         readonly Dictionary<KayakController, float> finished = new Dictionary<KayakController, float>();
         float black;
@@ -88,8 +90,9 @@ namespace CampanhaRio.Campaign
             {
                 float side = ((i % 2 == 0) ? 1f : -1f) * 2.2f * ((i + 1) / 2);
                 var pose = new Pose(s.point + s.right * side, Quaternion.LookRotation(s.direction));
-                k.SetStart(pose.position, pose.rotation);
-                k.Teleport(pose.position, pose.rotation, Vector3.zero);
+                var sync = Net.KayakNetSync.Of(k);
+                if (sync && sync.IsSpawned) sync.PlaceAt(pose.position, pose.rotation); // a networked kayak: its owner moves it
+                else { k.SetStart(pose.position, pose.rotation); k.Teleport(pose.position, pose.rotation, Vector3.zero); }
                 i++;
             }
         }

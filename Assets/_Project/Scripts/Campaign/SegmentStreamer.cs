@@ -49,31 +49,51 @@ namespace CampanhaRio.Campaign
             Load(string.IsNullOrEmpty(first) ? order[0] : first);
         }
 
+        string jumpTo, pinned; // pinned: the jump's target stays loaded until someone is in it
+
+        /// <summary>Host: load this segment now, wherever the group is (a trip back to the agency). Segments left
+        /// behind or ahead of everyone unload by themselves.</summary>
+        public void JumpTo(string id)
+        {
+            if (!started) return;
+            pinned = id;
+            if (loaded.Contains(id)) return;
+            if (busy == null) Load(id); else jumpTo = id;
+        }
+
+        public bool IsLoaded(string id) => loaded.Contains(id);
+
         void Update()
         {
             if (!started || busy != null || Time.unscaledTime < nextCheck || !Net || !Net.IsServer) return;
+            if (jumpTo != null) { var j = jumpTo; jumpTo = null; Load(j); return; }
             nextCheck = Time.unscaledTime + checkInterval;
             if (NetworkPlayer.All.Count == 0 || loaded.Count == 0) return;
 
-            // Load the next segment when someone reaches the end of the last loaded one
-            var last = Segment.Find(loaded[loaded.Count - 1]);
-            int lastIndex = Array.IndexOf(order, loaded[loaded.Count - 1]);
-            if (last && lastIndex >= 0 && lastIndex + 1 < order.Length)
+            // Load the next segment when someone reaches the end of a loaded one
+            foreach (string id in loaded)
+            {
+                var seg = Segment.Find(id);
+                int index = Array.IndexOf(order, id);
+                if (!seg || index < 0 || index + 1 >= order.Length || loaded.Contains(order[index + 1])) continue;
                 foreach (var p in NetworkPlayer.All)
-                    if (last.InLoadNextZone(p.transform.position)) { Load(order[lastIndex + 1]); return; }
+                    if (seg.InLoadNextZone(p.transform.position)) { Load(order[index + 1]); return; }
+            }
 
-            // Unload a segment that is behind everyone
-            int minIndex = int.MaxValue;
+            // Unload a segment behind everyone, or more than one ahead of everyone (after a trip back)
+            int minIndex = int.MaxValue, maxIndex = -1;
             foreach (var p in NetworkPlayer.All)
             {
                 int i = SegmentIndexOf(p.transform.position);
                 if (i < 0) return; // someone is between segments: decide later
                 minIndex = Mathf.Min(minIndex, i);
+                maxIndex = Mathf.Max(maxIndex, i);
+                if (pinned != null && i >= 0 && order[i] == pinned) pinned = null; // arrived
             }
             foreach (string id in loaded)
             {
                 int i = Array.IndexOf(order, id);
-                if (i < minIndex) { Unload(id); return; }
+                if (id != pinned && (i < minIndex || i > maxIndex + 1)) { Unload(id); return; }
             }
 
             // The checkpoint: the segment where the whole group is

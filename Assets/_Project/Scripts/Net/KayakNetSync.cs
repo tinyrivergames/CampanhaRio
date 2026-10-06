@@ -218,6 +218,22 @@ namespace CampanhaRio.Net
         [Rpc(SendTo.NotMe)] void LandRpc(float airTime, float impact, double t) =>
             Later(t, () => { Kayak.RaiseLand(impact, airTime); SyncJumps.RemoteLand(Kayak, airTime); });
 
+        // ------------------------------------------------------------------ host: put a kayak somewhere (a new attempt)
+
+        /// <summary>Host: move this kayak (its owner simulates it, so the owner does it), e.g. to the start line.</summary>
+        public void PlaceAt(Vector3 position, Quaternion rotation)
+        {
+            if (SimulatedHere) { Kayak.SetStart(position, rotation); Kayak.Teleport(position, rotation, Vector3.zero); }
+            else PlaceRpc(position, rotation);
+        }
+
+        [Rpc(SendTo.Owner)]
+        void PlaceRpc(Vector3 position, Quaternion rotation)
+        {
+            Kayak.SetStart(position, rotation);
+            Kayak.Teleport(position, rotation, Vector3.zero);
+        }
+
         // ------------------------------------------------------------------ R in a group run: ghosted for a moment
 
         /// <summary>After a reset onto the river: no collisions with the other kayaks for a moment, and a blink, everywhere.</summary>

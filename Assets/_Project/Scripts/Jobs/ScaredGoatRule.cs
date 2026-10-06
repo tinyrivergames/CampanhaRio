@@ -138,7 +138,7 @@ namespace CampanhaRio.Jobs
             if (goat) Destroy(goat);
         }
 
-        static GameObject BuildGoat()
+        public static GameObject BuildGoat()
         {
             var root = new GameObject("Goat (graybox)");
             var white = new Material(Shader.Find("CampanhaRio/SoftToon") ?? Shader.Find("Universal Render Pipeline/Lit"));

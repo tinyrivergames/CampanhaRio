@@ -1,13 +1,15 @@
 using System;
 using CampanhaRio.Campaign;
 using CampanhaRio.Core;
+using Unity.Collections;
+using Unity.Netcode;
 using UnityEngine;
 
 namespace CampanhaRio.Jobs
 {
     /// <summary>The rating of a finished job (PLANO_CAMPANHA 4): up to 3 stars.</summary>
     [Serializable]
-    public struct JobResult
+    public struct JobResult : INetworkSerializable
     {
         public bool completed;
         [Tooltip("Before sunset (always, when completed) + cargo/passenger + time.")]
@@ -15,6 +17,12 @@ namespace CampanhaRio.Jobs
         public float time, condition;
         public int pay, reputation;
         public int Stars => (sunsetStar ? 1 : 0) + (conditionStar ? 1 : 0) + (timeStar ? 1 : 0);
+
+        public void NetworkSerialize<T>(BufferSerializer<T> s) where T : IReaderWriter
+        {
+            s.SerializeValue(ref completed); s.SerializeValue(ref sunsetStar); s.SerializeValue(ref conditionStar); s.SerializeValue(ref timeStar);
+            s.SerializeValue(ref time); s.SerializeValue(ref condition); s.SerializeValue(ref pay); s.SerializeValue(ref reputation);
+        }
 
         public static JobResult Rate(JobDefinition job, float time, float condition)
         {
@@ -29,7 +37,7 @@ namespace CampanhaRio.Jobs
 
     /// <summary>
     /// Plays one job on a river: puts the job's deadline on the river's sunset rule (RiverChallenge), adds the job's rule
-    /// (<see cref="JobModifier"/>), and when at least half the group arrives before sunset rates it (stars, gold, pay),
+    /// (<see cref="JobModifier"/>), and when at least half the group arrives before sunset rates it (stars, pay),
     /// writes it to the campaign save and shows the result. A failed attempt (night) just tries again, as the river rule
     /// does. Host (or solo) only; the HUD is a graybox (OnGUI) until the real UI.
     /// </summary>
@@ -76,6 +84,15 @@ namespace CampanhaRio.Jobs
             Challenge.Begin();
         }
 
+        /// <summary>The job is over (the group went ashore): no rule, no HUD.</summary>
+        public void End()
+        {
+            if (Rule) Destroy(Rule);
+            Rule = null;
+            Job = null;
+            Challenge.FinishAllowed = null;
+        }
+
         void OnAttempt() { if (Rule) Rule.OnAttemptBegin(); }
 
         void FixedUpdate()
@@ -100,57 +117,35 @@ namespace CampanhaRio.Jobs
             CampaignState.Current?.RecordJob(Job.id, false, Challenge.Elapsed, 0, 0, 0);
         }
 
-        // ---------------------------------------------------------------- graybox HUD
-        GUIStyle big, small;
+        // ---------------------------------------------------------------- HUD
+
+        [Tooltip("Draw the HUD here (off when AgencyFlow draws it for everyone).")]
+        public bool drawHud = true;
+
+        /// <summary>What the HUD shows now (AgencyFlow sends it to the clients).</summary>
+        public JobHudState Hud()
+        {
+            if (!Job) return default;
+            return new JobHudState
+            {
+                active = true,
+                title = new FixedString64Bytes(Job.title),
+                label = new FixedString64Bytes(Rule ? Rule.Label : ""),
+                state = new FixedString64Bytes(Rule ? Rule.State : ""),
+                meterLabel = new FixedString64Bytes(Rule ? Rule.MeterLabel : ""),
+                meter = Rule ? Rule.Meter : -1f,
+                condition = Rule ? Rule.Condition : 1f,
+                timeLeft = Mathf.Max(0f, Challenge.EffectiveLimit - Challenge.Elapsed),
+                timeStar = Job.TimeStar,
+                passenger = Job.kind == JobKind.Passenger,
+            };
+        }
+
+        public bool ShowingResult => Result.HasValue && Time.unscaledTime - resultShownAt < resultTime;
 
         void OnGUI()
         {
-            if (!Job) return;
-            big ??= new GUIStyle(GUI.skin.label) { fontSize = 22, fontStyle = FontStyle.Bold };
-            small ??= new GUIStyle(GUI.skin.label) { fontSize = 16 };
-            float s = Screen.height / 1080f;
-            var m = GUI.matrix;
-            GUI.matrix = Matrix4x4.Scale(new Vector3(s, s, 1f));
-
-            GUILayout.BeginArea(new Rect(24, 24, 420, 190), GUI.skin.box);
-            GUILayout.Label(Loc.T(Job.title), big);
-            float left = Mathf.Max(0f, Challenge.EffectiveLimit - Challenge.Elapsed);
-            GUILayout.Label(Loc.F("Sunset in {0}", Clock(left)), small);
-            if (Rule && !string.IsNullOrEmpty(Rule.Label))
-            {
-                GUILayout.Label($"{Loc.T(Rule.Label)}: {Loc.T(Rule.State)}", small);
-                var bar = GUILayoutUtility.GetRect(380, 14);
-                GUI.Box(bar, GUIContent.none);
-                GUI.color = Color.Lerp(new Color(0.9f, 0.35f, 0.25f), new Color(0.45f, 0.85f, 0.4f), Rule.Condition);
-                GUI.DrawTexture(new Rect(bar.x + 2, bar.y + 2, (bar.width - 4) * Rule.Condition, bar.height - 4), Texture2D.whiteTexture);
-                GUI.color = Color.white;
-                if (Rule.Meter >= 0f)
-                {
-                    GUILayout.Label(Loc.T(Rule.MeterLabel), small);
-                    var fear = GUILayoutUtility.GetRect(380, 14);
-                    GUI.Box(fear, GUIContent.none);
-                    GUI.color = Color.Lerp(new Color(0.95f, 0.85f, 0.3f), new Color(0.95f, 0.3f, 0.2f), Rule.Meter);
-                    GUI.DrawTexture(new Rect(fear.x + 2, fear.y + 2, (fear.width - 4) * Rule.Meter, fear.height - 4), Texture2D.whiteTexture);
-                    GUI.color = Color.white;
-                }
-            }
-            GUILayout.EndArea();
-
-            if (Result.HasValue && Time.unscaledTime - resultShownAt < resultTime)
-            {
-                var r = Result.Value;
-                GUILayout.BeginArea(new Rect(1920 / 2 - 260, 300, 520, 260), GUI.skin.box);
-                GUILayout.Label(Loc.T("Delivered!"), big);
-                GUILayout.Label(new string('★', r.Stars) + new string('☆', 3 - r.Stars), new GUIStyle(big) { fontSize = 44 });
-                GUILayout.Label((r.sunsetStar ? "★ " : "☆ ") + Loc.T("Before sunset"), small);
-                GUILayout.Label((r.conditionStar ? "★ " : "☆ ") + Loc.T(Job.kind == JobKind.Passenger ? "Happy passenger" : "Cargo in one piece"), small);
-                GUILayout.Label((r.timeStar ? "★ " : "☆ ") + Loc.F("Within {0}", Clock(Job.TimeStar)), small);
-                GUILayout.Label(Loc.F("+{0} coins, +{1} reputation", r.pay, r.reputation), small);
-                GUILayout.EndArea();
-            }
-            GUI.matrix = m;
+            if (drawHud && Job) JobHud.Draw(Hud(), ShowingResult ? Result : null);
         }
-
-        static string Clock(float seconds) => $"{(int)(seconds / 60f)}:{(int)(seconds % 60f):00}";
     }
 }
