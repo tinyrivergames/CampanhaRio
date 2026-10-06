@@ -7,7 +7,7 @@ paralelo. Cada fase termina com um relatório curto, e a próxima só começa qu
 |---|---|---|---|
 | **0. Fundação nova** | Projeto, sistemas portados, pipeline do Blender, shader macio, ciclo do dia, trechos carregados aos poucos, save, regra do pôr do sol | Um objeto feito no Blender aparece no Unity com a luz certa | ✅ **2026-10-03** |
 | **1. Âncoras de estilo** | **Pinheiro → rocha → caiaque**, pelo ciclo de aprovação (`ART_PIPELINE.md`), vistos também na hora dourada e no pôr do sol | O desenvolvedor aprova os 3 | ✅ **2026-10-05** |
-| **2. Caixa cinza do vertical slice** | Agência (hub), estrada curta, Rio do Moinho, chegada; **o sistema de trabalhos** (quadro de pedidos, modificadores de carga e passageiro, avaliação ⭐); **2 trabalhos no mesmo rio** (carta urgente, bode medroso); Seu Alce simples | Dá para jogar os 2 trabalhos com os amigos, e o mesmo rio parece diferente | |
+| **2. Caixa cinza do vertical slice** | Agência (hub), estrada curta, Rio do Moinho, chegada; **o sistema de trabalhos** (quadro de pedidos, modificadores de carga e passageiro, avaliação ⭐); **2 trabalhos no mesmo rio** (carta urgente, bode medroso); Seu Alce simples | Dá para jogar os 2 trabalhos com os amigos, e o mesmo rio parece diferente | **Em andamento** (2026-10-06) |
 | **3. Kit da floresta** | Lotes 2 e 3: variações de pinheiro, árvores de folha, arbustos, tufos, troncos, rochas, falésias, montanhas de fundo; terreno, margens, seixos, a água turquesa | A floresta aprovada | |
 | **4. Personagens e passageiros** | Os 4 amigos + os passageiros (bode, coruja, urso…): MeshAI → limpeza, rig e integração | Os 4 amigos + o bode animados no jogo | |
 | **5. Barcos, van e cargas** | Canoa, bote, boia, a van, remos, as encomendas (caixas, ovos, galinhas, piano…) | Aprovados | |
@@ -33,6 +33,18 @@ As 3 âncoras aprovadas pelo ciclo de versões (notas literais em `ArtSource/<Fa
   não aparece sobre o casco nem dentro do barco (stencil). Remo provisório em vinho e marrom.
 Também: câmera um pouco mais afastada (4,6 m, 16°); floresta e pedras de teste no KayakTest; repositório no GitHub
 (`tinyrivergames/CampanhaRio`, privado).
+
+## Fase 2: o roteiro (uma parte por commit; tudo em caixa cinza, verificado em build de release)
+- **A. Sistema de trabalhos:** o pedido (rio + trabalho + prazo + tempo da Vó + pagamento), o quadro de pedidos (2 a 4, o
+  host escolhe), o modificador em cima da regra do pôr do sol, a avaliação (⭐ pôr do sol, ⭐ carga/passageiro, ⭐ tempo;
+  ouro extra no tempo da Vó), o save, e a sincronização do pedido, do relógio e do resultado com os clientes.
+- **B. Os 2 trabalhos:** **carta urgente** (a regra básica: prazo apertado, a carta não pode molhar demais) e **bode
+  medroso** (o medo enche com velocidade e pulos; cheio, ele pula na água e alguém tem que buscá-lo).
+- **C. Os lugares:** `Agencia` (o hub com o quadro e a van), `Estrada_Vale` (curta), `Rio_Moinho` (corredeiras, remansos e
+  a primeira cachoeirinha) e a chegada, como cenas carregadas aos poucos.
+- **D. O ciclo inteiro:** agência → quadro → van → largada → descida → chegada → avaliação → de volta à agência.
+- **E. O Seu Alce simples:** um boneco cinza na chegada, com uma piada diferente a cada chegada.
+- **F. Teste em grupo:** host + clientes (e bots) jogando os 2 trabalhos; o mesmo rio tem que parecer diferente.
 
 ## Pendências conhecidas
 - O terreno do KayakTest usa o shader de terreno do URP: ganha um shader no estilo SoftToon na Fase 3.
