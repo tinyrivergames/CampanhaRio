@@ -67,6 +67,7 @@ namespace CampanhaRio.Jobs
             Challenge.startOnPlay = false;
             Rule = JobModifier.Add(gameObject, job.rule);
             Rule.Setup(job, Challenge);
+            Challenge.FinishAllowed = () => !Rule || Rule.CanFinish;
             Challenge.AttemptBegan -= OnAttempt;
             Challenge.AttemptBegan += OnAttempt;
             Challenge.Passed -= OnPassed;
@@ -126,6 +127,15 @@ namespace CampanhaRio.Jobs
                 GUI.color = Color.Lerp(new Color(0.9f, 0.35f, 0.25f), new Color(0.45f, 0.85f, 0.4f), Rule.Condition);
                 GUI.DrawTexture(new Rect(bar.x + 2, bar.y + 2, (bar.width - 4) * Rule.Condition, bar.height - 4), Texture2D.whiteTexture);
                 GUI.color = Color.white;
+                if (Rule.Meter >= 0f)
+                {
+                    GUILayout.Label(Loc.T(Rule.MeterLabel), small);
+                    var fear = GUILayoutUtility.GetRect(380, 14);
+                    GUI.Box(fear, GUIContent.none);
+                    GUI.color = Color.Lerp(new Color(0.95f, 0.85f, 0.3f), new Color(0.95f, 0.3f, 0.2f), Rule.Meter);
+                    GUI.DrawTexture(new Rect(fear.x + 2, fear.y + 2, (fear.width - 4) * Rule.Meter, fear.height - 4), Texture2D.whiteTexture);
+                    GUI.color = Color.white;
+                }
             }
             GUILayout.EndArea();
 

@@ -20,6 +20,11 @@ namespace CampanhaRio.Jobs
         public abstract string Label { get; }
         /// <summary>A short state for the HUD, e.g. "dry" / "a bit wet" (English, the Loc key).</summary>
         public virtual string State => "";
+        /// <summary>A second meter for the HUD (0..1), e.g. the goat's fear; negative = none.</summary>
+        public virtual float Meter => -1f;
+        public virtual string MeterLabel => "";
+        /// <summary>False holds the finish back (the goat is in the water).</summary>
+        public virtual bool CanFinish => true;
 
         public void Setup(JobDefinition job, RiverChallenge challenge)
         {
@@ -36,6 +41,8 @@ namespace CampanhaRio.Jobs
         {
             switch (rule)
             {
+                case JobRule.UrgentLetter: return on.AddComponent<UrgentLetterRule>();
+                case JobRule.ScaredGoat: return on.AddComponent<ScaredGoatRule>();
                 default: return on.AddComponent<PlainRule>();
             }
         }

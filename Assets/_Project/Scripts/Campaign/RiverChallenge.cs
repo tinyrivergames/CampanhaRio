@@ -53,6 +53,8 @@ namespace CampanhaRio.Campaign
         public event Action Failed;
         /// <summary>A new attempt started (everyone back at the start line).</summary>
         public event Action AttemptBegan;
+        /// <summary>A job can hold the finish back (e.g. the goat is in the water): no pass while this says false.</summary>
+        public Func<bool> FinishAllowed;
 
         readonly Dictionary<KayakController, float> finished = new Dictionary<KayakController, float>();
         float black;
@@ -104,7 +106,7 @@ namespace CampanhaRio.Campaign
                 group++;
                 if (!finished.ContainsKey(k) && k.RiverSample.distanceAlong >= finishAlong) finished[k] = Elapsed;
             }
-            if (group > 0 && finished.Count * 2 >= group) { Pass(); return; }
+            if (group > 0 && finished.Count * 2 >= group && (FinishAllowed == null || FinishAllowed())) { Pass(); return; }
             if (Elapsed >= EffectiveLimit) StartCoroutine(Fail());
         }
 
