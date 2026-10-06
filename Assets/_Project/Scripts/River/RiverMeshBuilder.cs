@@ -58,6 +58,12 @@ namespace CampanhaRio.River
         [Tooltip("Distance over which calm-water rings show around obstacles (m).")]
         public float proximityRadius = 3f;
 
+        [Tooltip("The water baked in the editor (WorldBuilder): used as is in play mode, so loading the river never builds it (that takes about a second for a 1 km river).")]
+        public Mesh baked;
+        [HideInInspector] public float bakedMaxSpeed = 1f;
+        bool bakedApplied;
+        float lastMaxSpeed = 1f;
+
         Mesh mesh;
         int builtRiverVersion = -1;
         int builtZoneVersion = -1;
@@ -84,6 +90,7 @@ namespace CampanhaRio.River
         void Update()
         {
             if (!river) return;
+            if (Application.isPlaying && baked) { if (!bakedApplied) ApplyBaked(); return; }
             bool dirty = river.Version != builtRiverVersion || ZoneVersion != builtZoneVersion;
             // In the editor, also rebuild when an obstacle is moved (checked twice a second)
             if (!dirty && !Application.isPlaying && Time.realtimeSinceStartup > nextObstacleCheck)
@@ -98,6 +105,7 @@ namespace CampanhaRio.River
         public void Rebuild()
         {
             if (!river) return;
+            var watch = System.Diagnostics.Stopwatch.StartNew();
             builtRiverVersion = river.Version;
             builtZoneVersion = ZoneVersion;
             builtObstacleHash = ObstacleHash();
@@ -207,13 +215,36 @@ namespace CampanhaRio.River
             mesh.RecalculateNormals();
             mesh.RecalculateBounds();
             GetComponent<MeshFilter>().sharedMesh = mesh;
+            if (Application.isPlaying) Debug.Log($"[River] water mesh rebuilt: {rows} rows, {mesh.vertexCount} vertices in {watch.Elapsed.TotalMilliseconds:0} ms");
 
             // The shader turns R back into m/s with this
             block ??= new MaterialPropertyBlock();
             var meshRenderer = GetComponent<MeshRenderer>();
             meshRenderer.GetPropertyBlock(block);
+            lastMaxSpeed = maxSpeed;
             block.SetFloat(FlowMaxSpeedId, maxSpeed);
             meshRenderer.SetPropertyBlock(block);
+        }
+
+        void ApplyBaked()
+        {
+            bakedApplied = true;
+            GetComponent<MeshFilter>().sharedMesh = baked;
+            block ??= new MaterialPropertyBlock();
+            var meshRenderer = GetComponent<MeshRenderer>();
+            meshRenderer.GetPropertyBlock(block);
+            block.SetFloat(FlowMaxSpeedId, bakedMaxSpeed);
+            meshRenderer.SetPropertyBlock(block);
+        }
+
+        /// <summary>Editor: build the water now and return a copy to save as an asset (then set <see cref="baked"/> to it).</summary>
+        public Mesh BakeCopy()
+        {
+            Rebuild();
+            var copy = Instantiate(mesh);
+            copy.name = river.name + " water (baked)";
+            bakedMaxSpeed = lastMaxSpeed;
+            return copy;
         }
 
         /// <summary>Row distances along the river: minRowSpacing near modifiers and obstacles, maxRowSpacing in calm water.</summary>

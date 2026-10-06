@@ -172,6 +172,19 @@ namespace CampanhaRio.Editor
             Marker(root, WorldMarker.Kind.SeuAlce, alce, Yaw(-finish.right));
             Marker(root, WorldMarker.Kind.Landing, finish.point + finish.right * (finish.rightWidth + 2f) + finish.direction * 4f, Yaw(finish.right));
 
+            // The water, baked now: loading the river must not build it (about a second, in the middle of the van ride)
+            var water = Object.FindAnyObjectByType<RiverMeshBuilder>();
+            if (water)
+            {
+                const string waterPath = "Assets/_Project/Art/Models/River/Rio_Moinho_Water.asset";
+                Directory.CreateDirectory(Path.GetDirectoryName(waterPath));
+                AssetDatabase.DeleteAsset(waterPath);
+                var baked = water.BakeCopy();
+                AssetDatabase.CreateAsset(baked, waterPath);
+                water.baked = baked;
+                EditorUtility.SetDirty(water);
+            }
+
             var entry = Marker(root, WorldMarker.Kind.Entry, beach + Vector3.up * 1f, Yaw(startPoint.direction));
             var t = terrain.transform.position;
             var size = terrain.terrainData.size;
