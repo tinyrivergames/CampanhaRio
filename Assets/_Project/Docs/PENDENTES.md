@@ -74,3 +74,5 @@ Print: `Docs/Screenshots/2026-10-06_fase3/floresta_rio.png`. **Ainda falta** (ca
 grama, capim alto, arbustos, samambaias, flores, cogumelos, troncos caídos (a sua referência) e o shader de terreno no
 estilo SoftToon. **Pedido seu ainda na fila:** você dirigir a van + várias estradas saindo da agência (mapa "mundo
 aberto").
+
+**Novo para aprovar:** o **TufoGramaA v001** (o tufo de grama da floresta, no estilo das lâminas do pinheiro, 22 lâminas, 0,5 m, ~100 triângulos): `ArtSource/Grass/TufoGramaA/TufoGramaA_v001_preview.png`. Aprovado, ele é espalhado aos milhares pelas margens e clareiras.
