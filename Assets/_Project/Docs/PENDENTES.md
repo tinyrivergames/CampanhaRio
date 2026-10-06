@@ -49,3 +49,16 @@ agência crescendo em estágios?). Hoje um pedido paga 40 a 86 moedas.
 a **Vila do Moinho** aparece depois da carta urgente; o **Rio das Pedras** com reputação 4 e a **Vila das Pedras** com
 6 (os dois "em breve"). Cada lugar novo avisa uma vez ("Novo no mapa: ..."). Lugares e regras em
 `Scripts/Campaign/ValleyMap.cs`. **Aprovar:** os lugares, os nomes e o que revela cada um. O desenho é caixa cinza.
+
+## 5. Variações do pinheiro e da pedra (Fase 3, adiantado)
+Feitas com os mesmos geradores e o mesmo estilo das versões aprovadas (só forma e tamanho mudam). Ainda **não** estão
+no jogo: entram depois do seu ok. Pranchas em `ArtSource/<Família>/<Asset>/<Asset>_v001_preview.png`; todas lado a lado
+em `Docs/Screenshots/2026-10-06_variacoes/variacoes_3-4.png` (na ordem: PinheiroA de referência, B, C; RochaA de
+referência, B, C, D).
+- **PinheiroB:** jovem, 6,5 m, mais fino.
+- **PinheiroC:** alto e velho, 11 m, mais largo, um pouco inclinado.
+- **RochaB:** seixo pequeno (~1 m).
+- **RochaC:** laje baixa e larga (~3 m).
+- **RochaD:** pedra alta (~2,3 m).
+
+**Aprovar:** quais entram (e o que mudar). Aprovadas, elas vão para a floresta e as margens do Rio do Moinho.
