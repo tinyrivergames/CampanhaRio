@@ -132,3 +132,23 @@ but never use `-nographics` for anything visual.
 - **Fix:** `BuildTools.BuildRelease` deletes this machine's cache after every build. **For release:** players' caches
   could go bad the same way across updates; check Unity's D3D12 pipeline-cache options (or its issue tracker) before
   shipping.
+
+## The vertical slice's loop (Phase 2, 2026-10-06)
+- **Jobs:** `JobDefinition` (river, rule, deadline, star targets, pay) in `Data/Jobs`, the catalog in
+  `Resources/JobCatalog` (JobsBuilder). `JobRun` puts a job on the river's `RiverChallenge` (the sunset rule) and adds
+  its `JobModifier` (`UrgentLetterRule`, `ScaredGoatRule`, via `CarriedRule` = the carrier kayak's events). The
+  condition (1 = perfect) gives the cargo/passenger star; `CanFinish` holds the finish (the goat in the water).
+- **Places:** `Agencia`, `Estrada_Vale`, `Rio_Moinho` (a copy of the KayakTest river) are segments (WorldBuilder);
+  `WorldMarker`s say where the board, the van's stops, the road, Seu Alce and the landing are.
+- **Core** holds `AgencyFlow` (a NetworkBehaviour: the host's state machine, Hub → Boarding → Driving → Kayaking →
+  Arrived → ReturnBoarding → Returning), the `ValleyVan` (server-driven along points, grounded by raycasts), the
+  board, the upgrades panel, the valley map and Seu Alce (SliceCoreBuilder).
+- **Players:** the host sets each `NetworkPlayer`'s mode (walk / van seat / kayak); the owner follows its seat or its
+  kayak, so the streamer still sees where everyone is. Kayaks are spawned per player at the put-in; new attempts move
+  them through their owners (`KayakNetSync.PlaceAt`).
+- **To clients:** the flow's NetworkVariables carry the phase, the message, the job HUD (`JobHudState`), the result,
+  the day's progress (the sunset clock), the fades, the goat, Seu Alce's arrival count, the upgrades and the map.
+- **Streaming both ways:** `SegmentStreamer.JumpTo` loads a segment wherever the group is (the trip back), pinned until
+  someone arrives; segments behind everyone or more than one ahead unload by themselves.
+- **Sessions start at the agency** (the campaign is hub-based); the save keeps coins, reputation, jobs, upgrades, the
+  map's announced places and the arrivals.
