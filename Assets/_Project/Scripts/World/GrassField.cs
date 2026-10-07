@@ -37,6 +37,8 @@ namespace CampanhaRio.World
         public float cellSize = 48f;
         [Tooltip("A place without a river (the agency): grass everywhere on the terrain, off the paths.")]
         public bool noRiver;
+        [Tooltip("The carpet layer: short dense grass patches that fill the ground (two colours mixed), under the tall tufts.")]
+        public bool carpet;
 
         class Cell
         {
@@ -146,6 +148,13 @@ namespace CampanhaRio.World
                 p.y = terrain.SampleHeight(p) + origin.y - 0.03f;
                 if (river && edge < 1.5f && p.y < river.GetWaterHeight(p, ref riverHint) - 0.05f) continue; // not under the water
 
+                if (carpet)
+                {
+                    var kc = R() < 0.55f ? Tuft.Green : Tuft.DarkLush; // (the two carpet colours)
+                    cell.matrices[(int)kc].Add(Matrix4x4.TRS(p, Quaternion.Euler(0f, R() * 360f, 0f), new Vector3(Mathf.Lerp(1.1f, 1.45f, R()), Mathf.Lerp(0.8f, 1.25f, R()), Mathf.Lerp(1.1f, 1.45f, R()))));
+                    minY = Mathf.Min(minY, p.y); maxY = Mathf.Max(maxY, p.y);
+                    continue;
+                }
                 float woods = Mathf.PerlinNoise(p.x * 0.012f + 3f, p.z * 0.012f + 9f);   // the pines' own density noise
                 float patch = Mathf.PerlinNoise(p.x * 0.06f + 41f, p.z * 0.06f + 17f);   // patches of tall grass
                 Tuft kind;

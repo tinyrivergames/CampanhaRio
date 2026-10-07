@@ -91,11 +91,65 @@ def build_tuft(name, lod, p, col):
     return obj
 
 
+def build_carpet(name, lod, p, col):
+    """The carpet: a square patch (p["patch"] m) of thin straight blades that fills the ground, dark at the root and light
+    at the tip (the developer's reference: a soft, simple field), each blade its own height, lean and tone."""
+    rnd = random.Random(p["seed"])
+    bm = bmesh.new()
+    colors = {}
+    dark, mid, light = srgb(p["root"]), srgb(p["mid"]), srgb(p["tip"])
+    count = {"LOD0": p["blades"], "LOD1": p["blades"] // 2, "LOD2": max(4, p["blades"] // 8)}[lod]
+    half = p["patch"] / 2
+    for i in range(count):
+        base = Vector((rnd.uniform(-half, half), rnd.uniform(-half, half), 0.0))
+        a = rnd.uniform(0, 2 * math.pi)
+        side = Vector((math.cos(a), math.sin(a), 0.0))
+        lean_dir = Vector((-side.y, side.x, 0.0)) * rnd.uniform(-1, 1)
+        h = p["height"] * rnd.uniform(0.65, 1.2)
+        w = p["width"] * rnd.uniform(0.8, 1.25)
+        tip = base + lean_dir * h * 0.25 * p["lean"] + Vector((0, 0, h))
+        k = rnd.uniform(0.9, 1.08)
+        t = rnd.uniform(-1, 1)
+        tint = Vector((1.0 + 0.06 * t, 1.0 + 0.03 * t, 1.0 - 0.08 * t))
+
+        def v(pos, c, alpha):
+            vert = bm.verts.new(pos)
+            cc = Vector((c.x * tint.x, c.y * tint.y, c.z * tint.z)) * k
+            colors[vert] = (min(cc.x, 1), min(cc.y, 1), min(cc.z, 1), alpha)
+            return vert
+
+        L0, R0 = v(base - side * w, dark, 0.0), v(base + side * w, dark, 0.0)
+        T = v(tip, light, 1.0)
+        if lod == "LOD0":
+            midp = base.lerp(tip, 0.55)
+            Lm, Rm = v(midp - side * w * 0.6, mid, 0.55), v(midp + side * w * 0.6, mid, 0.55)
+            for f in ((L0, R0, Rm), (L0, Rm, Lm), (Lm, Rm, T)):
+                bm.faces.new(f)
+        else:
+            bm.faces.new((L0, R0, T))
+    mesh = bpy.data.meshes.new(name)
+    vert_list = list(bm.verts)
+    bm.to_mesh(mesh)
+    bm.free()
+    obj = common.mesh_object(name, mesh, col)
+    attr = mesh.color_attributes.new("Col", "BYTE_COLOR", "CORNER")
+    mesh.color_attributes.active_color = attr
+    normals = []
+    for poly in mesh.polygons:
+        poly.use_smooth = True
+        for li in poly.loop_indices:
+            attr.data[li].color_srgb = colors[vert_list[mesh.loops[li].vertex_index]]
+            normals.append(Vector((0, 0, 1)))  # all up: the field reads as one soft mass, lit by the gradient
+    mesh.normals_split_custom_set(normals)
+    return obj
+
+
 def build(asset, p):
     rig = common.load_rig()
     common.reset_scene()
     col = common.collection(asset)
-    parts = {k: build_tuft(f"{asset}_{k}", k, p, col) for k in ("LOD0", "LOD1", "LOD2")}
+    make = build_carpet if p["style"] == "carpet" else build_tuft
+    parts = {k: make(f"{asset}_{k}", k, p, col) for k in ("LOD0", "LOD1", "LOD2")}
     mat = common.soft_toon_material("M_" + asset, rig, preset="Foliage", _BaseColor="#FFFFFF", _UseVertexColor=1.0)
     for o in parts.values():
         o.data.materials.append(mat)
@@ -133,6 +187,8 @@ def main():
     p = {
         "seed": int(args.get("seed", 5)),
         "blades": int(args.get("blades", 14)),
+        "style": args.get("style", "tuft"),
+        "patch": f("patch", 0.8),
         "height": f("height", 0.45),
         "spread": f("spread", 0.22),
         "lean": f("lean", 1.0),

@@ -95,7 +95,7 @@ namespace CampanhaRio.Campaign
                 var k = Keyboard.current;
                 float x = (k.dKey.isPressed ? 1f : 0f) - (k.aKey.isPressed ? 1f : 0f);
                 float z = (k.wKey.isPressed ? 1f : 0f) - (k.sKey.isPressed ? 1f : 0f);
-                move = new Vector3(x, 0f, z).normalized * walkSpeed * (k.leftShiftKey.isPressed ? 2f : 1f);
+                move = Quaternion.Euler(0f, CoreView.Yaw, 0f) * new Vector3(x, 0f, z).normalized * walkSpeed * (k.leftShiftKey.isPressed ? 2f : 1f); // the way the camera looks
                 if (k.eKey.wasPressedThisFrame) Interact();
             }
             var p = transform.position + move * Time.deltaTime;

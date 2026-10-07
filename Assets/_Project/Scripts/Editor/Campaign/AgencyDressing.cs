@@ -30,7 +30,7 @@ namespace CampanhaRio.Editor
         {
             var scene = EditorSceneManager.OpenScene(ScenePath);
             var root = GameObject.Find("Agencia").transform;
-            foreach (string old in new[] { "Ground", "Trees", "Agency Terrain", "Forest", "Grass", "Paths" })
+            foreach (string old in new[] { "Ground", "Trees", "Agency Terrain", "Forest", "Grass", "Grass Carpet", "Paths" })
             {
                 var t = root.Find(old);
                 if (t) Object.DestroyImmediate(t.gameObject);
@@ -60,6 +60,16 @@ namespace CampanhaRio.Editor
             grass.densityFar = 3.2f;
             grass.drawDistance = 80f;
             grass.types = GrassTypes();
+            grass.densityNear = grass.densityFar = 0.9f; // the tall tufts: accents over the carpet
+
+            var carpet = new GameObject("Grass Carpet").AddComponent<GrassField>();
+            carpet.transform.SetParent(root, false);
+            carpet.terrain = terrain;
+            carpet.noRiver = true;
+            carpet.carpet = true;
+            carpet.densityNear = carpet.densityFar = 2.6f;
+            carpet.drawDistance = 55f; carpet.lodDistance = 16f; carpet.thinDistance = 34f;
+            carpet.types = CarpetTypes();
 
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene);
@@ -176,6 +186,21 @@ namespace CampanhaRio.Editor
                 stones++;
             }
             Debug.Log($"[Campanha] Agency forest: {trees} trees, {stones} rocks");
+        }
+
+        static GrassField.TuftType[] CarpetTypes()
+        {
+            var list = new List<GrassField.TuftType>();
+            foreach (var (letter, kind) in new[] { ("A", GrassField.Tuft.Green), ("B", GrassField.Tuft.DarkLush) })
+            {
+                string fbx = $"Assets/_Project/Art/Models/Grass/GramaTapete{letter}.fbx";
+                Mesh near = null, far = null;
+                foreach (var a in AssetDatabase.LoadAllAssetsAtPath(fbx))
+                    if (a is Mesh m) { if (m.name.EndsWith("_LOD0")) near = m; else if (m.name.EndsWith("_LOD1")) far = m; }
+                var mat = AssetDatabase.LoadAssetAtPath<Material>($"Assets/_Project/Art/Materials/Grass/M_GramaTapete{letter}.mat");
+                if (near && mat) list.Add(new GrassField.TuftType { kind = kind, near = near, far = far ? far : near, material = mat });
+            }
+            return list.ToArray();
         }
 
         static GrassField.TuftType[] GrassTypes()
