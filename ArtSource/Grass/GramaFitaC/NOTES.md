@@ -63,3 +63,10 @@
 - Prévia: `GramaFitaC_v008_preview.png`
 - **Feedback do desenvolvedor (literal):** _(aguardando)_
 - **O que mudou:** Cor neutra: no jogo cada tufo pega a cor do chao onde nasce (GrassField.groundTint); o vertex color so guarda a variacao entre tufos.
+
+### v009
+- Gerado com: `--seed 23 --blades 14 --style ribbon --patch 0.8 --height 0.7 --spread 0.24 --lean 0.7 --width 0.06 --root #FFF8E0 --mid #FFF8E0 --tip #FFFFE6 --petal #F4F1E6 --up_normals 0.97 --shadows 1.0 --wrap 0.8 --ao 0.3 --transl 0.05 --shade_var 0.05 --leaf 0.25 --fold_dark 0.98 --hue_var 0.02 --heart #F2C53D --ground_tint 1.0`
+- Triângulos: LOD0 504, LOD1 90, LOD2 6
+- Prévia: `GramaFitaC_v009_preview.png`
+- **Feedback do desenvolvedor (literal):** _(aguardando)_
+- **O que mudou:** Sombras: a grama recebe as sombras com forca total, como o chao.
