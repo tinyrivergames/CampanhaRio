@@ -135,7 +135,7 @@ namespace CampanhaRio.Editor
             {
                 float wx = Origin.x + x / (float)(ar - 1) * Size.x, wz = Origin.z + y / (float)(ar - 1) * Size.z;
                 var p = new Vector3(wx, 0f, wz);
-                float trail = 1f - Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(-0.2f, 0.9f, paths.Distance(p)));   // the trails (earth with pebbles), soft edges
+                float trail = 1f - Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(-0.5f, 1.6f, paths.Distance(p) + (Mathf.PerlinNoise(p.x * 0.6f, p.z * 0.6f) - 0.5f) * 0.9f));   // the trails (earth with pebbles), soft edges
                 float earth = Mathf.Max(0f, Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.72f, 0.8f, Mathf.PerlinNoise(wx * 0.05f + 3f, wz * 0.05f + 1f))) * 0.5f);
                 float gravel = wx > -6f && wx < 6f && wz > -294f ? 1f : 0f;                                     // the van's gravel and the road out
                 trail *= 1f - gravel;
@@ -164,7 +164,7 @@ namespace CampanhaRio.Editor
             string texPath = $"{dir}/T_Ground_Trail.png";
             const int size = 512;
             var tex = new Texture2D(size, size, TextureFormat.RGBA32, true);
-            var earthDark = new Color(0.55f, 0.31f, 0.17f); var earthLight = new Color(0.68f, 0.41f, 0.24f); // the reference's orange-red earth
+            var earthDark = new Color(0.5f, 0.33f, 0.22f); var earthLight = new Color(0.62f, 0.43f, 0.3f); // the reference's orange-red earth
             for (int y = 0; y < size; y++)
             for (int x = 0; x < size; x++)
             {
