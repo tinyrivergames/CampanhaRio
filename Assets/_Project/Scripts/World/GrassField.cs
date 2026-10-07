@@ -48,6 +48,8 @@ namespace CampanhaRio.World
         public float heightPatches = 0.45f;
         [Tooltip("Tall tufts gather along the trails, within this distance (m; 0 = off).")]
         public float trailHug;
+        [Tooltip("Over this distance (m) from a trail's edge, and around objects, the grass fades in (lower and thinner): soft edges.")]
+        public float edgeFade = 1.8f, objectFade = 1.2f;
 
         class Cell
         {
@@ -119,7 +121,9 @@ namespace CampanhaRio.World
                 {
                     var list = cell.matrices[(int)types[t].kind];
                     if (list == null || list.Count == 0) continue;
-                    int count = thin ? list.Count / 2 : list.Count; // (the list is in random order: half is an even thinning)
+                    // Fades out with distance (the list is in random order: drawing a share of it thins evenly)
+                    float keep = thin ? Mathf.Clamp01(1f - (d - thinDistance) / Mathf.Max(1f, drawDistance - thinDistance)) : 1f;
+                    int count = Mathf.RoundToInt(list.Count * keep);
                     var mesh = far && types[t].far ? types[t].far : types[t].near;
                     for (int start = 0; start < count; start += 1023)
                     {
@@ -169,6 +173,17 @@ namespace CampanhaRio.World
                     if (hug) intoWoods = Mathf.Max(intoWoods, 0.2f); // a little taller there
                 }
                 float tall = Mathf.Lerp(1f, forestTallness, intoWoods) * (1f + (Mathf.PerlinNoise(p.x * 0.09f + 13f, p.z * 0.09f + 5f) - 0.5f) * 2f * heightPatches);
+                // Soft edges: the grass gets lower and thinner toward the trails and around objects (rocks, posts, the cabin)
+                float fade = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.1f, edgeFade, path));
+                foreach (var hit in Physics.OverlapSphere(p + Vector3.up * 0.3f, objectFade, ~0, QueryTriggerInteraction.Ignore))
+                {
+                    if (hit is TerrainCollider || hit.attachedRigidbody) continue;
+                    var cp = hit.ClosestPoint(p + Vector3.up * 0.3f);
+                    float d = Vector2.Distance(new Vector2(cp.x, cp.z), new Vector2(p.x, p.z));
+                    fade = Mathf.Min(fade, Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.05f, objectFade, d)));
+                }
+                if (fade < 0.12f || R() > Mathf.Lerp(0.35f, 1f, fade)) continue; // thinner there too
+                tall *= Mathf.Lerp(0.35f, 1f, fade);
                 if (carpet)
                 {
                     // Clumps: dark ones gather in patches (the reference), lower near the trails, sizes varied
