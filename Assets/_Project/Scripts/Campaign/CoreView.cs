@@ -24,6 +24,9 @@ namespace CampanhaRio.Campaign
         public static float Yaw { get; private set; }
 
         float yaw;
+
+        /// <summary>A test script turns the camera (the dev vlog's walks).</summary>
+        public float CurrentYaw { get => yaw; set => yaw = value; }
         bool snapped;
 
         void OnDisable()

@@ -24,6 +24,8 @@ namespace CampanhaRio.Campaign
         public float walkSpeed = 6f;
         [Tooltip("Set by a test script: walk forward (+Z) at this speed (m/s) without input.")]
         public static float ScriptedWalk;
+        [Tooltip("Set by a test script: walk this way (world, m/s) without input (the dev vlog's walks).")]
+        public static Vector3 ScriptedMove;
 
         readonly NetworkVariable<PlayerMode> mode = new NetworkVariable<PlayerMode>();
         readonly NetworkVariable<byte> seat = new NetworkVariable<byte>();
@@ -89,7 +91,8 @@ namespace CampanhaRio.Campaign
                     return;
             }
             Vector3 move = Vector3.zero;
-            if (ScriptedWalk > 0f) move = Vector3.forward * ScriptedWalk;
+            if (ScriptedMove.sqrMagnitude > 0f) move = ScriptedMove;
+            else if (ScriptedWalk > 0f) move = Vector3.forward * ScriptedWalk;
             else if (Keyboard.current != null)
             {
                 var k = Keyboard.current;

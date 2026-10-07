@@ -50,3 +50,6 @@ ArtSource/**/_tmp/
 .DS_Store
 Thumbs.db
 Desktop.ini
+
+# Dev vlog: every print of the session (large, kept local; the chosen ones go to Assets/_Project/Docs/Screenshots)
+DevVlog/
