@@ -1,7 +1,7 @@
 {
     "asset": "GramaFitaA",
     "family": "Grass",
-    "source": "ArtSource/Grass/GramaFitaA/GramaFitaA_v011.blend",
+    "source": "ArtSource/Grass/GramaFitaA/GramaFitaA_v012.blend",
     "material": {
         "_BaseColor": "#FFFFFF",
         "_Wrap": 0.8,

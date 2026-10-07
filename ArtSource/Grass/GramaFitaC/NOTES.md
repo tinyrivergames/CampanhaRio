@@ -35,3 +35,10 @@
 - Prévia: `GramaFitaC_v004_preview.png`
 - **Feedback do desenvolvedor (literal):** _(aguardando)_
 - **O que mudou:** Estilo RV There Yet: a raiz com a cor exata do chão, quase uma cor por lâmina, pouca variação, lâminas mais soltas e longas.
+
+### v005
+- Gerado com: `--seed 23 --blades 14 --style ribbon --patch 0.8 --height 0.7 --spread 0.24 --lean 0.7 --width 0.06 --root #7A9A4C --mid #7C9B4E --tip #8CA75A --petal #F4F1E6 --up_normals 0.97 --shadows 0.25 --wrap 0.8 --ao 0.3 --transl 0.05 --shade_var 0.06 --leaf 0.25 --fold_dark 0.98 --hue_var 0.05 --heart #F2C53D`
+- Triângulos: LOD0 504, LOD1 90, LOD2 6
+- Prévia: `GramaFitaC_v005_preview.png`
+- **Feedback do desenvolvedor (literal):** _(aguardando)_
+- **O que mudou:** Teste: grama escurecida quase até a cor do chão (aspecto de floresta).
