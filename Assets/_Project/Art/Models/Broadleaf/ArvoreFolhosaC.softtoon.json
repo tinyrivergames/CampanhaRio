@@ -1,0 +1,78 @@
+{
+    "asset": "ArvoreFolhosaC",
+    "family": "Broadleaf",
+    "source": "ArtSource/Broadleaf/ArvoreFolhosaC/ArvoreFolhosaC_v001.blend",
+    "material": {
+        "_BaseColor": "#FFFFFF",
+        "_Wrap": 0.7,
+        "_RampCenter": 0.45,
+        "_RampSoftness": 0.35,
+        "_ReceiveShadows": 0.85,
+        "_RimStrength": 0.14,
+        "_RimPower": 3.5,
+        "_UseVertexColor": 1.0,
+        "_GradientBottom": "#FFFFFF",
+        "_GradientTop": "#FFFFFF",
+        "_GradientHeights": [
+            0.0,
+            1.0
+        ],
+        "_TopTint": "#FFFFFF",
+        "_TopTintAmount": 0.0,
+        "_TopTintSharpness": 0.35,
+        "_Translucency": 0.25,
+        "preset": "Foliage"
+    },
+    "materialList": [
+        {
+            "name": "M_ArvoreFolhosaC",
+            "_BaseColor": "#FFFFFF",
+            "_Wrap": 0.7,
+            "_RampCenter": 0.45,
+            "_RampSoftness": 0.35,
+            "_ReceiveShadows": 0.85,
+            "_RimStrength": 0.14,
+            "_RimPower": 3.5,
+            "_UseVertexColor": 1.0,
+            "_GradientBottom": "#FFFFFF",
+            "_GradientTop": "#FFFFFF",
+            "_GradientHeights": [
+                0.0,
+                1.0
+            ],
+            "_TopTint": "#FFFFFF",
+            "_TopTintAmount": 0.0,
+            "_TopTintSharpness": 0.35,
+            "_Translucency": 0.25,
+            "preset": "Foliage"
+        },
+        {
+            "name": "M_ArvoreFolhosaC_Impostor",
+            "_BaseColor": "#FFFFFF",
+            "_Wrap": 0.7,
+            "_RampCenter": 0.45,
+            "_RampSoftness": 0.35,
+            "_ReceiveShadows": 0.85,
+            "_RimStrength": 0.08,
+            "_RimPower": 3.5,
+            "_UseVertexColor": 0.0,
+            "_GradientBottom": "#FFFFFF",
+            "_GradientTop": "#FFFFFF",
+            "_GradientHeights": [
+                0.0,
+                1.0
+            ],
+            "_TopTint": "#FFFFFF",
+            "_TopTintAmount": 0.0,
+            "_TopTintSharpness": 0.35,
+            "_Translucency": 0.25,
+            "_BaseMap": "Assets/_Project/Art/Textures/Broadleaf/ArvoreFolhosaC_impostor.png",
+            "preset": "Foliage"
+        }
+    ],
+    "triangles": {
+        "LOD0": 448,
+        "LOD1": 100,
+        "LOD2": 4
+    }
+}

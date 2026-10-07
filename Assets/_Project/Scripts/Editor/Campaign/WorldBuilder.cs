@@ -32,6 +32,7 @@ namespace CampanhaRio.Editor
             BuildRioMoinho();
             PatchCore();
             ForestDressing.Build(); // the river's forest and ground (Rio_Moinho is rebuilt from KayakTest above)
+            AgencyDressing.Build(); // the agency's ground, trails, forest and grass
             Debug.Log("[Campanha] Vertical slice world built: " + string.Join(", ", Order));
         }
 

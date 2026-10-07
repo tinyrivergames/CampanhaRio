@@ -79,3 +79,10 @@ aberto").
 **Variações de cor da grama (para misturar):** TufoGramaB (verde-escuro, baixo e denso, sombra da mata), C (capim alto
 amarelado, como a referência), D (verde-amarelado com pontas secas, transição), E (verde-frio azulado, beira d'água).
 Lado a lado: `Docs/Screenshots/2026-10-06_fase3/gramas_variacoes.png` (em cima o close, embaixo a escala).
+
+## 7. A floresta na agência (2026-10-07)
+Tudo reunido onde o personagem nasce: terreno de verdade (pátio plano, morrinhos), **trilhas de terra** (quadro, galpão,
+van e uma volta pela mata), **1.100 árvores maiores** (os 3 pinheiros e 3 árvores de folha novas), 140 pedras e grama
+densa (~85 mil tufos). Prints: `Docs/Screenshots/2026-10-07_agencia_floresta/`.
+**Para aprovar:** as árvores de folha **ArvoreFolhosaA** (redonda), **B** (alta e ovalada) e **C** (baixa, verde-amarelada),
+pranchas em `ArtSource/Broadleaf/<Asset>/<Asset>_v001_preview.png`.

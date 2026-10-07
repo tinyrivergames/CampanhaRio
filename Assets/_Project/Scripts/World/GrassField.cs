@@ -35,6 +35,8 @@ namespace CampanhaRio.World
         public float maxSteepness = 48f;
         public float drawDistance = 85f, lodDistance = 24f, thinDistance = 45f;
         public float cellSize = 48f;
+        [Tooltip("A place without a river (the agency): grass everywhere on the terrain, off the paths.")]
+        public bool noRiver;
 
         class Cell
         {
@@ -53,7 +55,7 @@ namespace CampanhaRio.World
         void OnEnable()
         {
             if (!terrain) terrain = FindAnyObjectByType<Terrain>();
-            if (!river) river = FindAnyObjectByType<RiverPath>();
+            if (!river && !noRiver) river = FindAnyObjectByType<RiverPath>();
             paramsNear = new RenderParams[types.Length];
             paramsFar = new RenderParams[types.Length];
             for (int i = 0; i < types.Length; i++)
@@ -66,7 +68,7 @@ namespace CampanhaRio.World
         void Update()
         {
             var cam = Camera.main;
-            if (!cam || !terrain || !river || types.Length == 0) return;
+            if (!cam || !terrain || types.Length == 0) return;
             Vector3 eye = cam.transform.position;
 
             // Make the nearest missing cell (one per frame)
@@ -135,17 +137,20 @@ namespace CampanhaRio.World
                 var p = new Vector3(x0 + R() * cellSize, 0f, z0 + R() * cellSize);
                 float nx = (p.x - origin.x) / data.size.x, nz = (p.z - origin.z) / data.size.z;
                 if (nx < 0f || nx > 1f || nz < 0f || nz > 1f) continue;
-                float edge = river.SampleShape(p, ref riverHint).edgeDistance;
+                float edge = river ? river.SampleShape(p, ref riverHint).edgeDistance : 30f;
+                float path = GroundPaths.DistanceToPath(p);
+                if (path < 0.2f || GroundPaths.Cleared(p)) continue; // the trails and the buildings stay clear
                 if (edge < fromEdge || edge > toEdge) continue;
                 if (edge > 25f && R() > densityFar / densityNear) continue; // lighter in the deep woods
                 if (data.GetSteepness(nx, nz) > maxSteepness) continue;
                 p.y = terrain.SampleHeight(p) + origin.y - 0.03f;
-                if (edge < 1.5f && p.y < river.GetWaterHeight(p, ref riverHint) - 0.05f) continue; // not under the water
+                if (river && edge < 1.5f && p.y < river.GetWaterHeight(p, ref riverHint) - 0.05f) continue; // not under the water
 
                 float woods = Mathf.PerlinNoise(p.x * 0.012f + 3f, p.z * 0.012f + 9f);   // the pines' own density noise
                 float patch = Mathf.PerlinNoise(p.x * 0.06f + 41f, p.z * 0.06f + 17f);   // patches of tall grass
                 Tuft kind;
-                if (edge < 3f) kind = R() < 0.7f ? Tuft.CoolWater : Tuft.Green;
+                if (path < 1.2f) kind = R() < 0.6f ? Tuft.DryTipped : Tuft.Green; // trodden edges of the trails
+                else if (edge < 3f) kind = R() < 0.7f ? Tuft.CoolWater : Tuft.Green;
                 else if (woods > 0.5f && edge > 6f) kind = R() < 0.75f ? Tuft.DarkLush : Tuft.Green;
                 else if (patch > 0.7f) kind = R() < 0.6f ? Tuft.TallYellow : Tuft.DryTipped;
                 else kind = R() < 0.6f ? Tuft.Green : R() < 0.75f ? Tuft.DryTipped : R() < 0.5f ? Tuft.DarkLush : Tuft.TallYellow;
