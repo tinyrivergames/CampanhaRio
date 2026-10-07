@@ -1,0 +1,16 @@
+# Grass / TufoGramaB
+
+## Briefing (2026-10-06, Fase 3)
+- **O que é:** o tufo de grama da floresta (espalhado aos milhares), no estilo das lâminas do pinheiro aprovado.
+- **Pedido do desenvolvedor:** "monta as texturas principais da floresta e popule ela como floresta" (referência: floresta low-poly densa com grama e capim).
+- **Triângulos:** LOD0 <= 120, LOD1 <= 40, LOD2 <= 8.
+- **Gerador:** `ArtSource/Grass/grass_gen.py`.
+
+## Versões
+
+### v001
+- Gerado com: `--seed 7 --blades 26 --height 0.32 --spread 0.28 --lean 1.0 --width 0.03 --root #2C4A1F --mid #3F6B2C --tip #6E9A3E`
+- Triângulos: LOD0 130, LOD1 40, LOD2 2
+- Prévia: `TufoGramaB_v001_preview.png`
+- **Feedback do desenvolvedor (literal):** _(aguardando)_
+- **O que mudou:** primeira versão.

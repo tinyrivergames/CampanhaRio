@@ -76,3 +76,6 @@ estilo SoftToon. **Pedido seu ainda na fila:** você dirigir a van + várias est
 aberto").
 
 **Novo para aprovar:** o **TufoGramaA v001** (o tufo de grama da floresta, no estilo das lâminas do pinheiro, 22 lâminas, 0,5 m, ~100 triângulos): `ArtSource/Grass/TufoGramaA/TufoGramaA_v001_preview.png`. Aprovado, ele é espalhado aos milhares pelas margens e clareiras.
+**Variações de cor da grama (para misturar):** TufoGramaB (verde-escuro, baixo e denso, sombra da mata), C (capim alto
+amarelado, como a referência), D (verde-amarelado com pontas secas, transição), E (verde-frio azulado, beira d'água).
+Lado a lado: `Docs/Screenshots/2026-10-06_fase3/gramas_variacoes.png` (em cima o close, embaixo a escala).
