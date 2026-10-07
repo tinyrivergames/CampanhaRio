@@ -42,3 +42,17 @@
 - Prévia: `GramaFitaC_v005_preview.png`
 - **Feedback do desenvolvedor (literal):** _(aguardando)_
 - **O que mudou:** Teste: grama escurecida quase até a cor do chão (aspecto de floresta).
+
+### v006
+- Gerado com: `--seed 23 --blades 14 --style ribbon --patch 0.8 --height 0.7 --spread 0.24 --lean 0.7 --width 0.06 --root #7A994D --mid #7A994D --tip #7F9C51 --petal #F4F1E6 --up_normals 0.97 --shadows 0.25 --wrap 0.8 --ao 0.3 --transl 0.05 --shade_var 0.05 --leaf 0.25 --fold_dark 0.98 --hue_var 0.04 --heart #F2C53D`
+- Triângulos: LOD0 504, LOD1 90, LOD2 6
+- Prévia: `GramaFitaC_v006_preview.png`
+- **Feedback do desenvolvedor (literal):** _(aguardando)_
+- **O que mudou:** Teste C: grama praticamente da cor do chão.
+
+### v007
+- Gerado com: `--seed 23 --blades 14 --style ribbon --patch 0.8 --height 0.7 --spread 0.24 --lean 0.7 --width 0.06 --root #5F773C --mid #5F773C --tip #637A40 --petal #F4F1E6 --up_normals 0.97 --shadows 0.25 --wrap 0.8 --ao 0.3 --transl 0.05 --shade_var 0.05 --leaf 0.25 --fold_dark 0.98 --hue_var 0.04 --heart #F2C53D`
+- Triângulos: LOD0 504, LOD1 90, LOD2 6
+- Prévia: `GramaFitaC_v007_preview.png`
+- **Feedback do desenvolvedor (literal):** _(aguardando)_
+- **O que mudou:** Teste C: grama da cor do chão como aparece no jogo (compensando a luz mais forte da grama).
