@@ -126,7 +126,7 @@ namespace CampanhaRio.Editor
         /// <summary>Baked textures (impostors, background cards): sRGB colour with an alpha that is clipped.</summary>
         void OnPreprocessTexture()
         {
-            if (!assetPath.StartsWith("Assets/_Project/Art/Textures/") || assetPath.Contains("/Water/")) return;
+            if (!assetPath.StartsWith("Assets/_Project/Art/Textures/") || assetPath.Contains("/Water/") || assetPath.Contains("/Ground/")) return; // (ground textures tile, and their alpha is smoothness)
             var t = (TextureImporter)assetImporter;
             t.sRGBTexture = true;
             t.alphaIsTransparency = true;

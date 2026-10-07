@@ -39,6 +39,13 @@ namespace CampanhaRio.World
         public bool noRiver;
         [Tooltip("The carpet layer: short dense grass patches that fill the ground (two colours mixed), under the tall tufts.")]
         public bool carpet;
+        [Tooltip("A clearing (XZ rect: x, z, width, depth; empty = none): outside it, toward the woods, the grass grows taller (and, for the tall tufts, denser).")]
+        public Rect clearing;
+        public float forestTallness = 1.7f;
+        [Tooltip("Inside the clearing, this share of the tall tufts stays (they gather at the woods' edge).")]
+        [Range(0f, 1f)] public float clearingShare = 0.35f;
+        [Tooltip("Height variation in patches (0 = even): low and high patches of grass.")]
+        public float heightPatches = 0.45f;
 
         class Cell
         {
@@ -148,10 +155,20 @@ namespace CampanhaRio.World
                 p.y = terrain.SampleHeight(p) + origin.y - 0.03f;
                 if (river && edge < 1.5f && p.y < river.GetWaterHeight(p, ref riverHint) - 0.05f) continue; // not under the water
 
+                // How far into the woods (0 in the clearing, 1 ten metres out), and the patchy height of the field
+                float intoWoods = 0f;
+                if (clearing.width > 0f)
+                {
+                    float ox = Mathf.Max(0f, Mathf.Max(clearing.xMin - p.x, p.x - clearing.xMax));
+                    float oz = Mathf.Max(0f, Mathf.Max(clearing.yMin - p.z, p.z - clearing.yMax));
+                    intoWoods = Mathf.Clamp01(Mathf.Sqrt(ox * ox + oz * oz) / 10f);
+                    if (!carpet && intoWoods <= 0f && R() > clearingShare) continue;
+                }
+                float tall = Mathf.Lerp(1f, forestTallness, intoWoods) * (1f + (Mathf.PerlinNoise(p.x * 0.09f + 13f, p.z * 0.09f + 5f) - 0.5f) * 2f * heightPatches);
                 if (carpet)
                 {
                     var kc = R() < 0.55f ? Tuft.Green : Tuft.DarkLush; // (the two carpet colours)
-                    cell.matrices[(int)kc].Add(Matrix4x4.TRS(p, Quaternion.Euler(0f, R() * 360f, 0f), new Vector3(Mathf.Lerp(1.1f, 1.45f, R()), Mathf.Lerp(0.8f, 1.25f, R()), Mathf.Lerp(1.1f, 1.45f, R()))));
+                    cell.matrices[(int)kc].Add(Matrix4x4.TRS(p, Quaternion.Euler(0f, R() * 360f, 0f), new Vector3(Mathf.Lerp(1.1f, 1.45f, R()), Mathf.Lerp(0.8f, 1.25f, R()) * tall, Mathf.Lerp(1.1f, 1.45f, R()))));
                     minY = Mathf.Min(minY, p.y); maxY = Mathf.Max(maxY, p.y);
                     continue;
                 }
@@ -166,7 +183,7 @@ namespace CampanhaRio.World
 
                 float scale = Mathf.Lerp(0.85f, 1.5f, R()) * (kind == Tuft.DarkLush ? 1.1f : 1f);
                 var rot = Quaternion.Euler(R() * 10f - 5f, R() * 360f, R() * 10f - 5f);
-                cell.matrices[(int)kind].Add(Matrix4x4.TRS(p, rot, Vector3.one * scale));
+                cell.matrices[(int)kind].Add(Matrix4x4.TRS(p, rot, new Vector3(scale, scale * tall, scale)));
                 minY = Mathf.Min(minY, p.y); maxY = Mathf.Max(maxY, p.y);
             }
             // Random order already (random points), so drawing half thins evenly

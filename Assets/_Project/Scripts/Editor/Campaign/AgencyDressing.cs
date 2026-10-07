@@ -60,7 +60,10 @@ namespace CampanhaRio.Editor
             grass.densityFar = 3.2f;
             grass.drawDistance = 80f;
             grass.types = GrassTypes();
-            grass.densityNear = grass.densityFar = 0.9f; // the tall tufts: accents over the carpet
+            grass.densityNear = grass.densityFar = 2.2f; // the tall tufts: few in the yard, thick at the woods' edge
+            grass.clearing = Yard;
+            grass.clearingShare = 0.25f;
+            grass.forestTallness = 1.8f;
 
             var carpet = new GameObject("Grass Carpet").AddComponent<GrassField>();
             carpet.transform.SetParent(root, false);
@@ -70,6 +73,8 @@ namespace CampanhaRio.Editor
             carpet.densityNear = carpet.densityFar = 2.6f;
             carpet.drawDistance = 55f; carpet.lodDistance = 16f; carpet.thinDistance = 34f;
             carpet.types = CarpetTypes();
+            carpet.clearing = Yard;
+            carpet.forestTallness = 1.5f;
 
             EditorSceneManager.MarkSceneDirty(scene);
             EditorSceneManager.SaveScene(scene);
@@ -98,7 +103,17 @@ namespace CampanhaRio.Editor
                 float dx = Mathf.Max(0f, Mathf.Max(Yard.xMin - wx, wx - Yard.xMax));
                 float dz = Mathf.Max(0f, Mathf.Max(Yard.yMin - wz, wz - Yard.yMax));
                 float out_ = Mathf.Sqrt(dx * dx + dz * dz);
-                float hills = Mathf.SmoothStep(0f, 1f, out_ / 45f) * 5f + (Mathf.PerlinNoise(wx * 0.025f + 5f, wz * 0.025f + 2f) - 0.5f) * 3f * Mathf.SmoothStep(0f, 1f, out_ / 20f);
+                float hills0 = Mathf.SmoothStep(0f, 1f, out_ / 45f) * 5f + (Mathf.PerlinNoise(wx * 0.025f + 5f, wz * 0.025f + 2f) - 0.5f) * 3f * Mathf.SmoothStep(0f, 1f, out_ / 20f);
+                float hills = hills0;
+                var here = new Vector3(wx, 0f, wz);
+                float nearBuilding = 99f;
+                foreach (var r in paths.keepClear)
+                {
+                    float bx = Mathf.Max(0f, Mathf.Max(r.xMin - wx, wx - r.xMax)), bz = Mathf.Max(0f, Mathf.Max(r.yMin - wz, wz - r.yMax));
+                    nearBuilding = Mathf.Min(nearBuilding, Mathf.Sqrt(bx * bx + bz * bz));
+                }
+                float swell = (Mathf.PerlinNoise(wx * 0.06f + 21f, wz * 0.06f + 8f) - 0.5f) * 1.6f + (Mathf.PerlinNoise(wx * 0.17f + 4f, wz * 0.17f + 2f) - 0.5f) * 0.5f;
+                hills += swell * Mathf.SmoothStep(0f, 1f, nearBuilding / 6f);
                 float edgeFlat = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(-262f, -285f, wz)); // 0 at the road segment's edge
                 float trail = Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.5f, 6f, paths.Distance(new Vector3(wx, 0f, wz))));
                 h[y, x] = (Ground + hills * edgeFlat * Mathf.Lerp(0.55f, 1f, trail) - Origin.y) / Size.y; // trails sit a little lower
@@ -109,21 +124,23 @@ namespace CampanhaRio.Editor
                 AssetDatabase.LoadAssetAtPath<TerrainLayer>("Assets/_Project/Art/Textures/Ground/TL_Grass.terrainlayer"),
                 AssetDatabase.LoadAssetAtPath<TerrainLayer>("Assets/_Project/Art/Textures/Ground/TL_Earth.terrainlayer"),
                 AssetDatabase.LoadAssetAtPath<TerrainLayer>("Assets/_Project/Art/Textures/Ground/TL_Gravel.terrainlayer"),
+                TrailLayer(),
             };
             int ar = data.alphamapResolution;
-            var maps = new float[ar, ar, 3];
+            var maps = new float[ar, ar, 4];
             for (int y = 0; y < ar; y++)
             for (int x = 0; x < ar; x++)
             {
                 float wx = Origin.x + x / (float)(ar - 1) * Size.x, wz = Origin.z + y / (float)(ar - 1) * Size.z;
                 var p = new Vector3(wx, 0f, wz);
-                float earth = 1f - Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(-0.2f, 0.9f, paths.Distance(p)));   // the trails, soft edges
-                earth = Mathf.Max(earth, Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.72f, 0.8f, Mathf.PerlinNoise(wx * 0.05f + 3f, wz * 0.05f + 1f))) * 0.5f);
+                float trail = 1f - Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(-0.2f, 0.9f, paths.Distance(p)));   // the trails (earth with pebbles), soft edges
+                float earth = Mathf.Max(0f, Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.72f, 0.8f, Mathf.PerlinNoise(wx * 0.05f + 3f, wz * 0.05f + 1f))) * 0.5f);
                 float gravel = wx > -6f && wx < 6f && wz > -300f ? 1f : 0f;                                     // the van's gravel and the road out
-                earth *= 1f - gravel;
-                float grass = Mathf.Max(0f, 1f - earth - gravel);
-                float sum = grass + earth + gravel;
-                maps[y, x, 0] = grass / sum; maps[y, x, 1] = earth / sum; maps[y, x, 2] = gravel / sum;
+                trail *= 1f - gravel;
+                earth *= (1f - gravel) * (1f - trail);
+                float grass = Mathf.Max(0f, 1f - earth - gravel - trail);
+                float sum = grass + earth + gravel + trail;
+                maps[y, x, 0] = grass / sum; maps[y, x, 1] = earth / sum; maps[y, x, 2] = gravel / sum; maps[y, x, 3] = trail / sum;
             }
             data.SetAlphamaps(0, 0, maps);
             EditorUtility.SetDirty(data);
@@ -136,6 +153,63 @@ namespace CampanhaRio.Editor
             var t = go.GetComponent<Terrain>();
             t.drawInstanced = true;
             return t;
+        }
+
+        /// <summary>The trails' ground: brown earth with pebbles mixed in (light and dark stones, a shade under each), tileable.</summary>
+        static TerrainLayer TrailLayer()
+        {
+            const string dir = "Assets/_Project/Art/Textures/Ground";
+            string texPath = $"{dir}/T_Ground_Trail.png";
+            const int size = 512;
+            var tex = new Texture2D(size, size, TextureFormat.RGBA32, true);
+            var earthDark = new Color(0.33f, 0.24f, 0.16f); var earthLight = new Color(0.46f, 0.35f, 0.24f);
+            for (int y = 0; y < size; y++)
+            for (int x = 0; x < size; x++)
+            {
+                float u = x / (float)size * Mathf.PI * 2f, v = y / (float)size * Mathf.PI * 2f;
+                float n = Mathf.PerlinNoise(3f + Mathf.Cos(u) * 2f + Mathf.Sin(v) * 0.7f, 7f + Mathf.Sin(u) * 2f + Mathf.Cos(v) * 0.7f);
+                tex.SetPixel(x, y, Color.Lerp(earthDark, earthLight, n));
+            }
+            var rng = new System.Random(5);
+            for (int s = 0; s < 260; s++)
+            {
+                float cx = (float)rng.NextDouble() * size, cy = (float)rng.NextDouble() * size;
+                float rx = 3f + (float)rng.NextDouble() * (s < 30 ? 13f : 6f), ry = rx * (0.6f + (float)rng.NextDouble() * 0.4f);
+                float ang = (float)rng.NextDouble() * Mathf.PI;
+                float g = 0.42f + (float)rng.NextDouble() * 0.28f;
+                var stone = new Color(g, g * 0.97f, g * 0.92f);
+                for (int dy = -(int)rx - 3; dy <= (int)rx + 3; dy++)
+                for (int dx = -(int)rx - 3; dx <= (int)rx + 3; dx++)
+                {
+                    float lx = dx * Mathf.Cos(ang) + dy * Mathf.Sin(ang), ly = -dx * Mathf.Sin(ang) + dy * Mathf.Cos(ang);
+                    float e = (lx / rx) * (lx / rx) + (ly / ry) * (ly / ry);
+                    int px = ((int)cx + dx + size) % size, py = ((int)cy + dy + size) % size;
+                    if (e <= 1f) tex.SetPixel(px, py, stone * Mathf.Lerp(1.1f, 0.85f, Mathf.Clamp01((ly / ry + 1f) * 0.5f)));
+                    else if (e <= 1.5f && dy < 0) tex.SetPixel(px, py, tex.GetPixel(px, py) * 0.8f); // a little shade
+                }
+            }
+            var pixels = tex.GetPixels();
+            for (int pi = 0; pi < pixels.Length; pi++) pixels[pi].a = 0f; // URP's terrain reads the alpha as smoothness: 0 = matte
+            tex.SetPixels(pixels);
+            tex.Apply();
+            File.WriteAllBytes(texPath, tex.EncodeToPNG());
+            Object.DestroyImmediate(tex);
+            AssetDatabase.ImportAsset(texPath);
+            var imp = (TextureImporter)AssetImporter.GetAtPath(texPath);
+            imp.wrapMode = TextureWrapMode.Repeat;
+            imp.alphaIsTransparency = false; // (the alpha is the terrain's smoothness, not a cut-out: never bleed the colours)
+            imp.anisoLevel = 4;
+            imp.SaveAndReimport();
+            string layerPath = $"{dir}/TL_Trail.terrainlayer";
+            var layer = AssetDatabase.LoadAssetAtPath<TerrainLayer>(layerPath);
+            if (!layer) { layer = new TerrainLayer(); AssetDatabase.CreateAsset(layer, layerPath); }
+            layer.diffuseTexture = AssetDatabase.LoadAssetAtPath<Texture2D>(texPath);
+            layer.tileSize = new Vector2(3.5f, 3.5f);
+            layer.smoothness = 0f; // matte (a default smoothness made the trails shine like water)
+            layer.metallic = 0f;
+            layer.specular = Color.black;
+            EditorUtility.SetDirty(layer);
+            return layer;
         }
 
         static void Forest(Transform root, Terrain terrain, GroundPaths paths)
@@ -185,7 +259,20 @@ namespace CampanhaRio.Editor
                 placed.Add(p);
                 stones++;
             }
-            Debug.Log($"[Campanha] Agency forest: {trees} trees, {stones} rocks");
+            int boulders = 0;
+            for (int i = 0; i < 20000 && boulders < 45; i++) // big mossy boulders in the woods and at its edge
+            {
+                var p = new Vector3(Origin.x + R() * Size.x, 0f, Origin.z + R() * Size.z);
+                if (InYard(p.x, p.z, 1f) || p.z > -268f || paths.Distance(p) < 3.5f || !Free(p, 4.5f)) continue;
+                float scale = Mathf.Lerp(2.2f, 4f, R());
+                p.y = terrain.SampleHeight(p) + terrain.transform.position.y - 0.25f * scale;
+                var rock = (GameObject)PrefabUtility.InstantiatePrefab(L(rocks[R() < 0.5f ? 0 : 3]), forest);
+                rock.transform.SetPositionAndRotation(p, Quaternion.Euler(R() * 10f - 5f, R() * 360f, R() * 10f - 5f));
+                rock.transform.localScale = Vector3.one * scale;
+                placed.Add(p);
+                boulders++;
+            }
+            Debug.Log($"[Campanha] Agency forest: {trees} trees, {stones} rocks, {boulders} big boulders");
         }
 
         static GrassField.TuftType[] CarpetTypes()

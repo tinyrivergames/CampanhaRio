@@ -332,7 +332,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a707b7a1873309e4f83503cbc27ff073, type: 3}
   m_Name: 
   m_EditorClassIdentifier: CampanhaRio::CampanhaRio.Campaign.CoreView
-  offset: {x: 0, y: 6, z: -10}
+  distance: 9
+  distanceRange: {x: 4, y: 16}
+  pitch: 24
+  pitchRange: {x: -5, y: 70}
+  mouseSensitivity: 0.12
   smoothing: 6
 --- !u!114 &487736189
 MonoBehaviour:

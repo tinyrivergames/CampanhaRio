@@ -61,12 +61,16 @@ namespace CampanhaRio.Editor
                 if (rng.NextDouble() < speckle * 0.08) c = Color.Lerp(c, rng.NextDouble() < 0.5 ? light : dark, 0.6f); // grains, blades
                 tex.SetPixel(x, y, c);
             }
+            var pixels = tex.GetPixels();
+            for (int pi = 0; pi < pixels.Length; pi++) pixels[pi].a = 0f; // URP's terrain reads the alpha as smoothness: 0 = matte
+            tex.SetPixels(pixels);
             tex.Apply();
             File.WriteAllBytes(texPath, tex.EncodeToPNG());
             Object.DestroyImmediate(tex);
             AssetDatabase.ImportAsset(texPath);
             var imp = (TextureImporter)AssetImporter.GetAtPath(texPath);
             imp.wrapMode = TextureWrapMode.Repeat;
+            imp.alphaIsTransparency = false; // (the alpha is the terrain's smoothness, not a cut-out: never bleed the colours)
             imp.anisoLevel = 4;
             imp.SaveAndReimport();
 
