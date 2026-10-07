@@ -54,7 +54,9 @@ namespace CampanhaRio.Editor
             foreach (var l in new[] { new Vector3(-3.6f, 0, -309f), new Vector3(3.8f, 0, -346f), new Vector3(-7.5f, 0, -323.5f), new Vector3(7.5f, 0, -319f) }) Lantern(l);
             BigRocks();
             Pebbles(paths);
-            Marker(root, WorldMarker.Kind.Entry, new Vector3(2f, 0f, -309f), 180f, 1f);
+            var entry = Marker(root, WorldMarker.Kind.Entry, new Vector3(2f, 0f, -309f), 180f, 1f);
+            var segment = root.GetComponent<Campaign.Segment>();
+            if (segment) segment.entry = entry; // (the old entry was removed with the old yard: players spawned in the void)
         }
 
         /// <summary>A self-lit material (unlit): the lanterns' glow and the warm inside (SoftToon only takes the sun).</summary>
@@ -303,12 +305,13 @@ namespace CampanhaRio.Editor
             Debug.Log($"[Campanha] Agency set: {n} pebbles");
         }
 
-        static void Marker(Transform root, WorldMarker.Kind kind, Vector3 at, float yaw, float lift = 0f)
+        static Transform Marker(Transform root, WorldMarker.Kind kind, Vector3 at, float yaw, float lift = 0f)
         {
             var go = new GameObject($"Marker_{kind}");
             go.transform.SetParent(root, false);
             go.transform.SetPositionAndRotation(new Vector3(at.x, G(at.x, at.z) + lift, at.z), Quaternion.Euler(0f, yaw, 0f));
             go.AddComponent<WorldMarker>().kind = kind;
+            return go.transform;
         }
     }
 }
