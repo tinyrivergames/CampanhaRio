@@ -46,6 +46,8 @@ namespace CampanhaRio.World
         [Range(0f, 1f)] public float clearingShare = 0.35f;
         [Tooltip("Height variation in patches (0 = even): low and high patches of grass.")]
         public float heightPatches = 0.45f;
+        [Tooltip("Tall tufts gather along the trails, within this distance (m; 0 = off).")]
+        public float trailHug;
 
         class Cell
         {
@@ -162,13 +164,15 @@ namespace CampanhaRio.World
                     float ox = Mathf.Max(0f, Mathf.Max(clearing.xMin - p.x, p.x - clearing.xMax));
                     float oz = Mathf.Max(0f, Mathf.Max(clearing.yMin - p.z, p.z - clearing.yMax));
                     intoWoods = Mathf.Clamp01(Mathf.Sqrt(ox * ox + oz * oz) / 10f);
-                    if (!carpet && intoWoods <= 0f && R() > clearingShare) continue;
+                    bool hug = !carpet && trailHug > 0f && path < trailHug;
+                    if (!carpet && intoWoods <= 0f && !hug && R() > clearingShare) continue;
+                    if (hug) intoWoods = Mathf.Max(intoWoods, 0.2f); // a little taller there
                 }
                 float tall = Mathf.Lerp(1f, forestTallness, intoWoods) * (1f + (Mathf.PerlinNoise(p.x * 0.09f + 13f, p.z * 0.09f + 5f) - 0.5f) * 2f * heightPatches);
                 if (carpet)
                 {
                     var kc = R() < 0.55f ? Tuft.Green : Tuft.DarkLush; // (the two carpet colours)
-                    cell.matrices[(int)kc].Add(Matrix4x4.TRS(p, Quaternion.Euler(0f, R() * 360f, 0f), new Vector3(Mathf.Lerp(1.1f, 1.45f, R()), Mathf.Lerp(0.8f, 1.25f, R()) * tall, Mathf.Lerp(1.1f, 1.45f, R()))));
+                    cell.matrices[(int)kc].Add(Matrix4x4.TRS(p, Quaternion.Euler(0f, R() * 360f, 0f), new Vector3(Mathf.Lerp(1.1f, 1.45f, R()), Mathf.Lerp(0.6f, 0.95f, R()) * tall, Mathf.Lerp(1.1f, 1.45f, R()))));
                     minY = Mathf.Min(minY, p.y); maxY = Mathf.Max(maxY, p.y);
                     continue;
                 }

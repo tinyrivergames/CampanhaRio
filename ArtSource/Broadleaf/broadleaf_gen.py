@@ -74,7 +74,7 @@ def build_tree(name, lod, p, col):
 
     # The canopy: faceted blobs around the branch ends and the top
     blobs = p["blobs"] if detail else max(3, p["blobs"] - 2)
-    subdiv = p["subdiv"] if detail else 1
+    subdiv = p["subdiv"]  # (LOD1 too: a 20-face ball at mid distance read as a different object)
     centre = Vector((0, 0, H * 0.75))
     for i in range(blobs):
         anchor = branch_ends[i % len(branch_ends)]

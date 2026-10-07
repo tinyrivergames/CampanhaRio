@@ -162,7 +162,7 @@ namespace CampanhaRio.Rendering
             new DayKey { name = "Tarde", at = Afternoon, sunElevation = 42f, sunAzimuth = -38f, sunColor = C("#FFF0D6"), sunIntensity = 1.15f,
                 ambientSky = C("#9DB8D9"), ambientEquator = C("#A9AE9C"), ambientGround = C("#6E6150"), ambientStrength = 0.55f,
                 shadowTint = C("#5D6A9E"), shadowTintStrength = 0.35f, skyTop = C("#78A9DC"), skyHorizon = C("#D4E3EC"), skyGround = C("#8A8577"),
-                sunGlow = 0.25f, fogColor = C("#C9DAE6"), fogDensity = 0.0035f },
+                sunGlow = 0.25f, fogColor = C("#B7D3EA"), fogDensity = 0.0011f }, // (clear afternoon: the developer's reference)
             new DayKey { name = "Hora dourada", at = GoldenHour, sunElevation = 17f, sunAzimuth = -52f, sunColor = C("#FFC985"), sunIntensity = 1.1f,
                 ambientSky = C("#A7B2D6"), ambientEquator = C("#CBAE8E"), ambientGround = C("#6B5444"), ambientStrength = 0.5f,
                 shadowTint = C("#6A5E9E"), shadowTintStrength = 0.42f, skyTop = C("#6E9BD0"), skyHorizon = C("#F3D3A4"), skyGround = C("#7E6C5C"),

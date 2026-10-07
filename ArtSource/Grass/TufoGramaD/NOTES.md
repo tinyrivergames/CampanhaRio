@@ -21,3 +21,17 @@
 - Prévia: `TufoGramaD_v002_preview.png`
 - **Feedback do desenvolvedor (literal):** _(aguardando)_
 - **O que mudou:** Cores do tapete (verde de floresta) para mesclar com a grama baixa (feedback: os tufos não encaixavam).
+
+### v003
+- Gerado com: `--seed 13 --blades 22 --style tuft --patch 0.8 --height 0.75 --spread 0.26 --lean 1.0 --width 0.035 --root #2C5E1F --mid #4FA033 --tip #A2D65A --petal #F4F1E6 --heart #F2C53D`
+- Triângulos: LOD0 110, LOD1 35, LOD2 2
+- Prévia: `TufoGramaD_v003_preview.png`
+- **Feedback do desenvolvedor (literal):** _(aguardando)_
+- **O que mudou:** Verde vivo da referência do desenvolvedor (imagem da agência).
+
+### v004
+- Gerado com: `--seed 13 --blades 22 --style tuft --patch 0.8 --height 0.75 --spread 0.26 --lean 1.0 --width 0.035 --root #28561C --mid #48952F --tip #8FC650 --petal #F4F1E6 --heart #F2C53D`
+- Triângulos: LOD0 110, LOD1 35, LOD2 2
+- Prévia: `TufoGramaD_v004_preview.png`
+- **Feedback do desenvolvedor (literal):** _(aguardando)_
+- **O que mudou:** Verde menos limão (comparação com a referência).

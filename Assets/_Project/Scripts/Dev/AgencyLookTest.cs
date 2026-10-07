@@ -29,13 +29,16 @@ namespace CampanhaRio.Dev
             foreach (var mb in cam.GetComponents<MonoBehaviour>()) mb.enabled = false;
             foreach (var (name, eye0, at0) in new[]
             {
+                ("agencia_ref", new Vector3(1.2f, -3.6f, -308f), new Vector3(-1.8f, -0.3f, -336f)), // the reference picture's angle (negative y = above the ground)
                 ("agencia_cima", new Vector3(30f, 70f, -270f), new Vector3(-12f, 37f, -335f)),
                 ("agencia_trilha", new Vector3(-48f, 0f, -318f), new Vector3(-66f, 0f, -342f)),
                 ("agencia_mata", new Vector3(26f, 0f, -340f), new Vector3(48f, 0f, -352f)),
             })
             {
                 Vector3 eye = eye0, at = at0;
-                if (eye.y == 0f) { eye.y = Ground(eye) + 1.8f; at.y = Ground(at) + 1.4f; } // on the trail, at eye height
+                if (eye.y == 0f) { eye.y = Ground(eye) + 1.8f; at.y = Ground(at) + 1.4f; }
+                else if (eye.y < 0f) { eye.y = Ground(eye) - eye.y; at.y = Ground(at) - at.y; }
+                cam.fieldOfView = name == "agencia_ref" ? 50f : 60f; // on the trail, at eye height
                 cam.transform.position = eye;
                 cam.transform.LookAt(at);
                 yield return new WaitForSeconds(2.5f); // the grass cells near the new view

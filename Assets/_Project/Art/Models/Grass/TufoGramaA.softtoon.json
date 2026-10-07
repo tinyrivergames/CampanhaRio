@@ -1,7 +1,7 @@
 {
     "asset": "TufoGramaA",
     "family": "Grass",
-    "source": "ArtSource/Grass/TufoGramaA/TufoGramaA_v002.blend",
+    "source": "ArtSource/Grass/TufoGramaA/TufoGramaA_v004.blend",
     "material": {
         "_BaseColor": "#FFFFFF",
         "_Wrap": 0.7,
@@ -48,8 +48,8 @@
         }
     ],
     "triangles": {
-        "LOD0": 110,
-        "LOD1": 35,
+        "LOD0": 120,
+        "LOD1": 40,
         "LOD2": 2
     }
 }

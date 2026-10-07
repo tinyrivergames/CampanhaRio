@@ -1,7 +1,7 @@
 {
     "asset": "ArvoreFolhosaC",
     "family": "Broadleaf",
-    "source": "ArtSource/Broadleaf/ArvoreFolhosaC/ArvoreFolhosaC_v002.blend",
+    "source": "ArtSource/Broadleaf/ArvoreFolhosaC/ArvoreFolhosaC_v003.blend",
     "material": {
         "_BaseColor": "#FFFFFF",
         "_Wrap": 0.7,
@@ -72,7 +72,7 @@
     ],
     "triangles": {
         "LOD0": 528,
-        "LOD1": 120,
+        "LOD1": 360,
         "LOD2": 4
     }
 }

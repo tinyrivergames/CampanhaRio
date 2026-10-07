@@ -1,7 +1,7 @@
 {
     "asset": "TufoGramaE",
     "family": "Grass",
-    "source": "ArtSource/Grass/TufoGramaE/TufoGramaE_v002.blend",
+    "source": "ArtSource/Grass/TufoGramaE/TufoGramaE_v004.blend",
     "material": {
         "_BaseColor": "#FFFFFF",
         "_Wrap": 0.7,

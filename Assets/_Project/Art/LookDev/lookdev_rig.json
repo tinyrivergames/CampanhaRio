@@ -4,8 +4,8 @@
     "sun": {
         "elevationDeg": 42,
         "azimuthDeg": -38,
-        "color": "#FFF0D6",
-        "intensity": 1.15,
+        "color": "#FFE9C4",
+        "intensity": 1.3,
         "angularDiameterDeg": 3.0
     },
     "ambient": {
@@ -17,8 +17,8 @@
     "shadowTint": "#5D6A9E",
     "shadowTintStrength": 0.35,
     "background": {
-        "top": "#78A9DC",
-        "horizon": "#D4E3EC"
+        "top": "#4E92E0",
+        "horizon": "#BCDDF2"
     },
     "ground": {
         "color": "#A39E92",
@@ -37,7 +37,7 @@
     ],
     "closeup": { "label": "CLOSE", "yawDeg": -150, "pitchDeg": 22, "zoom": 1.6 },
     "scaleRef": { "label": "ESCALA (bicho 0,9 m)", "height": 0.9, "gap": 0.35, "yawDeg": 180, "color": "#D9A47A" },
-    "grading": { "postExposure": 0.1, "saturation": 10, "contrast": 6, "temperature": 4, "about": "Unity post-processing (Color Adjustments + White Balance); the Blender sheet applies the same approximately" },
+    "grading": { "postExposure": 0.1, "saturation": 18, "contrast": 12, "temperature": 7, "about": "Unity post-processing (Color Adjustments + White Balance); the Blender sheet applies the same approximately" },
     "sky": { "horizonSharpness": 1.6, "ground": "#8A8577" },
     "contactAO": { "intensity": 1.2, "radius": 0.35, "directStrength": 0.35, "about": "soft SSAO in Unity (contact darkening under and around objects); the Blender material uses its AO node with the same radius and strength" },
     "tileSize": 640,
@@ -61,7 +61,7 @@
         "bark": "#6B4A35",
         "water_shallow": "#5FCFBF",
         "water_deep": "#1F7F86",
-        "sky_top": "#78A9DC",
+        "sky_top": "#4E92E0",
         "cloud": "#F4F1EA",
         "flower_pink": "#E58FA8",
         "flower_yellow": "#F2CF5B",

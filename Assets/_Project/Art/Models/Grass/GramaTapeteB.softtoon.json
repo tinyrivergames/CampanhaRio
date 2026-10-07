@@ -1,7 +1,7 @@
 {
     "asset": "GramaTapeteB",
     "family": "Grass",
-    "source": "ArtSource/Grass/GramaTapeteB/GramaTapeteB_v002.blend",
+    "source": "ArtSource/Grass/GramaTapeteB/GramaTapeteB_v004.blend",
     "material": {
         "_BaseColor": "#FFFFFF",
         "_Wrap": 0.7,

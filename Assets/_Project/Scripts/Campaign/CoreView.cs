@@ -13,9 +13,9 @@ namespace CampanhaRio.Campaign
     /// </summary>
     public class CoreView : MonoBehaviour
     {
-        public float distance = 9f;
+        public float distance = 7f;
         public Vector2 distanceRange = new Vector2(4f, 16f);
-        public float pitch = 24f;
+        public float pitch = 14f;
         public Vector2 pitchRange = new Vector2(-5f, 70f);
         public float mouseSensitivity = 0.12f;
         public float smoothing = 10f;

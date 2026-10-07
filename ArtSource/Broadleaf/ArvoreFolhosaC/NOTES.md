@@ -21,3 +21,10 @@
 - Prévia: `ArvoreFolhosaC_v002_preview.png`
 - **Feedback do desenvolvedor (literal):** _(aguardando)_
 - **O que mudou:** Baixa e cheia, verde-claro, facetas marcadas.
+
+### v003
+- Gerado com: `--seed 21 --height 5.0 --canopy 2.2 --blobs 6 --branches 3 --trunk 0.24 --squash 0.85 --spread 0.85 --top_light 1.0 --hue_var 0.9 --inflate 0.05 --subdiv 2 --ramp 0.2 --bark #7A4A30 --leaf_dark #3B6E24 --leaf #63AC35 --leaf_light #B4DE5C`
+- Triângulos: LOD0 528, LOD1 360
+- Prévia: `ArvoreFolhosaC_v003_preview.png`
+- **Feedback do desenvolvedor (literal):** _(aguardando)_
+- **O que mudou:** Versão de média distância (LOD1) com a mesma copa redonda (bug: trocava para uma bola de 20 faces); verdes da referência.

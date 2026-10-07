@@ -23,14 +23,14 @@ namespace CampanhaRio.Editor
         static readonly Vector3 Origin = new Vector3(-100f, 30f, -400f);
         static readonly Vector3 Size = new Vector3(200f, 30f, 140f);
         // The yard (flat, no trees): shed, boards, the van's gravel and the road out
-        static readonly Rect Yard = new Rect(-42f, -368f, 64f, 108f);
+        static readonly Rect Yard = new Rect(-34f, -352f, 58f, 64f); // (tighter: the woods close in, as in the reference)
 
         [MenuItem("CampanhaRio/Setup/Dress the Agency")]
         public static void Build()
         {
             var scene = EditorSceneManager.OpenScene(ScenePath);
             var root = GameObject.Find("Agencia").transform;
-            foreach (string old in new[] { "Ground", "Trees", "Agency Terrain", "Forest", "Grass", "Grass Carpet", "Paths", "Props" })
+            foreach (string old in new[] { "Ground", "Gravel", "Trees", "Agency Terrain", "Forest", "Grass", "Grass Carpet", "Paths", "Props" })
             {
                 var t = root.Find(old);
                 if (t) Object.DestroyImmediate(t.gameObject);
@@ -38,18 +38,19 @@ namespace CampanhaRio.Editor
 
             var paths = new GameObject("Paths").AddComponent<GroundPaths>();
             paths.transform.SetParent(root, false);
-            P(paths, 2.4f, new Vector3(-6, 0, -326), new Vector3(6, 0, -330.5f));                       // to the orders board
-            P(paths, 2.4f, new Vector3(-6, 0, -326), new Vector3(-12, 0, -334), new Vector3(-18, 0, -339)); // to the shed's door
-            P(paths, 2.0f, new Vector3(-12, 0, -334), new Vector3(-8.5f, 0, -335.5f));                  // to the upgrades board
-            P(paths, 2.8f, new Vector3(-6, 0, -326), new Vector3(-2, 0, -305), new Vector3(0, 0, -290)); // to the van
-            P(paths, 1.8f, new Vector3(6, 0, -330.5f), new Vector3(26, 0, -340), new Vector3(48, 0, -352), new Vector3(52, 0, -378),
-              new Vector3(20, 0, -390), new Vector3(-20, 0, -386), new Vector3(-56, 0, -372), new Vector3(-66, 0, -342),
-              new Vector3(-48, 0, -318), new Vector3(-6, 0, -326));                                     // the loop through the woods
-            paths.keepClear.Add(new Rect(-27f, -353f, 18f, 15f));   // the shed
-            paths.keepClear.Add(new Rect(3.5f, -331f, 5f, 1.6f));   // the orders board
+            // The reference's trails: from the van a wide trail to a junction, then on into the woods (centre), to the cabin
+            // (right) and into the woods on the left
+            P(paths, 3.6f, new Vector3(0, 0, -292), new Vector3(1.5f, 0, -306), new Vector3(0, 0, -318));
+            P(paths, 3.2f, new Vector3(0, 0, -318), new Vector3(-5, 0, -323), new Vector3(-9, 0, -327.8f));
+            P(paths, 3.2f, new Vector3(0, 0, -318), new Vector3(2.5f, 0, -330), new Vector3(-1.5f, 0, -342), new Vector3(1.5f, 0, -356),
+              new Vector3(-2, 0, -372), new Vector3(2.5f, 0, -396));
+            P(paths, 2.6f, new Vector3(0, 0, -318), new Vector3(9, 0, -321.5f), new Vector3(20, 0, -318), new Vector3(34, 0, -326), new Vector3(52, 0, -321));
+            paths.keepClear.Add(new Rect(-22f, -342f, 18f, 18f));  // the cabin
+            paths.keepClear.Add(new Rect(-5.6f, -335f, 4.4f, 3f));  // the map board
             paths.keepClear.Add(new Rect(-6f, -300f, 12f, 40f));    // the van's gravel and the road out
 
             var terrain = BuildTerrain(root, paths);
+            AgencySet.Build(root, terrain, paths);
             Forest(root, terrain, paths);
 
             var grass = new GameObject("Grass").AddComponent<GrassField>();
@@ -64,6 +65,7 @@ namespace CampanhaRio.Editor
             grass.clearing = Yard;
             grass.clearingShare = 0.25f;
             grass.forestTallness = 1.8f;
+            grass.trailHug = 2.8f; // tall clumps hug the trails (the reference)
 
             var carpet = new GameObject("Grass Carpet").AddComponent<GrassField>();
             carpet.transform.SetParent(root, false);
@@ -135,7 +137,7 @@ namespace CampanhaRio.Editor
                 var p = new Vector3(wx, 0f, wz);
                 float trail = 1f - Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(-0.2f, 0.9f, paths.Distance(p)));   // the trails (earth with pebbles), soft edges
                 float earth = Mathf.Max(0f, Mathf.SmoothStep(0f, 1f, Mathf.InverseLerp(0.72f, 0.8f, Mathf.PerlinNoise(wx * 0.05f + 3f, wz * 0.05f + 1f))) * 0.5f);
-                float gravel = wx > -6f && wx < 6f && wz > -300f ? 1f : 0f;                                     // the van's gravel and the road out
+                float gravel = wx > -6f && wx < 6f && wz > -294f ? 1f : 0f;                                     // the van's gravel and the road out
                 trail *= 1f - gravel;
                 earth *= (1f - gravel) * (1f - trail);
                 float grass = Mathf.Max(0f, 1f - earth - gravel - trail);
@@ -162,7 +164,7 @@ namespace CampanhaRio.Editor
             string texPath = $"{dir}/T_Ground_Trail.png";
             const int size = 512;
             var tex = new Texture2D(size, size, TextureFormat.RGBA32, true);
-            var earthDark = new Color(0.33f, 0.24f, 0.16f); var earthLight = new Color(0.46f, 0.35f, 0.24f);
+            var earthDark = new Color(0.55f, 0.31f, 0.17f); var earthLight = new Color(0.68f, 0.41f, 0.24f); // the reference's orange-red earth
             for (int y = 0; y < size; y++)
             for (int x = 0; x < size; x++)
             {
@@ -171,10 +173,10 @@ namespace CampanhaRio.Editor
                 tex.SetPixel(x, y, Color.Lerp(earthDark, earthLight, n));
             }
             var rng = new System.Random(5);
-            for (int s = 0; s < 260; s++)
+            for (int s = 0; s < 70; s++) // (a few: the reference's earth is smooth, with loose pebbles on top)
             {
                 float cx = (float)rng.NextDouble() * size, cy = (float)rng.NextDouble() * size;
-                float rx = 3f + (float)rng.NextDouble() * (s < 30 ? 13f : 6f), ry = rx * (0.6f + (float)rng.NextDouble() * 0.4f);
+                float rx = 2.5f + (float)rng.NextDouble() * (s < 10 ? 8f : 4f), ry = rx * (0.6f + (float)rng.NextDouble() * 0.4f);
                 float ang = (float)rng.NextDouble() * Mathf.PI;
                 float g = 0.42f + (float)rng.NextDouble() * 0.28f;
                 var stone = new Color(g, g * 0.97f, g * 0.92f);
@@ -225,12 +227,13 @@ namespace CampanhaRio.Editor
             var placed = new List<Vector3>();
             bool Free(Vector3 q, float d) { foreach (var o in placed) if ((o - q).sqrMagnitude < d * d) return false; return true; }
             int trees = 0, stones = 0;
-            for (int i = 0; i < 40000 && trees < 1100; i++)
+            for (int i = 0; i < 60000 && trees < 1500; i++)
             {
                 var p = new Vector3(Origin.x + R() * Size.x, 0f, Origin.z + R() * Size.z);
                 if (InYard(p.x, p.z, 4f) || p.z > -268f) continue;                     // the yard, and the road segment's edge
-                bool leaf = R() < 0.55f;
-                float size = leaf ? Mathf.Lerp(1.2f, 1.9f, R()) : Mathf.Lerp(1.4f, 2.4f, R());
+                float edgeDist = Mathf.Sqrt(Mathf.Pow(Mathf.Max(0f, Mathf.Max(Yard.xMin - p.x, p.x - Yard.xMax)), 2) + Mathf.Pow(Mathf.Max(0f, Mathf.Max(Yard.yMin - p.z, p.z - Yard.yMax)), 2));
+                bool leaf = R() < (edgeDist < 12f ? 0.55f : 0.25f); // leafy trees in front, a wall of pines behind
+                float size = leaf ? Mathf.Lerp(1.4f, 2.1f, R()) : Mathf.Lerp(2.0f, 3.1f, R());
                 // The trails stay open: a pine's low branches reach about 2 m per unit of scale, a leafy tree's crown is overhead
                 if (paths.Distance(p) < (leaf ? 1.2f + 0.8f * size : 0.8f + 2f * size)) continue;
                 if (!Free(p, 3.4f)) continue;
@@ -279,7 +282,7 @@ namespace CampanhaRio.Editor
             {
                 var p = new Vector3(Origin.x + R() * Size.x, 0f, Origin.z + R() * Size.z);
                 float d = paths.Distance(p);
-                bool trailSide = d > 1.2f && d < 4f && R() < 0.5f;
+                bool trailSide = d > 1.2f && d < 4f && R() < 0.5f && p.z < -345f; // (none along the yard's trails: the reference keeps them in the woods)
                 float ox = Mathf.Max(0f, Mathf.Max(Yard.xMin - p.x, p.x - Yard.xMax)), oz = Mathf.Max(0f, Mathf.Max(Yard.yMin - p.z, p.z - Yard.yMax));
                 bool edge = !InYard(p.x, p.z) && Mathf.Sqrt(ox * ox + oz * oz) < 14f;
                 if ((!trailSide && !edge) || GroundPaths.Cleared(p) || p.z > -268f || d < 1.2f || !Free(p, 1.4f)) continue;
@@ -290,7 +293,6 @@ namespace CampanhaRio.Editor
                 placed.Add(p);
                 bushes++;
             }
-            Props(root, terrain, paths);
             Debug.Log($"[Campanha] Agency forest: {trees} trees, {stones} rocks, {boulders} big boulders, {bushes} bushes");
         }
 
