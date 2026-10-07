@@ -61,7 +61,7 @@ namespace CampanhaRio.Editor
             grass.densityFar = 3.2f;
             grass.drawDistance = 80f;
             grass.types = GrassTypes();
-            grass.densityNear = grass.densityFar = 2.2f; // the tall tufts: few in the yard, thick at the woods' edge
+            grass.densityNear = grass.densityFar = 1.2f; // the tall ribbons: few in the yard, thick at the woods' edge
             grass.clearing = Yard;
             grass.clearingShare = 0.25f;
             grass.forestTallness = 1.8f;
@@ -72,7 +72,7 @@ namespace CampanhaRio.Editor
             carpet.terrain = terrain;
             carpet.noRiver = true;
             carpet.carpet = true;
-            carpet.densityNear = carpet.densityFar = 2.6f;
+            carpet.densityNear = carpet.densityFar = 3.4f; // (each ribbon clump is fuller than the old carpet patch)
             carpet.drawDistance = 55f; carpet.lodDistance = 16f; carpet.thinDistance = 34f;
             carpet.types = CarpetTypes();
             carpet.clearing = Yard;
@@ -361,11 +361,11 @@ namespace CampanhaRio.Editor
             var list = new List<GrassField.TuftType>();
             foreach (var (letter, kind) in new[] { ("A", GrassField.Tuft.Green), ("B", GrassField.Tuft.DarkLush) })
             {
-                string fbx = $"Assets/_Project/Art/Models/Grass/GramaTapete{letter}.fbx";
+                string fbx = $"Assets/_Project/Art/Models/Grass/GramaFita{letter}.fbx"; // the reference's ribbon grass
                 Mesh near = null, far = null;
                 foreach (var a in AssetDatabase.LoadAllAssetsAtPath(fbx))
                     if (a is Mesh m) { if (m.name.EndsWith("_LOD0")) near = m; else if (m.name.EndsWith("_LOD1")) far = m; }
-                var mat = AssetDatabase.LoadAssetAtPath<Material>($"Assets/_Project/Art/Materials/Grass/M_GramaTapete{letter}.mat");
+                var mat = AssetDatabase.LoadAssetAtPath<Material>($"Assets/_Project/Art/Materials/Grass/M_GramaFita{letter}.mat");
                 if (near && mat) list.Add(new GrassField.TuftType { kind = kind, near = near, far = far ? far : near, material = mat });
             }
             return list.ToArray();
@@ -377,7 +377,7 @@ namespace CampanhaRio.Editor
             var list = new List<GrassField.TuftType>();
             foreach (var (letter, kind) in kinds)
             {
-                string asset = letter == "C" ? "FloresBrancas" : "TufoGrama" + letter; // the tall yellow grass gave way to white daisies
+                string asset = letter == "C" ? "FloresBrancas" : "GramaFitaB"; // the tall ribbon grass, and the daisies
                 string fbx = $"Assets/_Project/Art/Models/Grass/{asset}.fbx";
                 Mesh near = null, far = null;
                 foreach (var a in AssetDatabase.LoadAllAssetsAtPath(fbx))

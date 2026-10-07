@@ -19,6 +19,7 @@ import os
 import sys
 
 import bpy
+import mathutils
 import numpy as np
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
@@ -309,3 +310,56 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+def render_field(out_path, objects, rig, ground_hex="#3F7A2A", count=140, radius=3.2, eye=(0.0, 4.6, 1.15),
+                 target=(0.0, 0.0, 0.35), fov_deg=50.0, size=(1200, 675), seed=1, scale=(0.8, 1.25)):
+    """
+    A field of copies of these objects (linked duplicates, random spin and size) on a plain ground in the game's light,
+    seen from a low camera, through Unity's post: to compare a ground plant with a reference picture.
+    """
+    import random
+    scene = bpy.context.scene
+    rnd = random.Random(seed)
+    col = bpy.data.collections.new("FieldView")
+    scene.collection.children.link(col)
+    gmesh = bpy.data.meshes.new("FieldGround")
+    s = radius * 6
+    gmesh.from_pydata([(-s, -s, 0), (s, -s, 0), (s, s, 0), (-s, s, 0)], [], [(0, 1, 2, 3)])
+    ground = bpy.data.objects.new("FieldGround", gmesh)
+    col.objects.link(ground)
+    ground.data.materials.append(common.soft_toon_material("M_FieldGround", rig, preset="Default", _BaseColor=ground_hex))
+    copies = []
+    for i in range(count):
+        src = objects[i % len(objects)]
+        o = src.copy()
+        col.objects.link(o)
+        a = rnd.uniform(0, 2 * math.pi)
+        r = radius * math.sqrt(rnd.random())
+        o.location = (math.cos(a) * r * 1.6, -math.sin(a) * r * 1.1 + radius * 0.4, 0.0)
+        o.rotation_euler = (0.0, 0.0, rnd.uniform(0, 2 * math.pi))
+        k = rnd.uniform(*scale)
+        o.scale = (k, k, k)
+        o.hide_render = False
+        o.visible_shadow = False  # (in the game the grass is drawn without casting shadows)
+        copies.append(o)
+    for obj in bpy.data.objects:
+        if obj.type in {"MESH", "FONT"} and obj not in copies and obj is not ground:
+            obj.hide_render = True
+    cam = lookdev.camera("FieldCam")
+    cam.data.angle = math.radians(fov_deg)
+    cam.location = eye
+    d = mathutils.Vector(target) - mathutils.Vector(eye)
+    cam.rotation_euler = d.to_track_quat("-Z", "Y").to_euler()
+    scene.camera = cam
+    scene.render.resolution_x, scene.render.resolution_y = size
+    tmp = os.path.join(common.TMP_DIR, "field.exr")
+    render_tile(tmp)
+    rgba = load_rgba(tmp)
+    pitch = math.degrees(math.atan2(-d.z, math.hypot(d.x, d.y)))
+    h, w = rgba.shape[:2]
+    sky = sky_backdrop(max(h, w), rig, pitch, fov_deg)[:h, :w]
+    a = rgba[..., 3:4]
+    save_png(unity_post(sky * (1.0 - a) + rgba[..., :3], rig), out_path)
+    print(f"[preview] field {out_path}")
+    return out_path

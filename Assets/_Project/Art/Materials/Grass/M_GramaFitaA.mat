@@ -7,12 +7,14 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: M_Gray_Suitcase
+  m_Name: M_GramaFitaA
   m_Shader: {fileID: 4800000, guid: 9c836ca19817cd24ba667258f138a15c, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
-  m_ValidKeywords: []
-  m_InvalidKeywords: []
+  m_ValidKeywords:
+  - _WIND
+  m_InvalidKeywords:
+  - _USEVERTEXCOLOR_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 1
   m_DoubleSidedGI: 0
@@ -29,29 +31,29 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _AOStrength: 1
+    - _AOStrength: 0.6
     - _AlphaClip: 0
-    - _Cull: 2
+    - _Cull: 0
     - _Cutoff: 0.5
-    - _Preset: 0
+    - _Preset: 2
     - _RampCenter: 0.45
-    - _RampSoftness: 0.28
-    - _ReceiveShadows: 0.85
+    - _RampSoftness: 0.4
+    - _ReceiveShadows: 0.4
     - _RimPower: 3.5
-    - _RimStrength: 0.16
+    - _RimStrength: 0.12
     - _StencilComp: 0
     - _StencilRef: 0
     - _StencilWriteMask: 0
     - _TopTintAmount: 0
     - _TopTintSharpness: 0.35
-    - _Translucency: 0
-    - _UseVertexColor: 0
-    - _Wind: 0
+    - _Translucency: 0.05
+    - _UseVertexColor: 1
+    - _Wind: 1
     - _WindSpeed: 1.2
     - _WindStrength: 0.08
-    - _Wrap: 0.5
+    - _Wrap: 0.85
     m_Colors:
-    - _BaseColor: {r: 0.2, g: 0.42, b: 0.5, a: 1}
+    - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _GradientBottom: {r: 1, g: 1, b: 1, a: 1}
     - _GradientHeights: {r: 0, g: 1, b: 0, a: 0}
     - _GradientTop: {r: 1, g: 1, b: 1, a: 1}

@@ -195,13 +195,111 @@ def build_flowers(name, lod, p, col):
     return obj
 
 
+def build_ribbon(name, lod, p, col):
+    """The reference's grass: a clump of long flat ribbons, wide at the root, tapering to a point, curving gently out
+    (more toward the tip), with a soft fold along the middle; dark green at the root to light yellow-green at the tip."""
+    rnd = random.Random(p["seed"])
+    bm = bmesh.new()
+    colors = {}
+    root_c, mid_c, tip_c = srgb(p["root"]), srgb(p["mid"]), srgb(p["tip"])
+    count = {"LOD0": p["blades"], "LOD1": max(5, p["blades"] * 2 // 3), "LOD2": max(3, p["blades"] // 4)}[lod]
+    segs = {"LOD0": 5, "LOD1": 3, "LOD2": 1}[lod]
+    fold = lod == "LOD0"
+
+    def col_at(t, k, tint):
+        c = root_c.lerp(mid_c, min(1.0, t * 1.8)) if t < 0.55 else mid_c.lerp(tip_c, (t - 0.55) / 0.45)
+        return Vector((c.x * tint.x, c.y * tint.y, c.z * tint.z)) * k
+
+    for i in range(count):
+        a = rnd.uniform(0, 2 * math.pi)
+        r0 = (rnd.random() ** 0.7) * p["spread"]
+        base = Vector((math.cos(a) * r0, math.sin(a) * r0, 0.0))
+        out = Vector((math.cos(a), math.sin(a), 0.0)) if r0 > 0.01 else Vector((math.cos(a + 1), math.sin(a + 1), 0.0))
+        out = (out + Vector((rnd.uniform(-0.5, 0.5), rnd.uniform(-0.5, 0.5), 0))).normalized()
+        h = p["height"] * rnd.uniform(0.6, 1.15)
+        w = p["width"] * rnd.uniform(0.75, 1.3)
+        bend = math.radians(p["lean"] * rnd.uniform(15, 70))  # how far the tip falls over (from vertical)
+        twist = rnd.uniform(-0.6, 0.6)
+        side0 = Vector((-out.y, out.x, 0.0))
+        k = rnd.uniform(1.0 - p["shade_var"], 1.08)  # each blade its own value: they read apart
+        t0 = rnd.uniform(-1, 1)
+        tint = Vector((1.0 + 0.05 * t0, 1.0 + 0.02 * t0, 1.0 - 0.1 * t0))
+        rows = []
+        pos = base.copy()
+        step = h / segs
+        for s in range(segs + 1):
+            t = s / segs
+            ang = bend * (t ** 1.6)
+            dirv = (Vector((0, 0, 1)) * math.cos(ang) + out * math.sin(ang)).normalized()
+            if s > 0:
+                pos = pos + dirv * step
+            side = (side0 * math.cos(twist * t) + dirv.cross(side0).normalized() * math.sin(twist * t)).normalized()
+            half = w * (1.0 - t) ** 0.85 * 0.5
+            c = col_at(t, k, tint)
+            alpha = t
+            if s == segs:
+                rows.append([bm.verts.new(pos)])
+                colors[rows[-1][0]] = (min(c.x, 1), min(c.y, 1), min(c.z, 1), alpha)
+                continue
+            L = bm.verts.new(pos - side * half)
+            R = bm.verts.new(pos + side * half)
+            row = [L]
+            if fold:
+                C = bm.verts.new(pos + dirv.cross(side).normalized() * (-half * 0.35))
+                row.append(C)
+            row.append(R)
+            for vtx in row:
+                colors[vtx] = (min(c.x, 1), min(c.y, 1), min(c.z, 1), alpha)
+            colors[L] = (min(c.x * 0.9, 1), min(c.y * 0.9, 1), min(c.z * 0.9, 1), alpha)
+            rows.append(row)
+        for s in range(segs):
+            a_row, b_row = rows[s], rows[s + 1]
+            if len(b_row) == 1:
+                for j in range(len(a_row) - 1):
+                    bm.faces.new((a_row[j], a_row[j + 1], b_row[0]))
+            else:
+                for j in range(len(a_row) - 1):
+                    bm.faces.new((a_row[j], a_row[j + 1], b_row[j + 1], b_row[j]))
+    # Both sides (a copy turned around): seen from behind, a blade is still lit as grass, not as a dark back face
+    front = list(bm.faces)
+    dup = bmesh.ops.duplicate(bm, geom=front)
+    vmap = dup["vert_map"]
+    for old, new in vmap.items():
+        if isinstance(old, bmesh.types.BMVert) and old in colors and new not in colors:
+            colors[new] = colors[old]
+        elif isinstance(old, bmesh.types.BMVert) and new in colors and old not in colors:
+            colors[old] = colors[new]
+    bmesh.ops.reverse_faces(bm, faces=[g for g in dup["geom"] if isinstance(g, bmesh.types.BMFace)])
+    mesh = bpy.data.meshes.new(name)
+    vert_list = list(bm.verts)
+    bm.to_mesh(mesh)
+    bm.free()
+    obj = common.mesh_object(name, mesh, col)
+    attr = mesh.color_attributes.new("Col", "BYTE_COLOR", "CORNER")
+    mesh.color_attributes.active_color = attr
+    normals = []
+    for poly in mesh.polygons:
+        poly.use_smooth = True
+        n = poly.normal.copy()
+        if n.z < 0:
+            n = -n
+        n = n.lerp(Vector((0, 0, 1)), p["up_normals"]).normalized()
+        for li in poly.loop_indices:
+            attr.data[li].color_srgb = colors[vert_list[mesh.loops[li].vertex_index]]
+            normals.append(n)
+    mesh.normals_split_custom_set(normals)
+    return obj
+
+
 def build(asset, p):
     rig = common.load_rig()
     common.reset_scene()
     col = common.collection(asset)
-    make = {"carpet": build_carpet, "flowers": build_flowers}.get(p["style"], build_tuft)
+    make = {"carpet": build_carpet, "flowers": build_flowers, "ribbon": build_ribbon}.get(p["style"], build_tuft)
     parts = {k: make(f"{asset}_{k}", k, p, col) for k in ("LOD0", "LOD1", "LOD2")}
-    mat = common.soft_toon_material("M_" + asset, rig, preset="Foliage", _BaseColor="#FFFFFF", _UseVertexColor=1.0)
+    mat = common.soft_toon_material("M_" + asset, rig, preset="Foliage", _BaseColor="#FFFFFF", _UseVertexColor=1.0,
+                                    _ReceiveShadows=p["shadows"], _Wrap=p["wrap"], _RampSoftness=0.4, _AOStrength=p["ao"], _Translucency=p["transl"])
+    mat.use_backface_culling = p["style"] == "ribbon"  # (double-sided blades: as the game's SoftToon, only the side facing the camera)
     for o in parts.values():
         o.data.materials.append(mat)
     parts["LOD1"].hide_set(True)
@@ -248,10 +346,20 @@ def main():
         "mid": args.get("mid", "#5C8A3A"),
         "tip": args.get("tip", "#9BBF5A"),
         "petal": args.get("petal", "#F4F1E6"),
+        "up_normals": f("up_normals", 0.5),
+        "shadows": f("shadows", 0.85),
+        "wrap": f("wrap", 0.7),
+        "ao": f("ao", 1.0),
+        "transl": f("transl", 0.45),
+        "shade_var": f("shade_var", 0.12),
         "heart": args.get("heart", "#F2C53D"),
     }
     parts = build(asset, p)
     print(f"[grass] tris { {k: common.triangle_count(o) for k, o in parts.items()} }")
+    if "field" in args:  # a field of this tuft vs the reference picture
+        preview.render_field(os.path.join(common.TMP_DIR, f"field_{asset}_{args['field']}.png"), [parts["LOD0"]], common.load_rig(),
+                             ground_hex=args.get("ground", "#3C7326"), count=int(args.get("count", 160)))
+        return
     if "draft" in args:
         out = os.path.join(common.TMP_DIR, f"draft_{asset}_{args['draft']}.png")
         preview.render_sheet(out, "rascunho " + str(args["draft"]))

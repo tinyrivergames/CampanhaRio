@@ -40,6 +40,7 @@ Shader "CampanhaRio/SoftToon"
         [Toggle(_ALPHATEST_ON)] _AlphaClip ("Alpha Clip", Float) = 0
         _Cutoff ("Alpha Cutoff", Range(0, 1)) = 0.5
         _Translucency ("Translucency (backlight)", Range(0, 1)) = 0
+        _AOStrength ("Contact AO Strength", Range(0, 1)) = 1
         [Toggle(_WIND)] _Wind ("Wind Sway (vertex colour alpha = weight)", Float) = 0
         _WindStrength ("Wind Strength (m)", Range(0, 0.5)) = 0.08
         _WindSpeed ("Wind Speed", Range(0, 4)) = 1.2
@@ -66,7 +67,7 @@ Shader "CampanhaRio/SoftToon"
             half4 _BaseColor, _GradientBottom, _GradientTop, _TopTint;
             float4 _GradientHeights;
             half _UseVertexColor, _Wrap, _RampCenter, _RampSoftness, _ReceiveShadows, _RimStrength, _RimPower;
-            half _TopTintAmount, _TopTintSharpness, _Cutoff, _Translucency, _WindStrength, _WindSpeed, _Preset, _Cull;
+            half _TopTintAmount, _TopTintSharpness, _Cutoff, _Translucency, _WindStrength, _WindSpeed, _Preset, _Cull, _AOStrength;
         CBUFFER_END
 
         // Gentle sway: weight from the vertex colour ALPHA (0 at the trunk, 1 at the tips; RGB is the colour), phase from the world position
@@ -187,8 +188,8 @@ Shader "CampanhaRio/SoftToon"
                               + (_CR_AmbientGround.rgb - _CR_AmbientEquator.rgb) * saturate(-up);
                 #if defined(_SCREEN_SPACE_OCCLUSION)
                     AmbientOcclusionFactor ao = GetScreenSpaceAmbientOcclusion(GetNormalizedScreenSpaceUV(i.positionCS));
-                    ambient *= ao.indirectAmbientOcclusion; // contact darkening (soft SSAO): under and around objects
-                    direct *= ao.directAmbientOcclusion;    // a little on the sunlit side too (URP's Direct Lighting Strength)
+                    ambient *= lerp(1.0, ao.indirectAmbientOcclusion, _AOStrength); // contact darkening (soft SSAO): under and around objects
+                    direct *= lerp(1.0, ao.directAmbientOcclusion, _AOStrength);   // a little on the sunlit side too (URP's Direct Lighting Strength)
                 #endif
 
                 half3 color = albedo * (direct + ambient);

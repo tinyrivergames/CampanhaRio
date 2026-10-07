@@ -162,6 +162,7 @@ namespace CampanhaRio.Editor
             mat.SetFloat("_TopTintAmount", p._TopTintAmount);
             mat.SetFloat("_TopTintSharpness", p._TopTintSharpness);
             mat.SetFloat("_Translucency", p._Translucency);
+            mat.SetFloat("_AOStrength", p._AOStrength);
             mat.SetFloat("_StencilRef", p._StencilRef);
             mat.SetFloat("_StencilWriteMask", p._StencilWriteMask);
             mat.SetFloat("_StencilComp", p._StencilWriteMask > 0f ? (float)UnityEngine.Rendering.CompareFunction.Always : 0f); // stencil off for everything but the boats (D3D12: see TECH_DECISIONS)
@@ -195,7 +196,7 @@ namespace CampanhaRio.Editor
         {
             public string name, preset, _BaseColor, _GradientBottom, _GradientTop, _TopTint, _BaseMap;
             public float _Wrap, _RampCenter, _RampSoftness, _ReceiveShadows, _RimStrength, _RimPower, _UseVertexColor;
-            public float _TopTintAmount, _TopTintSharpness, _Translucency, _StencilRef, _StencilWriteMask;
+            public float _TopTintAmount, _TopTintSharpness, _Translucency, _StencilRef, _StencilWriteMask, _AOStrength = 1f;
             public float[] _GradientHeights;
         }
     }

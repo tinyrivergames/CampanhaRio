@@ -162,6 +162,7 @@ SOFTTOON_DEFAULTS = {
     "_TopTintAmount": 0.0,
     "_TopTintSharpness": 0.35,
     "_Translucency": 0.0,      # Foliage: light through the leaves when backlit
+    "_AOStrength": 1.0,        # contact AO (1 = full; dense grass wants little)
 }
 
 PRESETS = {
@@ -245,7 +246,7 @@ def soft_toon_material(name, rig=None, preset="Default", **overrides):
     if cao:
         ao_node = g.node("ShaderNodeAmbientOcclusion")
         ao_node.inputs["Distance"].default_value = cao["radius"]
-        occlusion = g.math("MULTIPLY", g.math("SUBTRACT", 1.0, ao_node.outputs["AO"]), cao["intensity"] * 0.6)
+        occlusion = g.math("MULTIPLY", g.math("SUBTRACT", 1.0, ao_node.outputs["AO"]), cao["intensity"] * 0.6 * params.get("_AOStrength", 1.0))
         ao = g.math("SUBTRACT", 1.0, occlusion, clamp=True)
         ambient = g.vscale(ambient, ao)
         direct = g.vscale(direct, g.mix_float(cao["directStrength"], 1.0, ao))
