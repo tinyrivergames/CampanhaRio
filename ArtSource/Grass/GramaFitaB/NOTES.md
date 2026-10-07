@@ -42,3 +42,10 @@
 - Prévia: `GramaFitaB_v005_preview.png`
 - **Feedback do desenvolvedor (literal):** _(aguardando)_
 - **O que mudou:** Macia e menos forte (feedback: parecia esmeraldas brilhando com lineart): dobra quase sem contraste, luz igual nas lâminas, verde mais suave perto do chão.
+
+### v006
+- Gerado com: `--seed 12 --blades 18 --style ribbon --patch 0.8 --height 0.55 --spread 0.2 --lean 0.55 --width 0.11 --root #173A20 --mid #3A7030 --tip #7A9E48 --petal #F4F1E6 --up_normals 0.95 --shadows 0.3 --wrap 0.7 --ao 0.8 --transl 0.05 --shade_var 0.15 --leaf 0.55 --fold_dark 0.95 --hue_var 0.12 --heart #F2C53D`
+- Triângulos: LOD0 648, LOD1 120, LOD2 8
+- Prévia: `GramaFitaB_v006_preview.png`
+- **Feedback do desenvolvedor (literal):** _(aguardando)_
+- **O que mudou:** Touceira escura (manchas mais escuras, como na referência).

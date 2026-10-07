@@ -61,7 +61,7 @@ namespace CampanhaRio.Editor
             grass.densityFar = 3.2f;
             grass.drawDistance = 80f;
             grass.types = GrassTypes();
-            grass.densityNear = grass.densityFar = 0.5f; // the tall ribbons: few in the yard, thick at the woods' edge
+            grass.densityNear = grass.densityFar = 0.7f; // the tall ribbons: few in the yard, thick at the woods' edge
             grass.clearing = Yard;
             grass.clearingShare = 0.25f;
             grass.forestTallness = 1.8f;
@@ -72,7 +72,7 @@ namespace CampanhaRio.Editor
             carpet.terrain = terrain;
             carpet.noRiver = true;
             carpet.carpet = true;
-            carpet.densityNear = carpet.densityFar = 4.6f; // (each ribbon clump is fuller than the old carpet patch)
+            carpet.densityNear = carpet.densityFar = 5.0f; // (fewer: clumps with the ground between, as in the reference) // (each ribbon clump is fuller than the old carpet patch)
             carpet.drawDistance = 55f; carpet.lodDistance = 16f; carpet.thinDistance = 34f;
             carpet.types = CarpetTypes();
             carpet.clearing = Yard;

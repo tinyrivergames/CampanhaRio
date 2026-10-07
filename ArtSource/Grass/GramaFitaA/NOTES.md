@@ -49,3 +49,10 @@
 - Prévia: `GramaFitaA_v006_preview.png`
 - **Feedback do desenvolvedor (literal):** _(aguardando)_
 - **O que mudou:** Macia e menos forte (feedback: parecia esmeraldas brilhando com lineart): dobra quase sem contraste, luz igual nas lâminas, verde mais suave perto do chão.
+
+### v007
+- Gerado com: `--seed 5 --blades 18 --style ribbon --patch 0.8 --height 0.5 --spread 0.2 --lean 0.55 --width 0.11 --root #1F4424 --mid #4A8636 --tip #9AB952 --petal #F4F1E6 --up_normals 0.95 --shadows 0.3 --wrap 0.7 --ao 0.8 --transl 0.05 --shade_var 0.15 --leaf 0.55 --fold_dark 0.95 --hue_var 0.12 --heart #F2C53D`
+- Triângulos: LOD0 648, LOD1 120, LOD2 8
+- Prévia: `GramaFitaA_v007_preview.png`
+- **Feedback do desenvolvedor (literal):** _(aguardando)_
+- **O que mudou:** Verde mais fechado (menos limão), base escura (feedback: comparar com a referência).
