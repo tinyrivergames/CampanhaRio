@@ -1,7 +1,7 @@
 {
-    "asset": "GramaFitaB",
+    "asset": "GramaFitaC",
     "family": "Grass",
-    "source": "ArtSource/Grass/GramaFitaB/GramaFitaB_v009.blend",
+    "source": "ArtSource/Grass/GramaFitaC/GramaFitaC_v003.blend",
     "material": {
         "_BaseColor": "#FFFFFF",
         "_Wrap": 0.7,
@@ -26,7 +26,7 @@
     },
     "materialList": [
         {
-            "name": "M_GramaFitaB",
+            "name": "M_GramaFitaC",
             "_BaseColor": "#FFFFFF",
             "_Wrap": 0.7,
             "_RampCenter": 0.45,

@@ -359,7 +359,7 @@ namespace CampanhaRio.Editor
         static GrassField.TuftType[] CarpetTypes()
         {
             var list = new List<GrassField.TuftType>();
-            foreach (var (letter, kind) in new[] { ("A", GrassField.Tuft.Green), ("B", GrassField.Tuft.DarkLush) })
+            foreach (var (letter, kind) in new[] { ("A", GrassField.Tuft.Green), ("B", GrassField.Tuft.DarkLush), ("C", GrassField.Tuft.DryTipped) })
             {
                 string fbx = $"Assets/_Project/Art/Models/Grass/GramaFita{letter}.fbx"; // the reference's ribbon grass
                 Mesh near = null, far = null;

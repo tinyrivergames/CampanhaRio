@@ -29,7 +29,7 @@ namespace CampanhaRio.Editor
             var terrain = Object.FindAnyObjectByType<Terrain>();
             var layers = new[]
             {
-                Layer("Grass", new Color(0.2f, 0.36f, 0.15f), new Color(0.25f, 0.42f, 0.17f), new Color(0.16f, 0.3f, 0.12f), 0.18f, 7f), // the ribbon grass' root green (seen between the clumps)
+                Layer("Grass", new Color(0.27f, 0.42f, 0.22f), new Color(0.32f, 0.48f, 0.25f), new Color(0.22f, 0.36f, 0.18f), 0.18f, 7f), // the ribbon grass' root green (seen between the clumps)
                 Layer("Earth", new Color(0.47f, 0.37f, 0.27f), new Color(0.55f, 0.44f, 0.32f), new Color(0.38f, 0.29f, 0.21f), 0.25f, 5f),
                 Layer("Gravel", new Color(0.56f, 0.54f, 0.5f), new Color(0.68f, 0.66f, 0.6f), new Color(0.42f, 0.4f, 0.37f), 0.45f, 3f),
             };

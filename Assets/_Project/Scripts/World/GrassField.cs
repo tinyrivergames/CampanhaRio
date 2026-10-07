@@ -174,6 +174,8 @@ namespace CampanhaRio.World
                     // Clumps: dark ones gather in patches (the reference), lower near the trails, sizes varied
                     float darkPatch = Mathf.PerlinNoise(p.x * 0.11f + 7f, p.z * 0.11f + 3f);
                     var kc = R() < Mathf.Lerp(0.15f, 0.85f, Mathf.SmoothStep(0.35f, 0.65f, darkPatch)) ? Tuft.DarkLush : Tuft.Green;
+                    float warmPatch = Mathf.PerlinNoise(p.x * 0.09f + 53f, p.z * 0.09f + 19f); // groups of the yellowish clumps
+                    if (R() < Mathf.SmoothStep(0.5f, 0.75f, warmPatch) * 0.8f) kc = Tuft.DryTipped;
                     if (R() > Mathf.Lerp(0.7f, 1f, Mathf.SmoothStep(0.25f, 0.6f, Mathf.PerlinNoise(p.x * 0.07f + 31f, p.z * 0.07f + 11f)))) continue; // gaps: the ground shows
                     tall *= Mathf.Lerp(0.45f, 1f, Mathf.Clamp01((path - 0.2f) / 2.5f)) * Mathf.Lerp(0.55f, 1.3f, R() * R());
                     cell.matrices[(int)kc].Add(Matrix4x4.TRS(p, Quaternion.Euler(0f, R() * 360f, 0f), new Vector3(Mathf.Lerp(1.1f, 1.45f, R()), Mathf.Lerp(0.6f, 0.95f, R()) * tall, Mathf.Lerp(1.1f, 1.45f, R()))));

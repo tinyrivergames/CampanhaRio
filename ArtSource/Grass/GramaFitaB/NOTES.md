@@ -49,3 +49,24 @@
 - Prévia: `GramaFitaB_v006_preview.png`
 - **Feedback do desenvolvedor (literal):** _(aguardando)_
 - **O que mudou:** Touceira escura (manchas mais escuras, como na referência).
+
+### v007
+- Gerado com: `--seed 12 --blades 24 --style ribbon --patch 0.8 --height 0.65 --spread 0.2 --lean 0.8 --width 0.065 --root #45684A --mid #6E9862 --tip #A9C487 --petal #F4F1E6 --up_normals 0.95 --shadows 0.3 --wrap 0.7 --ao 0.7 --transl 0.05 --shade_var 0.15 --leaf 0.25 --fold_dark 0.95 --hue_var 0.15 --heart #F2C53D`
+- Triângulos: LOD0 864, LOD1 160, LOD2 12
+- Prévia: `GramaFitaB_v007_preview.png`
+- **Feedback do desenvolvedor (literal):** _(aguardando)_
+- **O que mudou:** Folhas mais finas e longas nas pontas, cores pastel (feedback).
+
+### v008
+- Gerado com: `--seed 12 --blades 24 --style ribbon --patch 0.8 --height 0.65 --spread 0.2 --lean 0.8 --width 0.065 --root #3D6342 --mid #5F9050 --tip #90B86C --petal #F4F1E6 --up_normals 0.95 --shadows 0.3 --wrap 0.7 --ao 0.7 --transl 0.05 --shade_var 0.15 --leaf 0.25 --fold_dark 0.95 --hue_var 0.15 --heart #F2C53D`
+- Triângulos: LOD0 864, LOD1 160, LOD2 12
+- Prévia: `GramaFitaB_v008_preview.png`
+- **Feedback do desenvolvedor (literal):** _(aguardando)_
+- **O que mudou:** Pastel com mais verde (o anterior desbotou).
+
+### v009
+- Gerado com: `--seed 12 --blades 24 --style ribbon --patch 0.8 --height 0.65 --spread 0.2 --lean 0.8 --width 0.065 --root #2F5A34 --mid #4E8A40 --tip #88B25A --petal #F4F1E6 --up_normals 0.95 --shadows 0.3 --wrap 0.7 --ao 0.7 --transl 0.05 --shade_var 0.15 --leaf 0.25 --fold_dark 0.95 --hue_var 0.15 --heart #F2C53D`
+- Triângulos: LOD0 864, LOD1 160, LOD2 12
+- Prévia: `GramaFitaB_v009_preview.png`
+- **Feedback do desenvolvedor (literal):** _(aguardando)_
+- **O que mudou:** Meio-termo entre pastel e verde vivo.
