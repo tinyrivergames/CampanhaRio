@@ -1,12 +1,12 @@
 {
     "asset": "PedraCinzaB",
     "family": "Rock",
-    "source": "ArtSource/Rock/PedraCinzaB/PedraCinzaB_v001.blend",
+    "source": "ArtSource/Rock/PedraCinzaB/PedraCinzaB_v003.blend",
     "material": {
         "_BaseColor": "#FFFFFF",
-        "_Wrap": 0.4,
+        "_Wrap": 0.2,
         "_RampCenter": 0.45,
-        "_RampSoftness": 0.22,
+        "_RampSoftness": 0.1,
         "_ReceiveShadows": 0.85,
         "_RimStrength": 0.1,
         "_RimPower": 3.5,
@@ -21,15 +21,16 @@
         "_TopTintAmount": 0.0,
         "_TopTintSharpness": 0.35,
         "_Translucency": 0.0,
+        "_AOStrength": 1.0,
         "preset": "Rock"
     },
     "materialList": [
         {
             "name": "M_PedraCinzaB",
             "_BaseColor": "#FFFFFF",
-            "_Wrap": 0.4,
+            "_Wrap": 0.2,
             "_RampCenter": 0.45,
-            "_RampSoftness": 0.22,
+            "_RampSoftness": 0.1,
             "_ReceiveShadows": 0.85,
             "_RimStrength": 0.1,
             "_RimPower": 3.5,
@@ -44,14 +45,15 @@
             "_TopTintAmount": 0.0,
             "_TopTintSharpness": 0.35,
             "_Translucency": 0.0,
+            "_AOStrength": 1.0,
             "preset": "Rock"
         }
     ],
     "triangles": {
         "COL": 20,
-        "LOD0": 328,
-        "LOD1": 160,
-        "LOD2": 22
+        "LOD0": 740,
+        "LOD1": 348,
+        "LOD2": 52
     },
     "lodHeights": [
         0.03,

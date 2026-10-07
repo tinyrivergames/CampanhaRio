@@ -102,6 +102,10 @@ def build_rock(name, lod, p, col):
     stones = [srgb(common.palette(n)) for n in ("rock_gray", "rock_gray_light", "rock_gray_cool", "rock_beige")]
     ochre, orange = srgb(common.palette("rock_ochre")), srgb(common.palette("rock_orange"))
     top, shadow = srgb(common.palette("rock_gray_light")), srgb(common.palette("rock_gray_dark"))
+    if p["stone"]:  # explicit colours (the agency reference's warm grey rocks)
+        base = srgb(p["stone"])
+        stones = [base, base * 1.08, base * 0.93, base.lerp(srgb(p["top"]), 0.3)]
+        top, shadow = srgb(p["top"]), srgb(p["shadow"])
     moss_dark, moss_light = srgb(p["moss_dark"]), srgb(p["moss_light"])  # (v004: darker, toward the pine greens)
     if p["desat"] > 0:  # a neutral grey stone (the developer's reference rocks)
         grey = lambda c: c.lerp(Vector((1, 1, 1)) * (c.x * 0.3 + c.y * 0.59 + c.z * 0.11), p["desat"])  # noqa: E731
@@ -222,12 +226,20 @@ def main():
         "desat": float(args.get("desat", 0.0)),
         "moss_dark": args.get("moss_dark", "#3F5A2E"),
         "moss_light": args.get("moss_light", "#5C7A38"),
+        "stone": args.get("stone", ""),
+        "top": args.get("top", "#A39A90"),
+        "shadow": args.get("shadow", "#55505A"),
         "moss_cover": float(args.get("moss_cover", 0.35)),
         "moss_up": float(args.get("moss_up", 0.35)),
     }
     parts = build(asset, p)
     # Rocks are cheap (LOD0 ~250 tris) and very visible along the bank: full detail out to ~60 m, LOD1 to ~240 m
     bpy.context.scene["cr_lod_heights"] = [0.03, 0.008, 0.002]
+    if "field" in args:  # a few of these rocks in grass-green ground vs the reference picture
+        preview.render_field(os.path.join(common.TMP_DIR, f"field_{asset}_{args['field']}.png"), [parts["LOD0"]], common.load_rig(),
+                             ground_hex="#3C7A28", count=int(args.get("count", 9)), radius=4.0, eye=(0.0, 7.5, 1.6), target=(0.0, 0.0, 0.5),
+                             scale=(0.5, 1.1))
+        return
     if "draft" in args:
         out = os.path.join(common.TMP_DIR, f"draft_{asset}_{args['draft']}.png")
         preview.render_sheet(out, "rascunho " + str(args["draft"]))

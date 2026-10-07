@@ -267,8 +267,9 @@ namespace CampanhaRio.Editor
             foreach (var (p, s, big, yaw) in spots)
             {
                 var r = (GameObject)PrefabUtility.InstantiatePrefab(big ? a : b, set);
-                r.transform.SetPositionAndRotation(new Vector3(p.x, G(p.x, p.z) - 0.2f * s, p.z), Quaternion.Euler(0f, yaw, 0f));
-                r.transform.localScale = Vector3.one * (big ? s : Mathf.Max(0.7f, s * 1.5f)); // (above the knee-high grass)
+                float size = (big ? s : Mathf.Max(0.7f, s * 1.5f)) * 1.6f; // (well above the knee-high grass, as in the reference)
+                r.transform.SetPositionAndRotation(new Vector3(p.x, G(p.x, p.z) - 0.08f * size, p.z), Quaternion.Euler(0f, yaw, 0f));
+                r.transform.localScale = Vector3.one * size;
             }
         }
 

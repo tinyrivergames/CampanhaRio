@@ -220,7 +220,7 @@ namespace CampanhaRio.Editor
             forest.SetParent(root, false);
             string[] pines = { "Pine/PinheiroA", "Pine/PinheiroB", "Pine/PinheiroC" };
             string[] leafy = { "Broadleaf/ArvoreFolhosaA", "Broadleaf/ArvoreFolhosaB", "Broadleaf/ArvoreFolhosaC" };
-            string[] rocks = { "Rock/PedraMusgoA", "Rock/PedraMusgoB", "Rock/PedraMusgoB", "Rock/PedraMusgoA" }; // grey, moss on top (the reference)
+            string[] rocks = { "Rock/PedraCinzaA", "Rock/PedraCinzaB", "Rock/PedraCinzaB", "Rock/PedraCinzaA" }; // the reference picture's grey rocks
             GameObject L(string p) => AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/_Project/Art/Models/{p}.fbx");
             var rng = new System.Random(77);
             float R() => (float)rng.NextDouble();

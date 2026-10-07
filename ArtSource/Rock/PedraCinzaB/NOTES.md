@@ -17,3 +17,17 @@
 - Prévia: `PedraCinzaB_v001_preview.png`
 - **Feedback do desenvolvedor (literal):** _(aguardando)_
 - **O que mudou:** primeira versão.
+
+### v002
+- Gerado com: `--seed 63 --size 1.5 --depth 0.85 --height 0.72 --points 60 --merge 3.0 --jitter 0.14 --bevel 0.01 --inflate 0.0 --patches 0.1 --edge_light 0.06 --ramp 0.1 --wrap 0.1 --flat 1.0 --edge_angle 14.0 --tone 1.0 --moss 0.0 --variety 0.9 --warmth 0.0 --desat 0.0 --moss_dark #3F5A2E --moss_light #5C7A38 --stone #75727A --top #96909A --shadow #3B3946 --moss_cover 0.35 --moss_up 0.35`
+- Triângulos: LOD0 740, LOD1 348, LOD2 52, COL 20
+- Prévia: `PedraCinzaB_v002_preview.png`
+- **Feedback do desenvolvedor (literal):** _(aguardando)_
+- **O que mudou:** Refeita pela referência da agência: cinza neutro-lilás, domo, muitas facetas com tom próprio.
+
+### v003
+- Gerado com: `--seed 63 --size 1.5 --depth 0.85 --height 0.72 --points 60 --merge 3.0 --jitter 0.14 --bevel 0.01 --inflate 0.0 --patches 0.1 --edge_light 0.06 --ramp 0.1 --wrap 0.2 --flat 1.0 --edge_angle 14.0 --tone 1.0 --moss 0.0 --variety 0.9 --warmth 0.0 --desat 0.0 --moss_dark #3F5A2E --moss_light #5C7A38 --stone #928E95 --top #B2ACB3 --shadow #55525E --moss_cover 0.35 --moss_up 0.35`
+- Triângulos: LOD0 740, LOD1 348, LOD2 52, COL 20
+- Prévia: `PedraCinzaB_v003_preview.png`
+- **Feedback do desenvolvedor (literal):** _(aguardando)_
+- **O que mudou:** Mais clara no jogo (comparada com a referência).
