@@ -41,6 +41,7 @@ Shader "CampanhaRio/SoftToon"
         _Cutoff ("Alpha Cutoff", Range(0, 1)) = 0.5
         _Translucency ("Translucency (backlight)", Range(0, 1)) = 0
         _AOStrength ("Contact AO Strength", Range(0, 1)) = 1
+        [Toggle(_GROUND_TINT)] _GroundTintOn ("Ground Tint (per instance, grass)", Float) = 0
         [Toggle(_WIND)] _Wind ("Wind Sway (vertex colour alpha = weight)", Float) = 0
         _WindStrength ("Wind Strength (m)", Range(0, 0.5)) = 0.08
         _WindSpeed ("Wind Speed", Range(0, 4)) = 1.2
@@ -96,6 +97,7 @@ Shader "CampanhaRio/SoftToon"
             #pragma fragment Frag
             #pragma shader_feature_local _ALPHATEST_ON
             #pragma shader_feature_local _WIND
+            #pragma shader_feature_local _GROUND_TINT
             #pragma multi_compile _ _MAIN_LIGHT_SHADOWS _MAIN_LIGHT_SHADOWS_CASCADE _MAIN_LIGHT_SHADOWS_SCREEN
             #pragma multi_compile_fragment _ _SHADOWS_SOFT _SHADOWS_SOFT_LOW _SHADOWS_SOFT_MEDIUM _SHADOWS_SOFT_HIGH
             #pragma multi_compile_fragment _ _SCREEN_SPACE_OCCLUSION
@@ -107,6 +109,13 @@ Shader "CampanhaRio/SoftToon"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/LODCrossFade.hlsl"
 
             float4 _CR_ShadowTint, _CR_AmbientSky, _CR_AmbientEquator, _CR_AmbientGround;
+
+            // The grass: each instance takes the colour of the ground it grows from (GrassField sets it per instance)
+            #if defined(_GROUND_TINT)
+                UNITY_INSTANCING_BUFFER_START(GroundTint)
+                    UNITY_DEFINE_INSTANCED_PROP(float4, _GroundTint)
+                UNITY_INSTANCING_BUFFER_END(GroundTint)
+            #endif
 
             struct Attributes
             {
@@ -167,6 +176,9 @@ Shader "CampanhaRio/SoftToon"
                 // Albedo
                 half3 albedo = tex.rgb * _BaseColor.rgb;
                 if (_UseVertexColor > 0.5) albedo *= SRGBToLinear(i.color.rgb);
+                #if defined(_GROUND_TINT) && defined(UNITY_INSTANCING_ENABLED)
+                    albedo *= UNITY_ACCESS_INSTANCED_PROP(GroundTint, _GroundTint).rgb;
+                #endif
                 half g = saturate((i.heightOS - _GradientHeights.x) / max(_GradientHeights.y - _GradientHeights.x, 1e-4));
                 albedo *= lerp(_GradientBottom.rgb, _GradientTop.rgb, g);
                 half up = N.y;

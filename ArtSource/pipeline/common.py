@@ -163,6 +163,7 @@ SOFTTOON_DEFAULTS = {
     "_TopTintSharpness": 0.35,
     "_Translucency": 0.0,      # Foliage: light through the leaves when backlit
     "_AOStrength": 1.0,        # contact AO (1 = full; dense grass wants little)
+    "_GroundTintOn": 0.0,      # grass: tinted per instance by the ground under it (Unity only; GrassField)
 }
 
 PRESETS = {

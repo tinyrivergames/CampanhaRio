@@ -128,6 +128,7 @@ namespace CampanhaRio.Editor
                 AssetDatabase.LoadAssetAtPath<TerrainLayer>("Assets/_Project/Art/Textures/Ground/TL_Gravel.terrainlayer"),
                 TrailLayer(),
             };
+            foreach (var l in data.terrainLayers) Readable(l.diffuseTexture); // (the grass takes the ground's colour: GrassField.groundTint)
             int ar = data.alphamapResolution;
             var maps = new float[ar, ar, 4];
             for (int y = 0; y < ar; y++)
@@ -158,6 +159,14 @@ namespace CampanhaRio.Editor
         }
 
         /// <summary>The trails' ground: brown earth with pebbles mixed in (light and dark stones, a shade under each), tileable.</summary>
+        static void Readable(Texture2D tex)
+        {
+            var imp = tex ? AssetImporter.GetAtPath(AssetDatabase.GetAssetPath(tex)) as TextureImporter : null;
+            if (!imp || imp.isReadable) return;
+            imp.isReadable = true;
+            imp.SaveAndReimport();
+        }
+
         static TerrainLayer TrailLayer()
         {
             const string dir = "Assets/_Project/Art/Textures/Ground";
@@ -201,6 +210,7 @@ namespace CampanhaRio.Editor
             imp.wrapMode = TextureWrapMode.Repeat;
             imp.alphaIsTransparency = false; // (the alpha is the terrain's smoothness, not a cut-out: never bleed the colours)
             imp.anisoLevel = 4;
+            imp.isReadable = true; // (the grass reads the ground's colour under each tuft: GrassField.groundTint)
             imp.SaveAndReimport();
             string layerPath = $"{dir}/TL_Trail.terrainlayer";
             var layer = AssetDatabase.LoadAssetAtPath<TerrainLayer>(layerPath);

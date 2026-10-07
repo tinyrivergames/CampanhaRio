@@ -72,6 +72,7 @@ namespace CampanhaRio.Editor
             imp.wrapMode = TextureWrapMode.Repeat;
             imp.alphaIsTransparency = false; // (the alpha is the terrain's smoothness, not a cut-out: never bleed the colours)
             imp.anisoLevel = 4;
+            imp.isReadable = true; // (the grass reads the ground's colour under each tuft: GrassField.groundTint)
             imp.SaveAndReimport();
 
             string layerPath = $"{TexDir}/TL_{name}.terrainlayer";

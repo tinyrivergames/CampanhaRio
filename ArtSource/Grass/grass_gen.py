@@ -303,7 +303,7 @@ def build(asset, p):
     make = {"carpet": build_carpet, "flowers": build_flowers, "ribbon": build_ribbon}.get(p["style"], build_tuft)
     parts = {k: make(f"{asset}_{k}", k, p, col) for k in ("LOD0", "LOD1", "LOD2")}
     mat = common.soft_toon_material("M_" + asset, rig, preset="Foliage", _BaseColor="#FFFFFF", _UseVertexColor=1.0,
-                                    _ReceiveShadows=p["shadows"], _Wrap=p["wrap"], _RampSoftness=0.4, _AOStrength=p["ao"], _Translucency=p["transl"])
+                                    _ReceiveShadows=p["shadows"], _Wrap=p["wrap"], _RampSoftness=0.4, _AOStrength=p["ao"], _Translucency=p["transl"], _GroundTintOn=p["ground_tint"])
     mat.use_backface_culling = p["style"] == "ribbon"  # (double-sided blades: as the game's SoftToon, only the side facing the camera)
     for o in parts.values():
         o.data.materials.append(mat)
@@ -361,6 +361,7 @@ def main():
         "fold_dark": f("fold_dark", 0.9),
         "hue_var": f("hue_var", 0.1),
         "heart": args.get("heart", "#F2C53D"),
+        "ground_tint": f("ground_tint", 0.0),  # 1 = in the game each tuft takes the ground's colour (the vertex colours are then a neutral shade)
     }
     parts = build(asset, p)
     print(f"[grass] tris { {k: common.triangle_count(o) for k, o in parts.items()} }")

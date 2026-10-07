@@ -39,6 +39,11 @@ namespace CampanhaRio.World
         public bool noRiver;
         [Tooltip("The carpet layer: short dense grass patches that fill the ground (two colours mixed), under the tall tufts.")]
         public bool carpet;
+        [Tooltip("Each blade takes the colour of the ground it grows from (the terrain's painted layers), times this (the grass is lit more evenly than the terrain, so it needs to be darker to read the same).")]
+        public bool groundTint = true;
+        public float tintScale = 0.73f;
+        [Tooltip("Ground layers the grass never takes its colour from (the trails' earth: the tufts at their edges stay green).")]
+        public string[] tintIgnore = { "Trail" };
         [Tooltip("A clearing (XZ rect: x, z, width, depth; empty = none): outside it, toward the woods, the grass grows taller (and, for the tall tufts, denser).")]
         public Rect clearing;
         public float forestTallness = 1.7f;
@@ -55,6 +60,8 @@ namespace CampanhaRio.World
         {
             public Bounds bounds;
             public readonly List<Matrix4x4>[] matrices = new List<Matrix4x4>[5];
+            public readonly List<Vector4>[] tints = new List<Vector4>[5];
+            public readonly List<MaterialPropertyBlock>[] blocks = new List<MaterialPropertyBlock>[5];
         }
 
         readonly Dictionary<Vector2Int, Cell> cells = new Dictionary<Vector2Int, Cell>();
@@ -71,6 +78,7 @@ namespace CampanhaRio.World
             if (!river && !noRiver) river = FindAnyObjectByType<RiverPath>();
             paramsNear = new RenderParams[types.Length];
             paramsFar = new RenderParams[types.Length];
+            CacheGround();
             for (int i = 0; i < types.Length; i++)
             {
                 paramsNear[i] = new RenderParams(types[i].material) { shadowCastingMode = ShadowCastingMode.Off, receiveShadows = true, layer = gameObject.layer };
@@ -128,7 +136,9 @@ namespace CampanhaRio.World
                     for (int start = 0; start < count; start += 1023)
                     {
                         int n = Mathf.Min(1023, count - start);
-                        Graphics.RenderMeshInstanced(far ? paramsFar[t] : paramsNear[t], mesh, 0, list, n, start);
+                        var rp = far ? paramsFar[t] : paramsNear[t];
+                        rp.matProps = Block(cell, (int)types[t].kind, start / 1023);
+                        Graphics.RenderMeshInstanced(rp, mesh, 0, list, n, start);
                         drawn += n;
                     }
                 }
@@ -136,10 +146,71 @@ namespace CampanhaRio.World
             DrawnLastFrame = drawn;
         }
 
+        // ---------------------------------------------------------------- the ground's colour under each blade
+        float[,,] alphamaps;
+        Texture2D[] layerTex;
+        Vector2[] layerTile;
+
+        void CacheGround()
+        {
+            alphamaps = null;
+            if (!groundTint || !terrain) return;
+            var data = terrain.terrainData;
+            var layers = data.terrainLayers;
+            layerTex = new Texture2D[layers.Length];
+            layerTile = new Vector2[layers.Length];
+            for (int i = 0; i < layers.Length; i++)
+            {
+                var t = layers[i] ? layers[i].diffuseTexture : null;
+                layerTex[i] = t && t.isReadable ? t : null;
+                if (layers[i] && System.Array.Exists(tintIgnore, n => layers[i].name.Contains(n))) layerTex[i] = null;
+                layerTile[i] = layers[i] ? layers[i].tileSize : Vector2.one;
+            }
+            alphamaps = data.GetAlphamaps(0, 0, data.alphamapWidth, data.alphamapHeight);
+        }
+
+        Vector4 GroundTint(Vector3 p)
+        {
+            if (alphamaps == null) return Vector4.one;
+            var data = terrain.terrainData;
+            Vector3 local = p - terrain.transform.position;
+            int w = alphamaps.GetLength(1), h = alphamaps.GetLength(0);
+            int x = Mathf.Clamp(Mathf.RoundToInt(local.x / data.size.x * (w - 1)), 0, w - 1);
+            int z = Mathf.Clamp(Mathf.RoundToInt(local.z / data.size.z * (h - 1)), 0, h - 1);
+            Color c = Color.black;
+            float total = 0f;
+            for (int i = 0; i < layerTex.Length; i++)
+            {
+                float wgt = alphamaps[z, x, i];
+                if (wgt <= 0.001f || !layerTex[i]) continue;
+                c += layerTex[i].GetPixelBilinear(local.x / layerTile[i].x, local.z / layerTile[i].y).linear * wgt;
+                total += wgt;
+            }
+            if (total <= 0f) return Vector4.one;
+            c /= total;
+            return new Vector4(c.r * tintScale, c.g * tintScale, c.b * tintScale, 1f);
+        }
+
+        MaterialPropertyBlock Block(Cell cell, int kind, int batch)
+        {
+            var list = cell.blocks[kind];
+            while (list.Count <= batch)
+            {
+                int start = list.Count * 1023;
+                var tints = cell.tints[kind];
+                var arr = new Vector4[1023];
+                for (int i = 0; i < 1023; i++) arr[i] = start + i < tints.Count ? tints[start + i] : Vector4.one;
+                var mpb = new MaterialPropertyBlock();
+                mpb.SetVectorArray("_GroundTint", arr);
+                list.Add(mpb);
+            }
+            return list[batch];
+        }
+
         Cell Build(Vector2Int key)
         {
             var cell = new Cell();
-            for (int i = 0; i < 5; i++) cell.matrices[i] = new List<Matrix4x4>();
+            for (int i = 0; i < 5; i++) { cell.matrices[i] = new List<Matrix4x4>(); cell.tints[i] = new List<Vector4>(); cell.blocks[i] = new List<MaterialPropertyBlock>(); }
             var data = terrain.terrainData;
             Vector3 origin = terrain.transform.position;
             var rng = new System.Random(key.x * 73856093 ^ key.y * 19349663);
@@ -194,6 +265,7 @@ namespace CampanhaRio.World
                     if (R() > Mathf.Lerp(0.7f, 1f, Mathf.SmoothStep(0.25f, 0.6f, Mathf.PerlinNoise(p.x * 0.07f + 31f, p.z * 0.07f + 11f)))) continue; // gaps: the ground shows
                     tall *= Mathf.Lerp(0.45f, 1f, Mathf.Clamp01((path - 0.2f) / 2.5f)) * Mathf.Lerp(0.55f, 1.3f, R() * R());
                     cell.matrices[(int)kc].Add(Matrix4x4.TRS(p, Quaternion.Euler(0f, R() * 360f, 0f), new Vector3(Mathf.Lerp(1.1f, 1.45f, R()), Mathf.Lerp(0.6f, 0.95f, R()) * tall, Mathf.Lerp(1.1f, 1.45f, R()))));
+                    cell.tints[(int)kc].Add(GroundTint(p));
                     minY = Mathf.Min(minY, p.y); maxY = Mathf.Max(maxY, p.y);
                     continue;
                 }
@@ -209,6 +281,7 @@ namespace CampanhaRio.World
                 float scale = Mathf.Lerp(0.85f, 1.5f, R()) * (kind == Tuft.DarkLush ? 1.1f : 1f);
                 var rot = Quaternion.Euler(R() * 10f - 5f, R() * 360f, R() * 10f - 5f);
                 cell.matrices[(int)kind].Add(Matrix4x4.TRS(p, rot, new Vector3(scale, scale * tall, scale)));
+                cell.tints[(int)kind].Add(GroundTint(p));
                 minY = Mathf.Min(minY, p.y); maxY = Mathf.Max(maxY, p.y);
             }
             // Random order already (random points), so drawing half thins evenly

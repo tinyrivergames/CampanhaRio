@@ -1,7 +1,7 @@
 {
     "asset": "GramaFitaC",
     "family": "Grass",
-    "source": "ArtSource/Grass/GramaFitaC/GramaFitaC_v007.blend",
+    "source": "ArtSource/Grass/GramaFitaC/GramaFitaC_v008.blend",
     "material": {
         "_BaseColor": "#FFFFFF",
         "_Wrap": 0.8,
@@ -22,6 +22,7 @@
         "_TopTintSharpness": 0.35,
         "_Translucency": 0.05,
         "_AOStrength": 0.3,
+        "_GroundTintOn": 1.0,
         "preset": "Foliage"
     },
     "materialList": [
@@ -46,6 +47,7 @@
             "_TopTintSharpness": 0.35,
             "_Translucency": 0.05,
             "_AOStrength": 0.3,
+            "_GroundTintOn": 1.0,
             "preset": "Foliage"
         }
     ],
