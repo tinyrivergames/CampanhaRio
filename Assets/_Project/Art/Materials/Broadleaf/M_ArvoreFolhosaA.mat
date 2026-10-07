@@ -13,7 +13,8 @@ Material:
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
   - _WIND
-  m_InvalidKeywords: []
+  m_InvalidKeywords:
+  - _USEVERTEXCOLOR_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 1
   m_DoubleSidedGI: 0
@@ -35,7 +36,7 @@ Material:
     - _Cutoff: 0.5
     - _Preset: 2
     - _RampCenter: 0.45
-    - _RampSoftness: 0.35
+    - _RampSoftness: 0.2
     - _ReceiveShadows: 0.85
     - _RimPower: 3.5
     - _RimStrength: 0.14

@@ -14,3 +14,10 @@
 - Prévia: `ArvoreFolhosaC_v001_preview.png`
 - **Feedback do desenvolvedor (literal):** _(aguardando)_
 - **O que mudou:** primeira versão.
+
+### v002
+- Gerado com: `--seed 21 --height 5.0 --canopy 2.2 --blobs 6 --branches 3 --trunk 0.24 --squash 0.85 --spread 0.85 --top_light 1.0 --hue_var 0.9 --inflate 0.05 --subdiv 2 --ramp 0.2 --bark #7A4A30 --leaf_dark #3F6324 --leaf #66A033 --leaf_light #B6DA5E`
+- Triângulos: LOD0 528, LOD1 120
+- Prévia: `ArvoreFolhosaC_v002_preview.png`
+- **Feedback do desenvolvedor (literal):** _(aguardando)_
+- **O que mudou:** Baixa e cheia, verde-claro, facetas marcadas.

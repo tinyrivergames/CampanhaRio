@@ -1,12 +1,12 @@
 {
     "asset": "ArvoreFolhosaA",
     "family": "Broadleaf",
-    "source": "ArtSource/Broadleaf/ArvoreFolhosaA/ArvoreFolhosaA_v001.blend",
+    "source": "ArtSource/Broadleaf/ArvoreFolhosaA/ArvoreFolhosaA_v002.blend",
     "material": {
         "_BaseColor": "#FFFFFF",
         "_Wrap": 0.7,
         "_RampCenter": 0.45,
-        "_RampSoftness": 0.35,
+        "_RampSoftness": 0.2,
         "_ReceiveShadows": 0.85,
         "_RimStrength": 0.14,
         "_RimPower": 3.5,
@@ -29,7 +29,7 @@
             "_BaseColor": "#FFFFFF",
             "_Wrap": 0.7,
             "_RampCenter": 0.45,
-            "_RampSoftness": 0.35,
+            "_RampSoftness": 0.2,
             "_ReceiveShadows": 0.85,
             "_RimStrength": 0.14,
             "_RimPower": 3.5,
@@ -71,8 +71,8 @@
         }
     ],
     "triangles": {
-        "LOD0": 448,
-        "LOD1": 100,
+        "LOD0": 528,
+        "LOD1": 120,
         "LOD2": 4
     }
 }

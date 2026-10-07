@@ -144,11 +144,62 @@ def build_carpet(name, lod, p, col):
     return obj
 
 
+def build_flowers(name, lod, p, col):
+    """Little daisies: a few thin green stems, each with a flat flower (white petals around a yellow heart), facing up."""
+    rnd = random.Random(p["seed"])
+    bm = bmesh.new()
+    colors = {}
+    stem_c, petal_c, heart_c = srgb(p["mid"]), srgb(p["petal"]), srgb(p["heart"])
+    count = {"LOD0": p["blades"], "LOD1": max(2, p["blades"] // 2), "LOD2": 1}[lod]
+    petals = 6 if lod == "LOD0" else 4
+
+    def v(pos, c, a):
+        vert = bm.verts.new(pos)
+        colors[vert] = (min(c.x, 1), min(c.y, 1), min(c.z, 1), a)
+        return vert
+
+    for i in range(count):
+        base = Vector((rnd.uniform(-p["spread"], p["spread"]), rnd.uniform(-p["spread"], p["spread"]), 0.0))
+        h = p["height"] * rnd.uniform(0.7, 1.15)
+        top = base + Vector((rnd.uniform(-0.04, 0.04), rnd.uniform(-0.04, 0.04), h))
+        w = 0.008
+        a0 = rnd.uniform(0, math.pi)
+        side = Vector((math.cos(a0), math.sin(a0), 0))
+        L, R, T = v(base - side * w, stem_c * 0.8, 0.0), v(base + side * w, stem_c * 0.8, 0.0), v(top, stem_c, 1.0)
+        bm.faces.new((L, R, T))
+        r = p["width"] * rnd.uniform(0.85, 1.15)
+        heart = v(top + Vector((0, 0, 0.012)), heart_c, 1.0)
+        ring = []
+        for k in range(petals * 2):
+            ang = math.pi * k / petals + a0
+            rr = r if k % 2 == 0 else r * 0.45
+            ring.append(v(top + Vector((math.cos(ang) * rr, math.sin(ang) * rr, 0.005)), petal_c * rnd.uniform(0.92, 1.0), 1.0))
+        for k in range(len(ring)):
+            bm.faces.new((heart, ring[k], ring[(k + 1) % len(ring)]))
+        for k in range(0, len(ring), 2):  # the yellow heart: a small disc over the petals
+            pass
+    mesh = bpy.data.meshes.new(name)
+    vert_list = list(bm.verts)
+    bm.to_mesh(mesh)
+    bm.free()
+    obj = common.mesh_object(name, mesh, col)
+    attr = mesh.color_attributes.new("Col", "BYTE_COLOR", "CORNER")
+    mesh.color_attributes.active_color = attr
+    normals = []
+    for poly in mesh.polygons:
+        poly.use_smooth = True
+        for li in poly.loop_indices:
+            attr.data[li].color_srgb = colors[vert_list[mesh.loops[li].vertex_index]]
+            normals.append(Vector((0, 0, 1)))
+    mesh.normals_split_custom_set(normals)
+    return obj
+
+
 def build(asset, p):
     rig = common.load_rig()
     common.reset_scene()
     col = common.collection(asset)
-    make = build_carpet if p["style"] == "carpet" else build_tuft
+    make = {"carpet": build_carpet, "flowers": build_flowers}.get(p["style"], build_tuft)
     parts = {k: make(f"{asset}_{k}", k, p, col) for k in ("LOD0", "LOD1", "LOD2")}
     mat = common.soft_toon_material("M_" + asset, rig, preset="Foliage", _BaseColor="#FFFFFF", _UseVertexColor=1.0)
     for o in parts.values():
@@ -196,6 +247,8 @@ def main():
         "root": args.get("root", "#3E5E2A"),
         "mid": args.get("mid", "#5C8A3A"),
         "tip": args.get("tip", "#9BBF5A"),
+        "petal": args.get("petal", "#F4F1E6"),
+        "heart": args.get("heart", "#F2C53D"),
     }
     parts = build(asset, p)
     print(f"[grass] tris { {k: common.triangle_count(o) for k, o in parts.items()} }")

@@ -14,3 +14,10 @@
 - Prévia: `TufoGramaD_v001_preview.png`
 - **Feedback do desenvolvedor (literal):** "show, espalha bem elas no mapa e deixa bem preenchido." → **APROVADA**
 - **O que mudou:** primeira versão.
+
+### v002
+- Gerado com: `--seed 13 --blades 22 --style tuft --patch 0.8 --height 0.55 --spread 0.26 --lean 1.0 --width 0.03 --root #22502C --mid #3A8240 --tip #8FBE56 --petal #F4F1E6 --heart #F2C53D`
+- Triângulos: LOD0 110, LOD1 35, LOD2 2
+- Prévia: `TufoGramaD_v002_preview.png`
+- **Feedback do desenvolvedor (literal):** _(aguardando)_
+- **O que mudou:** Cores do tapete (verde de floresta) para mesclar com a grama baixa (feedback: os tufos não encaixavam).

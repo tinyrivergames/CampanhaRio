@@ -102,7 +102,11 @@ def build_rock(name, lod, p, col):
     stones = [srgb(common.palette(n)) for n in ("rock_gray", "rock_gray_light", "rock_gray_cool", "rock_beige")]
     ochre, orange = srgb(common.palette("rock_ochre")), srgb(common.palette("rock_orange"))
     top, shadow = srgb(common.palette("rock_gray_light")), srgb(common.palette("rock_gray_dark"))
-    moss_dark, moss_light = srgb("#3F5A2E"), srgb("#5C7A38")  # darker, toward the pine greens (v004)
+    moss_dark, moss_light = srgb(p["moss_dark"]), srgb(p["moss_light"])  # (v004: darker, toward the pine greens)
+    if p["desat"] > 0:  # a neutral grey stone (the developer's reference rocks)
+        grey = lambda c: c.lerp(Vector((1, 1, 1)) * (c.x * 0.3 + c.y * 0.59 + c.z * 0.11), p["desat"])  # noqa: E731
+        stones = [grey(s) for s in stones]
+        top, shadow = grey(top), grey(shadow)
     warm, cool = Vector((1.05, 1.01, 0.93)), Vector((0.94, 0.98, 1.05))
     seed_v = Vector((p["seed"] * 1.37, p["seed"] * 0.71, 3.3))
     attr = mesh.color_attributes.new("Col", "BYTE_COLOR", "CORNER")
@@ -215,6 +219,9 @@ def main():
         "moss": float(args.get("moss", 0.8)),
         "variety": float(args.get("variety", 0.6)),
         "warmth": float(args.get("warmth", 0.4)),
+        "desat": float(args.get("desat", 0.0)),
+        "moss_dark": args.get("moss_dark", "#3F5A2E"),
+        "moss_light": args.get("moss_light", "#5C7A38"),
         "moss_cover": float(args.get("moss_cover", 0.35)),
         "moss_up": float(args.get("moss_up", 0.35)),
     }

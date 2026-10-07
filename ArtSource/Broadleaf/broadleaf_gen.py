@@ -74,7 +74,7 @@ def build_tree(name, lod, p, col):
 
     # The canopy: faceted blobs around the branch ends and the top
     blobs = p["blobs"] if detail else max(3, p["blobs"] - 2)
-    subdiv = 2 if detail else 1
+    subdiv = p["subdiv"] if detail else 1
     centre = Vector((0, 0, H * 0.75))
     for i in range(blobs):
         anchor = branch_ends[i % len(branch_ends)]
@@ -127,7 +127,7 @@ def build(asset, p):
     lod0 = build_tree(asset + "_LOD0", "LOD0", p, col)
     lod1 = build_tree(asset + "_LOD1", "LOD1", p, col)
     mat = common.soft_toon_material("M_" + asset, rig, preset="Foliage", _BaseColor="#FFFFFF", _UseVertexColor=1.0,
-                                    _Translucency=0.25, _RimStrength=0.14)
+                                    _Translucency=0.25, _RimStrength=0.14, _RampSoftness=p["ramp"])
     for o in (lod0, lod1):
         o.data.materials.append(mat)
     lod1.hide_set(True)
@@ -172,6 +172,8 @@ def main():
         "top_light": f("top_light", 0.6),
         "hue_var": f("hue_var", 0.6),
         "inflate": f("inflate", 0.35),
+        "subdiv": int(args.get("subdiv", 2)),
+        "ramp": f("ramp", 0.35),
         "bark": args.get("bark", "#7A4A30"),
         "leaf_dark": args.get("leaf_dark", "#3E6227"),
         "leaf": args.get("leaf", "#5E8E34"),

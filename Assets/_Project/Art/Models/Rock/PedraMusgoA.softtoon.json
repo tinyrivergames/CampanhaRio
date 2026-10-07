@@ -1,0 +1,61 @@
+{
+    "asset": "PedraMusgoA",
+    "family": "Rock",
+    "source": "ArtSource/Rock/PedraMusgoA/PedraMusgoA_v002.blend",
+    "material": {
+        "_BaseColor": "#FFFFFF",
+        "_Wrap": 0.35,
+        "_RampCenter": 0.45,
+        "_RampSoftness": 0.2,
+        "_ReceiveShadows": 0.85,
+        "_RimStrength": 0.1,
+        "_RimPower": 3.5,
+        "_UseVertexColor": 1.0,
+        "_GradientBottom": "#FFFFFF",
+        "_GradientTop": "#FFFFFF",
+        "_GradientHeights": [
+            0.0,
+            1.0
+        ],
+        "_TopTint": "#FFFFFF",
+        "_TopTintAmount": 0.0,
+        "_TopTintSharpness": 0.35,
+        "_Translucency": 0.0,
+        "preset": "Rock"
+    },
+    "materialList": [
+        {
+            "name": "M_PedraMusgoA",
+            "_BaseColor": "#FFFFFF",
+            "_Wrap": 0.35,
+            "_RampCenter": 0.45,
+            "_RampSoftness": 0.2,
+            "_ReceiveShadows": 0.85,
+            "_RimStrength": 0.1,
+            "_RimPower": 3.5,
+            "_UseVertexColor": 1.0,
+            "_GradientBottom": "#FFFFFF",
+            "_GradientTop": "#FFFFFF",
+            "_GradientHeights": [
+                0.0,
+                1.0
+            ],
+            "_TopTint": "#FFFFFF",
+            "_TopTintAmount": 0.0,
+            "_TopTintSharpness": 0.35,
+            "_Translucency": 0.0,
+            "preset": "Rock"
+        }
+    ],
+    "triangles": {
+        "COL": 20,
+        "LOD0": 398,
+        "LOD1": 182,
+        "LOD2": 26
+    },
+    "lodHeights": [
+        0.03,
+        0.008,
+        0.002
+    ]
+}

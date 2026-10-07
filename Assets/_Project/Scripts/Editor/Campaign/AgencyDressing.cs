@@ -30,7 +30,7 @@ namespace CampanhaRio.Editor
         {
             var scene = EditorSceneManager.OpenScene(ScenePath);
             var root = GameObject.Find("Agencia").transform;
-            foreach (string old in new[] { "Ground", "Trees", "Agency Terrain", "Forest", "Grass", "Grass Carpet", "Paths" })
+            foreach (string old in new[] { "Ground", "Trees", "Agency Terrain", "Forest", "Grass", "Grass Carpet", "Paths", "Props" })
             {
                 var t = root.Find(old);
                 if (t) Object.DestroyImmediate(t.gameObject);
@@ -218,7 +218,7 @@ namespace CampanhaRio.Editor
             forest.SetParent(root, false);
             string[] pines = { "Pine/PinheiroA", "Pine/PinheiroB", "Pine/PinheiroC" };
             string[] leafy = { "Broadleaf/ArvoreFolhosaA", "Broadleaf/ArvoreFolhosaB", "Broadleaf/ArvoreFolhosaC" };
-            string[] rocks = { "Rock/RochaA", "Rock/RochaB", "Rock/RochaC", "Rock/RochaD" };
+            string[] rocks = { "Rock/PedraMusgoA", "Rock/PedraMusgoB", "Rock/PedraMusgoB", "Rock/PedraMusgoA" }; // grey, moss on top (the reference)
             GameObject L(string p) => AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/_Project/Art/Models/{p}.fbx");
             var rng = new System.Random(77);
             float R() => (float)rng.NextDouble();
@@ -229,7 +229,7 @@ namespace CampanhaRio.Editor
             {
                 var p = new Vector3(Origin.x + R() * Size.x, 0f, Origin.z + R() * Size.z);
                 if (InYard(p.x, p.z, 4f) || p.z > -268f) continue;                     // the yard, and the road segment's edge
-                bool leaf = R() < 0.45f;
+                bool leaf = R() < 0.55f;
                 float size = leaf ? Mathf.Lerp(1.2f, 1.9f, R()) : Mathf.Lerp(1.4f, 2.4f, R());
                 // The trails stay open: a pine's low branches reach about 2 m per unit of scale, a leafy tree's crown is overhead
                 if (paths.Distance(p) < (leaf ? 1.2f + 0.8f * size : 0.8f + 2f * size)) continue;
@@ -272,7 +272,86 @@ namespace CampanhaRio.Editor
                 placed.Add(p);
                 boulders++;
             }
-            Debug.Log($"[Campanha] Agency forest: {trees} trees, {stones} rocks, {boulders} big boulders");
+            // Round bushes: along the trails and in clumps at the woods' edge
+            int bushes = 0;
+            var bush = L("Broadleaf/ArbustoA");
+            for (int i = 0; i < 20000 && bushes < 260; i++)
+            {
+                var p = new Vector3(Origin.x + R() * Size.x, 0f, Origin.z + R() * Size.z);
+                float d = paths.Distance(p);
+                bool trailSide = d > 1.2f && d < 4f && R() < 0.5f;
+                float ox = Mathf.Max(0f, Mathf.Max(Yard.xMin - p.x, p.x - Yard.xMax)), oz = Mathf.Max(0f, Mathf.Max(Yard.yMin - p.z, p.z - Yard.yMax));
+                bool edge = !InYard(p.x, p.z) && Mathf.Sqrt(ox * ox + oz * oz) < 14f;
+                if ((!trailSide && !edge) || GroundPaths.Cleared(p) || p.z > -268f || d < 1.2f || !Free(p, 1.4f)) continue;
+                p.y = terrain.SampleHeight(p) + terrain.transform.position.y - 0.1f;
+                var b = (GameObject)PrefabUtility.InstantiatePrefab(bush, forest);
+                b.transform.SetPositionAndRotation(p, Quaternion.Euler(0f, R() * 360f, 0f));
+                b.transform.localScale = Vector3.one * Mathf.Lerp(1.1f, 2.2f, R());
+                placed.Add(p);
+                bushes++;
+            }
+            Props(root, terrain, paths);
+            Debug.Log($"[Campanha] Agency forest: {trees} trees, {stones} rocks, {boulders} big boulders, {bushes} bushes");
+        }
+
+        /// <summary>The reference's wooden props (graybox wood): a rail fence along the trails near the yard, a trail sign at
+        /// the woods' entrance, and lantern posts (lit, warm) along the way to the van and the woods.</summary>
+        static void Props(Transform root, Terrain terrain, GroundPaths paths)
+        {
+            var props = new GameObject("Props").transform;
+            props.SetParent(root, false);
+            var wood = GrayboxMaterials.Get("WoodWarm", new Color(0.43f, 0.27f, 0.16f));
+            var woodLight = GrayboxMaterials.Get("WoodLight", new Color(0.6f, 0.42f, 0.27f));
+            float G(float x, float z) => terrain.SampleHeight(new Vector3(x, 0f, z)) + terrain.transform.position.y;
+            Transform Box(Transform parent, string name, Vector3 pos, Vector3 size, Material m, float yaw = 0f)
+            {
+                var t = KayakPrefabBuilder.Primitive(PrimitiveType.Cube, name, parent, pos, size, m);
+                t.rotation = Quaternion.Euler(0f, yaw, 0f);
+                return t;
+            }
+            // Fences: posts every 2.4 m with two rails, beside the trail to the van and along the start of the woods' loop
+            void Fence(Vector3 a, Vector3 b)
+            {
+                var dir = b - a; dir.y = 0f;
+                int n = Mathf.Max(1, Mathf.RoundToInt(dir.magnitude / 2.4f));
+                float yaw = Quaternion.LookRotation(dir).eulerAngles.y;
+                for (int k = 0; k <= n; k++)
+                {
+                    var p = Vector3.Lerp(a, b, k / (float)n); p.y = G(p.x, p.z);
+                    Box(props, "FencePost", p + Vector3.up * 0.55f, new Vector3(0.16f, 1.1f, 0.16f), wood, yaw);
+                    if (k == n) continue;
+                    var q = Vector3.Lerp(a, b, (k + 0.5f) / n); q.y = G(q.x, q.z);
+                    float len = dir.magnitude / n;
+                    Box(props, "FenceRail", q + Vector3.up * 0.85f, new Vector3(0.08f, 0.1f, len), woodLight, yaw);
+                    Box(props, "FenceRail", q + Vector3.up * 0.45f, new Vector3(0.08f, 0.1f, len), woodLight, yaw);
+                }
+            }
+            Fence(new Vector3(-4.2f, 0, -322f), new Vector3(-3.8f, 0, -304f));
+            Fence(new Vector3(9f, 0, -333f), new Vector3(24f, 0, -342f));
+            Fence(new Vector3(-50f, 0, -315f), new Vector3(-62f, 0, -326f));
+            // A trail sign at the woods' entrance: a post and three arrow boards
+            var sx = 9.5f; var sz = -328.5f; var sy = G(sx, sz);
+            Box(props, "SignPost", new Vector3(sx, sy + 1.2f, sz), new Vector3(0.18f, 2.4f, 0.18f), wood);
+            for (int k = 0; k < 3; k++)
+                Box(props, "SignBoard", new Vector3(sx + 0.35f, sy + 1.9f - k * 0.42f, sz), new Vector3(0.9f, 0.3f, 0.06f), woodLight, k == 1 ? 180f : 0f).position += Vector3.right * (k == 1 ? -0.7f : 0f);
+            // Lantern posts: an L post, a small glowing box and a warm light
+            var lamp = GrayboxMaterials.Get("LanternGlow", new Color(1f, 0.82f, 0.45f));
+            void Lantern(float x, float z)
+            {
+                float y = G(x, z);
+                Box(props, "LanternPost", new Vector3(x, y + 1.3f, z), new Vector3(0.14f, 2.6f, 0.14f), wood);
+                Box(props, "LanternArm", new Vector3(x + 0.35f, y + 2.5f, z), new Vector3(0.7f, 0.1f, 0.1f), wood);
+                Box(props, "Lantern", new Vector3(x + 0.62f, y + 2.2f, z), new Vector3(0.24f, 0.32f, 0.24f), lamp);
+                var light = new GameObject("LanternLight").AddComponent<Light>();
+                light.transform.SetParent(props, false);
+                light.transform.position = new Vector3(x + 0.62f, y + 2.1f, z);
+                light.type = LightType.Point;
+                light.color = new Color(1f, 0.75f, 0.45f);
+                light.range = 7f;
+                light.intensity = 1.6f;
+                light.shadows = LightShadows.None;
+            }
+            Lantern(-4.8f, -318f); Lantern(-1.2f, -300f); Lantern(10.5f, -335f); Lantern(-44f, -318f); Lantern(30f, -343f);
         }
 
         static GrassField.TuftType[] CarpetTypes()
@@ -292,15 +371,16 @@ namespace CampanhaRio.Editor
 
         static GrassField.TuftType[] GrassTypes()
         {
-            var kinds = new[] { ("A", GrassField.Tuft.Green), ("B", GrassField.Tuft.DarkLush), ("C", GrassField.Tuft.TallYellow), ("D", GrassField.Tuft.DryTipped), ("E", GrassField.Tuft.CoolWater) };
+            var kinds = new[] { ("A", GrassField.Tuft.Green), ("B", GrassField.Tuft.DarkLush), ("C", GrassField.Tuft.TallYellow), ("D", GrassField.Tuft.DryTipped), ("E", GrassField.Tuft.CoolWater) }; // (C is the daisies now, see below)
             var list = new List<GrassField.TuftType>();
             foreach (var (letter, kind) in kinds)
             {
-                string fbx = $"Assets/_Project/Art/Models/Grass/TufoGrama{letter}.fbx";
+                string asset = letter == "C" ? "FloresBrancas" : "TufoGrama" + letter; // the tall yellow grass gave way to white daisies
+                string fbx = $"Assets/_Project/Art/Models/Grass/{asset}.fbx";
                 Mesh near = null, far = null;
                 foreach (var a in AssetDatabase.LoadAllAssetsAtPath(fbx))
                     if (a is Mesh m) { if (m.name.EndsWith("_LOD0")) near = m; else if (m.name.EndsWith("_LOD1")) far = m; }
-                var mat = AssetDatabase.LoadAssetAtPath<Material>($"Assets/_Project/Art/Materials/Grass/M_TufoGrama{letter}.mat");
+                var mat = AssetDatabase.LoadAssetAtPath<Material>($"Assets/_Project/Art/Materials/Grass/M_{asset}.mat");
                 if (near && mat) list.Add(new GrassField.TuftType { kind = kind, near = near, far = far ? far : near, material = mat });
             }
             return list.ToArray();
