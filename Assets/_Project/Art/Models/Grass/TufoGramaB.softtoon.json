@@ -1,0 +1,55 @@
+{
+    "asset": "TufoGramaB",
+    "family": "Grass",
+    "source": "ArtSource/Grass/TufoGramaB/TufoGramaB_v001.blend",
+    "material": {
+        "_BaseColor": "#FFFFFF",
+        "_Wrap": 0.7,
+        "_RampCenter": 0.45,
+        "_RampSoftness": 0.35,
+        "_ReceiveShadows": 0.85,
+        "_RimStrength": 0.12,
+        "_RimPower": 3.5,
+        "_UseVertexColor": 1.0,
+        "_GradientBottom": "#FFFFFF",
+        "_GradientTop": "#FFFFFF",
+        "_GradientHeights": [
+            0.0,
+            1.0
+        ],
+        "_TopTint": "#FFFFFF",
+        "_TopTintAmount": 0.0,
+        "_TopTintSharpness": 0.35,
+        "_Translucency": 0.45,
+        "preset": "Foliage"
+    },
+    "materialList": [
+        {
+            "name": "M_TufoGramaB",
+            "_BaseColor": "#FFFFFF",
+            "_Wrap": 0.7,
+            "_RampCenter": 0.45,
+            "_RampSoftness": 0.35,
+            "_ReceiveShadows": 0.85,
+            "_RimStrength": 0.12,
+            "_RimPower": 3.5,
+            "_UseVertexColor": 1.0,
+            "_GradientBottom": "#FFFFFF",
+            "_GradientTop": "#FFFFFF",
+            "_GradientHeights": [
+                0.0,
+                1.0
+            ],
+            "_TopTint": "#FFFFFF",
+            "_TopTintAmount": 0.0,
+            "_TopTintSharpness": 0.35,
+            "_Translucency": 0.45,
+            "preset": "Foliage"
+        }
+    ],
+    "triangles": {
+        "LOD0": 130,
+        "LOD1": 40,
+        "LOD2": 2
+    }
+}

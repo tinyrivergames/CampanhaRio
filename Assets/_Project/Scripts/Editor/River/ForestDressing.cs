@@ -35,6 +35,7 @@ namespace CampanhaRio.Editor
             };
             Paint(terrain, river, layers);
             Populate(terrain, river);
+            AddGrass(terrain, river);
             EditorSceneManager.SaveScene(scene);
             Debug.Log("[Campanha] Forest dressed: ground textures, painted terrain, pines and rocks.");
         }
@@ -169,6 +170,31 @@ namespace CampanhaRio.Editor
                 stones++;
             }
             Debug.Log($"[Campanha] Forest: {trees} pines, {stones} rocks");
+        }
+
+        /// <summary>The grass: a GrassField (instanced, generated around the camera) with the five approved tufts.</summary>
+        static void AddGrass(Terrain terrain, RiverPath river)
+        {
+            var old = Object.FindAnyObjectByType<World.GrassField>();
+            if (old) Object.DestroyImmediate(old.gameObject);
+            var field = new GameObject("Grass").AddComponent<World.GrassField>();
+            field.terrain = terrain;
+            field.river = river;
+            var kinds = new[] { ("A", World.GrassField.Tuft.Green), ("B", World.GrassField.Tuft.DarkLush), ("C", World.GrassField.Tuft.TallYellow), ("D", World.GrassField.Tuft.DryTipped), ("E", World.GrassField.Tuft.CoolWater) };
+            var types = new System.Collections.Generic.List<World.GrassField.TuftType>();
+            foreach (var (letter, kind) in kinds)
+            {
+                string fbx = $"Assets/_Project/Art/Models/Grass/TufoGrama{letter}.fbx";
+                Mesh near = null, far = null;
+                foreach (var a in AssetDatabase.LoadAllAssetsAtPath(fbx))
+                    if (a is Mesh m) { if (m.name.EndsWith("_LOD0")) near = m; else if (m.name.EndsWith("_LOD1")) far = m; }
+                var mat = AssetDatabase.LoadAssetAtPath<Material>($"Assets/_Project/Art/Materials/Grass/M_TufoGrama{letter}.mat");
+                if (!near || !mat) { Debug.LogWarning($"[Campanha] Grass: TufoGrama{letter} not found ({fbx})"); continue; }
+                mat.enableInstancing = true;
+                types.Add(new World.GrassField.TuftType { kind = kind, near = near, far = far ? far : near, material = mat });
+            }
+            field.types = types.ToArray();
+            Debug.Log($"[Campanha] Grass: {field.types.Length} tuft types");
         }
 
         static GameObject Load(string path) => AssetDatabase.LoadAssetAtPath<GameObject>($"Assets/_Project/Art/Models/{path}.fbx");

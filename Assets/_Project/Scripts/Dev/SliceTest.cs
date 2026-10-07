@@ -67,6 +67,8 @@ namespace CampanhaRio.Dev
                 Debug.Log($"[Test] slice ({who}): on the river with {KayakRegistry.All.Count} kayak(s), autopilot {(auto ? "on" : "missing")}");
                 yield return new WaitForSeconds(12f);
                 yield return Shot($"3_rio_{jobs[n]}");
+                var grass = FindAnyObjectByType<World.GrassField>();
+                if (grass) Debug.Log($"[Test] slice ({who}): grass {grass.Generated} tufts generated, {grass.DrawnLastFrame} drawn this frame; {1f / Time.smoothDeltaTime:0} fps");
                 yield return Until(() => flow.Current == AgencyFlow.Phase.Arrived, 300f, "arrived");
                 yield return new WaitForSeconds(1f);
                 yield return Shot($"4_resultado_{jobs[n]}");

@@ -12,5 +12,5 @@
 - Gerado com: `--seed 7 --blades 26 --height 0.32 --spread 0.28 --lean 1.0 --width 0.03 --root #2C4A1F --mid #3F6B2C --tip #6E9A3E`
 - Triângulos: LOD0 130, LOD1 40, LOD2 2
 - Prévia: `TufoGramaB_v001_preview.png`
-- **Feedback do desenvolvedor (literal):** _(aguardando)_
+- **Feedback do desenvolvedor (literal):** "show, espalha bem elas no mapa e deixa bem preenchido." → **APROVADA**
 - **O que mudou:** primeira versão.
