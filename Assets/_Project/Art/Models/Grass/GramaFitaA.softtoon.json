@@ -1,13 +1,13 @@
 {
     "asset": "GramaFitaA",
     "family": "Grass",
-    "source": "ArtSource/Grass/GramaFitaA/GramaFitaA_v010.blend",
+    "source": "ArtSource/Grass/GramaFitaA/GramaFitaA_v011.blend",
     "material": {
         "_BaseColor": "#FFFFFF",
-        "_Wrap": 0.7,
+        "_Wrap": 0.8,
         "_RampCenter": 0.45,
         "_RampSoftness": 0.4,
-        "_ReceiveShadows": 0.3,
+        "_ReceiveShadows": 0.25,
         "_RimStrength": 0.12,
         "_RimPower": 3.5,
         "_UseVertexColor": 1.0,
@@ -21,17 +21,17 @@
         "_TopTintAmount": 0.0,
         "_TopTintSharpness": 0.35,
         "_Translucency": 0.05,
-        "_AOStrength": 0.7,
+        "_AOStrength": 0.3,
         "preset": "Foliage"
     },
     "materialList": [
         {
             "name": "M_GramaFitaA",
             "_BaseColor": "#FFFFFF",
-            "_Wrap": 0.7,
+            "_Wrap": 0.8,
             "_RampCenter": 0.45,
             "_RampSoftness": 0.4,
-            "_ReceiveShadows": 0.3,
+            "_ReceiveShadows": 0.25,
             "_RimStrength": 0.12,
             "_RimPower": 3.5,
             "_UseVertexColor": 1.0,
@@ -45,13 +45,13 @@
             "_TopTintAmount": 0.0,
             "_TopTintSharpness": 0.35,
             "_Translucency": 0.05,
-            "_AOStrength": 0.7,
+            "_AOStrength": 0.3,
             "preset": "Foliage"
         }
     ],
     "triangles": {
-        "LOD0": 864,
-        "LOD1": 160,
-        "LOD2": 12
+        "LOD0": 504,
+        "LOD1": 90,
+        "LOD2": 6
     }
 }

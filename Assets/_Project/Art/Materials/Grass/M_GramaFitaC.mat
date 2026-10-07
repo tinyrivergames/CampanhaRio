@@ -31,14 +31,14 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _AOStrength: 0.7
+    - _AOStrength: 0.3
     - _AlphaClip: 0
     - _Cull: 0
     - _Cutoff: 0.5
     - _Preset: 2
     - _RampCenter: 0.45
     - _RampSoftness: 0.4
-    - _ReceiveShadows: 0.3
+    - _ReceiveShadows: 0.25
     - _RimPower: 3.5
     - _RimStrength: 0.12
     - _StencilComp: 0
@@ -51,7 +51,7 @@ Material:
     - _Wind: 1
     - _WindSpeed: 1.2
     - _WindStrength: 0.08
-    - _Wrap: 0.7
+    - _Wrap: 0.8
     m_Colors:
     - _BaseColor: {r: 1, g: 1, b: 1, a: 1}
     - _GradientBottom: {r: 1, g: 1, b: 1, a: 1}

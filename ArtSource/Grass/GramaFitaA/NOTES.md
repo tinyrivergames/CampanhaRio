@@ -77,3 +77,10 @@
 - Prévia: `GramaFitaA_v010_preview.png`
 - **Feedback do desenvolvedor (literal):** _(aguardando)_
 - **O que mudou:** Meio-termo entre pastel e verde vivo.
+
+### v011
+- Gerado com: `--seed 5 --blades 14 --style ribbon --patch 0.8 --height 0.75 --spread 0.24 --lean 0.7 --width 0.06 --root #548743 --mid #6A9A50 --tip #9CC06E --petal #F4F1E6 --up_normals 0.97 --shadows 0.25 --wrap 0.8 --ao 0.3 --transl 0.05 --shade_var 0.06 --leaf 0.25 --fold_dark 0.98 --hue_var 0.05 --heart #F2C53D`
+- Triângulos: LOD0 504, LOD1 90, LOD2 6
+- Prévia: `GramaFitaA_v011_preview.png`
+- **Feedback do desenvolvedor (literal):** _(aguardando)_
+- **O que mudou:** Estilo RV There Yet: a raiz com a cor exata do chão, quase uma cor por lâmina, pouca variação, lâminas mais soltas e longas.

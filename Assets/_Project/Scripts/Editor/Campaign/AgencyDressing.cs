@@ -72,7 +72,7 @@ namespace CampanhaRio.Editor
             carpet.terrain = terrain;
             carpet.noRiver = true;
             carpet.carpet = true;
-            carpet.densityNear = carpet.densityFar = 5.0f; // (fewer: clumps with the ground between, as in the reference) // (each ribbon clump is fuller than the old carpet patch)
+            carpet.densityNear = carpet.densityFar = 3.6f; // (looser: blades grow out of the ground, RV There Yet style) // (fewer: clumps with the ground between, as in the reference) // (each ribbon clump is fuller than the old carpet patch)
             carpet.drawDistance = 55f; carpet.lodDistance = 16f; carpet.thinDistance = 34f;
             carpet.types = CarpetTypes();
             carpet.clearing = Yard;

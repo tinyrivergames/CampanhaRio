@@ -15,9 +15,9 @@ RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 10
   m_Fog: 1
-  m_FogColor: {r: 0.7176471, g: 0.827451, b: 0.91764706, a: 1}
+  m_FogColor: {r: 0.7882353, g: 0.8627451, b: 0.78431374, a: 1}
   m_FogMode: 2
-  m_FogDensity: 0.0011
+  m_FogDensity: 0.0028
   m_LinearFogStart: 0
   m_LinearFogEnd: 300
   m_AmbientSkyColor: {r: 0.33862746, g: 0.39686278, b: 0.46803924, a: 0.55}
@@ -50012,8 +50012,8 @@ MonoBehaviour:
     skyHorizon: {r: 0.7372549, g: 0.8666667, b: 0.9490196, a: 1}
     skyGround: {r: 0.5411765, g: 0.52156866, b: 0.46666667, a: 1}
     sunGlow: 0.25
-    fogColor: {r: 0.7176471, g: 0.827451, b: 0.91764706, a: 1}
-    fogDensity: 0.0011
+    fogColor: {r: 0.7882353, g: 0.8627451, b: 0.78431374, a: 1}
+    fogDensity: 0.0028
   - name: Hora dourada
     at: 0.4
     sunElevation: 17
