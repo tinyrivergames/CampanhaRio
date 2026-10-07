@@ -21,3 +21,17 @@
 - Prévia: `GramaFitaB_v002_preview.png`
 - **Feedback do desenvolvedor (literal):** _(aguardando)_
 - **O que mudou:** Mais clara e quente no jogo (comparada lado a lado com a referência).
+
+### v003
+- Gerado com: `--seed 12 --blades 18 --style ribbon --patch 0.8 --height 0.82 --spread 0.2 --lean 0.55 --width 0.11 --root #2A6A40 --mid #46904A --tip #84B652 --petal #F4F1E6 --up_normals 0.88 --shadows 0.4 --wrap 0.85 --ao 0.5 --transl 0.05 --shade_var 0.3 --leaf 0.55 --fold_dark 0.72 --hue_var 0.3 --heart #F2C53D`
+- Triângulos: LOD0 648, LOD1 120, LOD2 8
+- Prévia: `GramaFitaB_v003_preview.png`
+- **Feedback do desenvolvedor (literal):** _(aguardando)_
+- **O que mudou:** Lâmina em folha larga (largura cheia até o meio, depois a ponta), quase ereta, lado escuro e lado claro na dobra, verdes variados (feedback: parecia fiapo).
+
+### v004
+- Gerado com: `--seed 12 --blades 18 --style ribbon --patch 0.8 --height 0.82 --spread 0.2 --lean 0.55 --width 0.11 --root #2E6C3E --mid #559C48 --tip #A2C85A --petal #F4F1E6 --up_normals 0.88 --shadows 0.4 --wrap 0.85 --ao 0.5 --transl 0.05 --shade_var 0.3 --leaf 0.55 --fold_dark 0.74 --hue_var 0.3 --heart #F2C53D`
+- Triângulos: LOD0 648, LOD1 120, LOD2 8
+- Prévia: `GramaFitaB_v004_preview.png`
+- **Feedback do desenvolvedor (literal):** _(aguardando)_
+- **O que mudou:** Pontas mais quentes e claras (comparação no jogo).

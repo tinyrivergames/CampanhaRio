@@ -223,7 +223,7 @@ def build_ribbon(name, lod, p, col):
         side0 = Vector((-out.y, out.x, 0.0))
         k = rnd.uniform(1.0 - p["shade_var"], 1.08)  # each blade its own value: they read apart
         t0 = rnd.uniform(-1, 1)
-        tint = Vector((1.0 + 0.05 * t0, 1.0 + 0.02 * t0, 1.0 - 0.1 * t0))
+        tint = Vector((1.0 + 0.5 * p["hue_var"] * t0, 1.0 + 0.2 * p["hue_var"] * t0, 1.0 - p["hue_var"] * t0))  # yellower or bluer blades
         rows = []
         pos = base.copy()
         step = h / segs
@@ -234,7 +234,11 @@ def build_ribbon(name, lod, p, col):
             if s > 0:
                 pos = pos + dirv * step
             side = (side0 * math.cos(twist * t) + dirv.cross(side0).normalized() * math.sin(twist * t)).normalized()
-            half = w * (1.0 - t) ** 0.85 * 0.5
+            if p["leaf"] > 0:  # a leaf (the reference): full width to the middle, then a point
+                prof = (0.78 + 0.22 * t / 0.3) if t < 0.3 else 1.0 if t < p["leaf"] else ((1.0 - t) / (1.0 - p["leaf"])) ** 0.75
+            else:
+                prof = (1.0 - t) ** 0.85
+            half = w * prof * 0.5
             c = col_at(t, k, tint)
             alpha = t
             if s == segs:
@@ -250,7 +254,8 @@ def build_ribbon(name, lod, p, col):
             row.append(R)
             for vtx in row:
                 colors[vtx] = (min(c.x, 1), min(c.y, 1), min(c.z, 1), alpha)
-            colors[L] = (min(c.x * 0.9, 1), min(c.y * 0.9, 1), min(c.z * 0.9, 1), alpha)
+            colors[L] = (min(c.x * p["fold_dark"], 1), min(c.y * p["fold_dark"], 1), min(c.z * p["fold_dark"], 1), alpha)  # the fold: a dark half
+            colors[R] = (min(c.x * 1.06, 1), min(c.y * 1.06, 1), min(c.z * 1.06, 1), alpha)   # and a light half
             rows.append(row)
         for s in range(segs):
             a_row, b_row = rows[s], rows[s + 1]
@@ -352,13 +357,16 @@ def main():
         "ao": f("ao", 1.0),
         "transl": f("transl", 0.45),
         "shade_var": f("shade_var", 0.12),
+        "leaf": f("leaf", 0.0),
+        "fold_dark": f("fold_dark", 0.9),
+        "hue_var": f("hue_var", 0.1),
         "heart": args.get("heart", "#F2C53D"),
     }
     parts = build(asset, p)
     print(f"[grass] tris { {k: common.triangle_count(o) for k, o in parts.items()} }")
     if "field" in args:  # a field of this tuft vs the reference picture
         preview.render_field(os.path.join(common.TMP_DIR, f"field_{asset}_{args['field']}.png"), [parts["LOD0"]], common.load_rig(),
-                             ground_hex=args.get("ground", "#3C7326"), count=int(args.get("count", 160)))
+                             ground_hex=args.get("ground", "#3C7326"), count=int(args.get("count", 160)), eye=(0.0, 4.2, 1.25), target=(0.0, 0.0, 0.25))
         return
     if "draft" in args:
         out = os.path.join(common.TMP_DIR, f"draft_{asset}_{args['draft']}.png")

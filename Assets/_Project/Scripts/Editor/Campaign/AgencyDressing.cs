@@ -61,11 +61,11 @@ namespace CampanhaRio.Editor
             grass.densityFar = 3.2f;
             grass.drawDistance = 80f;
             grass.types = GrassTypes();
-            grass.densityNear = grass.densityFar = 1.2f; // the tall ribbons: few in the yard, thick at the woods' edge
+            grass.densityNear = grass.densityFar = 0.5f; // the tall ribbons: few in the yard, thick at the woods' edge
             grass.clearing = Yard;
             grass.clearingShare = 0.25f;
             grass.forestTallness = 1.8f;
-            grass.trailHug = 2.8f; // tall clumps hug the trails (the reference)
+            grass.trailHug = 0f; // (the reference keeps the grass low at the trails)
 
             var carpet = new GameObject("Grass Carpet").AddComponent<GrassField>();
             carpet.transform.SetParent(root, false);

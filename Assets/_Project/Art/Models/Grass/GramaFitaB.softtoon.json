@@ -1,7 +1,7 @@
 {
     "asset": "GramaFitaB",
     "family": "Grass",
-    "source": "ArtSource/Grass/GramaFitaB/GramaFitaB_v002.blend",
+    "source": "ArtSource/Grass/GramaFitaB/GramaFitaB_v004.blend",
     "material": {
         "_BaseColor": "#FFFFFF",
         "_Wrap": 0.85,
@@ -21,7 +21,7 @@
         "_TopTintAmount": 0.0,
         "_TopTintSharpness": 0.35,
         "_Translucency": 0.05,
-        "_AOStrength": 0.6,
+        "_AOStrength": 0.5,
         "preset": "Foliage"
     },
     "materialList": [
@@ -45,13 +45,13 @@
             "_TopTintAmount": 0.0,
             "_TopTintSharpness": 0.35,
             "_Translucency": 0.05,
-            "_AOStrength": 0.6,
+            "_AOStrength": 0.5,
             "preset": "Foliage"
         }
     ],
     "triangles": {
-        "LOD0": 1008,
-        "LOD1": 180,
-        "LOD2": 14
+        "LOD0": 648,
+        "LOD1": 120,
+        "LOD2": 8
     }
 }
