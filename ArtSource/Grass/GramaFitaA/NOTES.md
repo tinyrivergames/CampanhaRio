@@ -42,3 +42,10 @@
 - Prévia: `GramaFitaA_v005_preview.png`
 - **Feedback do desenvolvedor (literal):** _(aguardando)_
 - **O que mudou:** Pontas mais quentes e claras (comparação no jogo).
+
+### v006
+- Gerado com: `--seed 5 --blades 20 --style ribbon --patch 0.8 --height 0.6 --spread 0.2 --lean 0.55 --width 0.11 --root #3B6E36 --mid #5C9444 --tip #8DB860 --petal #F4F1E6 --up_normals 0.98 --shadows 0.3 --wrap 0.9 --ao 0.4 --transl 0.05 --shade_var 0.12 --leaf 0.55 --fold_dark 0.95 --hue_var 0.1 --heart #F2C53D`
+- Triângulos: LOD0 720, LOD1 130, LOD2 10
+- Prévia: `GramaFitaA_v006_preview.png`
+- **Feedback do desenvolvedor (literal):** _(aguardando)_
+- **O que mudou:** Macia e menos forte (feedback: parecia esmeraldas brilhando com lineart): dobra quase sem contraste, luz igual nas lâminas, verde mais suave perto do chão.
