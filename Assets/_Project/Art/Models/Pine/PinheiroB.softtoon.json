@@ -1,7 +1,7 @@
 {
     "asset": "PinheiroB",
     "family": "Pine",
-    "source": "ArtSource/Pine/PinheiroB/PinheiroB_v001.blend",
+    "source": "ArtSource/Pine/PinheiroB/PinheiroB_v002.blend",
     "material": {
         "_BaseColor": "#FFFFFF",
         "_Wrap": 0.7,
@@ -21,6 +21,8 @@
         "_TopTintAmount": 0.0,
         "_TopTintSharpness": 0.35,
         "_Translucency": 0.3,
+        "_AOStrength": 1.0,
+        "_GroundTintOn": 0.0,
         "preset": "Foliage"
     },
     "materialList": [
@@ -44,6 +46,8 @@
             "_TopTintAmount": 0.0,
             "_TopTintSharpness": 0.35,
             "_Translucency": 0.3,
+            "_AOStrength": 1.0,
+            "_GroundTintOn": 0.0,
             "preset": "Foliage"
         },
         {
@@ -66,13 +70,15 @@
             "_TopTintAmount": 0.0,
             "_TopTintSharpness": 0.35,
             "_Translucency": 0.3,
+            "_AOStrength": 1.0,
+            "_GroundTintOn": 0.0,
             "_BaseMap": "Assets/_Project/Art/Textures/Pine/PinheiroB_impostor.png",
             "preset": "Foliage"
         }
     ],
     "triangles": {
-        "LOD0": 1406,
-        "LOD1": 251,
+        "LOD0": 6934,
+        "LOD1": 934,
         "LOD2": 4
     }
 }

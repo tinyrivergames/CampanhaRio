@@ -454,11 +454,158 @@ def build_tree_blades(name, lod, p, col):
     return obj
 
 
+def build_tree_fronds(name, lod, p, col):
+    """
+    The pine as the reference picture draws it: tiers of drooping FRONDS around a slim trunk. Each frond is a curved
+    spine with small pointed leaves along both sides (like a fern), smaller toward its tip; the tiers shrink toward
+    the top and the tree is tall and narrow. Leaves near the trunk and under a tier are dark, the frond tips and the
+    tops are light, so every frond reads on its own and the silhouette is finely jagged. Normals lean toward the crown
+    (soft, "inflated" light).
+    """
+    rnd = random.Random(p["seed"])
+    bm = bmesh.new()
+    colors = {}
+    dark, mid, light, bark = (srgb(p.get(k) or common.palette(d)) for k, d in (("c_dark", "pine_dark"), ("c_mid", "pine_mid"), ("c_light", "pine_light"), ("c_bark", "bark")))
+    up = Vector((0, 0, 1))
+    detail = lod == "LOD0"
+    warm, cool = Vector((1.07, 1.05, 0.84)), Vector((0.9, 0.98, 1.08))
+
+    def mul(a, b):
+        return Vector((a.x * b.x, a.y * b.y, a.z * b.z))
+
+    def lean(y):
+        return Vector((p["lean"] * y, 0.0, 0.0))
+
+    def vert(pos, color, alpha):
+        v = bm.verts.new(pos)
+        colors[v] = (min(color.x, 1), min(color.y, 1), min(color.z, 1), alpha)
+        return v
+
+    # Trunk: slim, a little flare at the ground, into the crown
+    sides = 6 if detail else 4
+    rings = []
+    for y, r, flare in ((0.0, 0.3, 0.3), (0.35, 0.17, 0.0), (2.0, 0.13, 0.0), (p["height"] - 1.0, 0.04, 0.0)):
+        ring = []
+        for j in range(sides):
+            a = 2 * math.pi * j / sides
+            rr = r * (1.0 + (flare if j % 2 == 0 else -flare * 0.4))
+            ring.append(vert(Vector((math.cos(a) * rr, math.sin(a) * rr, y)) + lean(y), bark * (0.85 if y == 0 else 1.0), 0.0))
+        rings.append(ring)
+    for a_r, b_r in zip(rings, rings[1:]):
+        for j in range(sides):
+            bm.faces.new((a_r[j], a_r[(j + 1) % sides], b_r[(j + 1) % sides], b_r[j]))
+
+    def leaf(base, d, side, L, w, c_base, c_tip, wind):
+        """A small pointed leaf from base along d (unit), folded a little along its middle."""
+        n = d.cross(side).normalized()
+        if n.z < 0:
+            n = -n
+        tip = base + d * L
+        m = base + d * (L * 0.45)
+        B, T = vert(base, c_base, wind * 0.8), vert(tip, c_tip, wind)
+        l = vert(m - side * w, c_base.lerp(c_tip, 0.45), wind * 0.9)
+        r = vert(m + side * w, c_base.lerp(c_tip, 0.45), wind * 0.9)
+        if detail:
+            C = vert(m + n * w * 0.25, c_base.lerp(c_tip, 0.6), wind * 0.9)
+            for f in ((B, l, C), (B, C, r), (l, T, C), (C, T, r)):
+                bm.faces.new(f)
+        else:
+            bm.faces.new((B, l, T))
+            bm.faces.new((B, T, r))
+
+    def frond(root, yaw, L, droop, t, shade, hue, under):
+        d0 = Vector((math.cos(yaw), math.sin(yaw), 0.0))
+        side = Vector((-d0.y, d0.x, 0.0))
+        steps = p["frond_leaves"] if detail else max(2, p["frond_leaves"] // 2)
+        tone = Vector((1, 1, 1)).lerp(warm if hue > 0 else cool, abs(hue) * p["hue_var"])
+        pos, pts = root.copy(), []
+        for k in range(steps + 1):  # the spine: an arc that droops more toward its tip
+            s = k / steps
+            a = droop * (0.35 + 0.9 * s)
+            pts.append(pos.copy())
+            pos += (d0 * math.cos(a) - up * math.sin(a)) * (L / steps)
+        spread = math.radians(p["leaf_angle"])
+        for k in range(1, steps + 1):
+            s = k / steps
+            base, nxt = pts[k - 1], pts[k]
+            d = (nxt - base).normalized()
+            size = L * p["leaf_len"] * (1.15 - 0.45 * s) * (p["frond_leaves"] / steps) ** 0.8  # (LOD1: fewer, bigger leaves)
+            inner = (1.0 - s) * 0.7 + (0.35 if under else 0.0)
+            c_base = mul(dark.lerp(mid, max(0.0, 0.35 - 0.3 * inner)) * shade, tone)
+            c_tip = mul(mid.lerp(light, max(0.0, (p["top_light"] - 0.5 * inner) * (0.4 + 0.6 * s) + 0.3 * t)) * shade, tone)
+            if under:
+                c_base, c_tip = c_base * 0.85, c_tip * 0.82
+            wind = 0.3 + 0.7 * s
+            for sgn in (-1, 1):  # a pair, swept forward and a little down
+                dl = (d * math.cos(spread) + side * sgn * math.sin(spread) - up * 0.18).normalized()
+                leaf(base, dl, Vector((-dl.y, dl.x, 0)).normalized(), size, size * p["leaf_width"], c_base, c_tip, wind)
+        d = (pts[-1] - pts[-2]).normalized()  # the frond's own tip leaf
+        tip_len = L * p["leaf_len"] * 0.9 * (p["frond_leaves"] / steps) ** 0.8
+        leaf(pts[-1], d, side, tip_len, tip_len * p["leaf_width"], mul(mid * shade, tone), mul(light.lerp(mid, 0.2) * shade, tone), 1.0)
+
+    tiers = p["tiers"] if detail else max(5, p["tiers"] // 2)
+    first, last = p["first"], p["height"] - 0.9
+    # The core: a dark, ragged cone inside the fronds (no sky through the middle)
+    core_sides = 10 if detail else 6
+    ring = []
+    for j in range(core_sides):
+        a = 2 * math.pi * j / core_sides
+        r = (p["radius"] * p["core_r"] + 0.15) * (1.0 if j % 2 == 0 else 0.7)
+        ring.append(vert(Vector((math.cos(a) * r, math.sin(a) * r, first - 0.4)) + lean(first), dark * 0.8, 0.0))
+    apex = vert(Vector((0, 0, last)) + lean(last), dark.lerp(mid, 0.4), 0.3)
+    for j in range(core_sides):
+        bm.faces.new((ring[j], ring[(j + 1) % core_sides], apex))
+    for i in range(tiers):
+        t = i / max(1, tiers - 1)
+        h = first + (last - first) * t ** 0.95
+        R = p["radius"] * (1.0 - 0.9 * t) + 0.2
+        n = max(4, round((p["fronds"] - 4 * t) * (1.0 if detail else 0.7)))
+        droop = math.radians(p["droop_deg"] * (1.0 - 0.35 * t))
+        offset = rnd.uniform(0, 2 * math.pi)
+        layers = ((False, 1.0, 0.0), (True, 0.75, 0.5)) if t < p["under_upto"] else ((False, 1.0, 0.0),)
+        for under, scale, half in layers:
+            for j in range(n):
+                yaw = offset + (j + half) * 2 * math.pi / n + rnd.uniform(-0.15, 0.15)
+                L = R * scale * rnd.uniform(0.8, 1.12)
+                root = Vector((0, 0, h - (0.2 if under else 0.0) + rnd.uniform(-p["h_jitter"], p["h_jitter"]))) + lean(h) + Vector((math.cos(yaw), math.sin(yaw), 0)) * 0.06
+                frond(root, yaw, L, droop * rnd.uniform(0.8, 1.2), t, rnd.uniform(0.9, 1.08), rnd.uniform(-1.0, 1.0), under)
+
+    # The crown: a short upright tuft of leaves and the leader
+    top = Vector((0, 0, last)) + lean(last)
+    for j in range(5 if detail else 3):
+        yaw = j * 2 * math.pi / (5 if detail else 3)
+        d = (Vector((math.cos(yaw), math.sin(yaw), 0)) * 0.45 + up).normalized()
+        leaf(top, d, Vector((-math.sin(yaw), math.cos(yaw), 0)), 0.55, 0.1, mid, light, 1.0)
+    leaf(top, up, Vector((1, 0, 0)), p["height"] - last + 0.1, 0.08, mid, light, 1.0)
+
+    bmesh.ops.triangulate(bm, faces=bm.faces)
+    mesh = bpy.data.meshes.new(name)
+    vert_colors = [colors[v] for v in bm.verts]
+    bm.to_mesh(mesh)
+    bm.free()
+    obj = common.mesh_object(name, mesh, col)
+    for poly in mesh.polygons:
+        poly.use_smooth = True
+    center = Vector((0, 0, p["height"] * 0.45))
+    axes = Vector((p["radius"] * 1.1, p["radius"] * 1.1, p["height"] * 0.6))
+    normals = []
+    for v in mesh.vertices:
+        dv = v.co - center - Vector((p["lean"] * v.co.z, 0, 0))
+        ell = Vector((dv.x / axes.x ** 2, dv.y / axes.y ** 2, dv.z / axes.z ** 2)).normalized()
+        normals.append(up.lerp(ell, p["inflate"]).normalized())
+    mesh.normals_split_custom_set_from_vertices(normals)
+    attr = mesh.color_attributes.new("Col", "BYTE_COLOR", "CORNER")
+    mesh.color_attributes.active_color = attr
+    for loop in mesh.loops:
+        attr.data[loop.index].color_srgb = vert_colors[loop.vertex_index]
+    return obj
+
+
 def build(asset, p):
     rig = common.load_rig()
     common.reset_scene()
     col = common.collection(asset)
-    make = {"tufts": build_tree_tufts, "blades": build_tree_blades}.get(p["style"], build_tree)
+    make = {"tufts": build_tree_tufts, "blades": build_tree_blades, "fronds": build_tree_fronds}.get(p["style"], build_tree)
     lod0 = make(asset + "_LOD0", "LOD0", p, col)
     lod1 = make(asset + "_LOD1", "LOD1", p, col)
     mat = common.soft_toon_material("M_" + asset, rig, preset="Foliage", _BaseColor="#FFFFFF", _UseVertexColor=1.0,
@@ -523,6 +670,14 @@ def main():
         "scallop": float(args.get("scallop", 0.28)),
         "droop": float(args.get("droop", 0.12)),
         "inflate": float(args.get("inflate", 0.4)),
+        "fronds": int(args.get("fronds", 11)),          # fronds style: fronds per tier at the bottom
+        "frond_leaves": int(args.get("frond_leaves", 7)),  # leaf pairs along a frond
+        "leaf_len": float(args.get("leaf_len", 0.22)),  # of the frond's length
+        "leaf_width": float(args.get("leaf_width", 0.3)),
+        "leaf_angle": float(args.get("leaf_angle", 50)),
+        "under_upto": float(args.get("under_upto", 0.6)),  # fronds: the darker under-layer up to this share of the tiers
+        "first": float(args.get("first", 1.7)),          # fronds: the lowest tier (m; the bare trunk below)
+        "c_dark": args.get("dark"), "c_mid": args.get("mid"), "c_light": args.get("light"), "c_bark": args.get("bark"),  # fronds: colours (default: the palette)
     }
     parts = build(asset, p)
     if "draft" in args:  # a test render only: no version, no notes (ArtSource/_tmp/draft_<asset>.png)

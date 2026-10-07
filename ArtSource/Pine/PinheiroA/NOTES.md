@@ -73,3 +73,10 @@
 - Prévia: `PinheiroA_v008_preview.png`
 - **Feedback do desenvolvedor (literal):** "beleza, parece bom. Seguimos" → **APROVADA** (substitui a v006 como pinheiro-mestre)
 - **O que mudou:** Miolo ainda mais parte da folhagem: em degraus que acompanham as camadas (6 anéis, alternando largura), pontas claras e vãos escuros como as dobras das lâminas, e um tom próprio em cada ponta (como cada lâmina). Lâminas iguais à v006/v007.
+
+### v009
+- Gerado com: `--style fronds --tiers 9 --density 1.0 --top_light 0.6 --hue_var 0.6 --tip_round 0.0 --core_soft 0 --core_r 0.35 --core_light 0.35 --core_rings 2 --core_step 1.0 --h_jitter 0.06 --droop_deg 32.0 --curl 0.3839724354387525 --blade_width 0.16 --whorls 9 --seed 4 --height 12.0 --radius 2.6 --layers 5 --lean 0.03 --scallop 0.28 --droop 0.12 --inflate 0.4 --fronds 12 --frond_leaves 6 --leaf_len 0.34 --leaf_width 0.24 --leaf_angle 38.0 --under_upto 0.95 --first 2.4 --c_dark #26442C --c_mid #44723A --c_light #86AE55 --c_bark None`
+- Triângulos: LOD0 9014, LOD1 934
+- Prévia: `PinheiroA_v009_preview.png`
+- **Feedback do desenvolvedor (literal):** _(aguardando)_
+- **O que mudou:** Novo estilo (fronds): andares de galhos com folhinhas pontudas, como os pinheiros da imagem de referencia da agencia.
